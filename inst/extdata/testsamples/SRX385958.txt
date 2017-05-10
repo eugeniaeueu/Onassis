@@ -1,0 +1,3 @@
+GSM1277685: H2A-ChIPSeq_KO_EB; Mus musculus; ChIP-Seq
+GEO Accession: GSM1277685
+source_name: mouse embryoid bodies || genotype: Usp16 KO || cell line: V6.5 || cell type: mouse embryoid bodies || passages: 15-20 || strain: C57BL/6 || chip antibody: Millipore, 07-146 || BioSampleModel: Generic

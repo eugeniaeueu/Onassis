@@ -1,0 +1,16 @@
+Cell line:BJ
+Cell type:Fibroblasts
+BJ_iPS11 
+Induced pluripotent cells
+Cell line:BJ
+Cell type:Induced pluripotent cells
+BJ_iPS12 GPL8230 Induced pluripotent cells Homo sapiens
+Cell line:BJ
+Cell type:Induced pluripotent cells
+GSE15007 GSM375440     hFib2 GPL8230               Fibroblasts Homo sapiens               Cell line:hFib2
+Cell type:Fibroblasts
+hFib2_iPS GPL8230 Induced pluripotent cells Homo sapiens Cell line:hFib3
+Cell type:Induced pluripotent cells
+IMR90 GPL8230               Fibroblasts Homo sapiens               
+Cell line:IMR90
+Cell type:Fibroblasts

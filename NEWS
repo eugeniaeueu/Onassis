@@ -1,0 +1,14 @@
+-------------------------------------
+o Initial version with the following files
+ + SRAdbHandler
+ + GEOHandler
+ + EntityFinder-methods
+ + similarity-methods
+ + AllGenerics
+ + AllClasses
+ + AllFunctions
+ +CMdict-methods
+ + Init_methods
+ + onLoad
+ + SupportingFunctions
+ + CMoptions-methods

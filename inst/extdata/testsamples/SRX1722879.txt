@@ -1,0 +1,24 @@
+Status	Public on Nov 01, 2016
+Title	A13-Lg_1_K36Me3
+Sample type	SRA
+
+Source name	Patient A13
+Organism	Homo sapiens
+Characteristics	antibody: K36Me3
+tissue: lung metastasis
+Treatment protocol	For ChIP-seq, cells were crosslinked with 1% formaldehyde for 10 min at 37 degrees. Isolated chromatin was sonicated to avg length of 200-600bp.
+Growth protocol	Unless otherwise stated, cells were grown to 70% (A38-Lg) or 100% (A38-Per) confluence in DMEM with 10% Fetal Bovine Serum (FBS)
+Extracted molecule	genomic DNA
+Extraction protocol	For ChIP-seq, input and IP DNA were extracted with Phenol:Chloroform.
+Libraries were prepared from 10-20 ng of IP ChIP DNA and 100-150 ng of input DNA according to Illumina’s instructions along with the ChIP-seq DNA Sample Prep Kit (IP-102-1001). Briefly, samples were checked for quality and concentration from 150-250 bp on a bioanalyzer. DNA was end-repaired using Klenow polymerase in 58 μL of reaction buffer. For IP DNA, Klenow was diluted 1:5. Samples were incubated at 20°C for 30 minutes and subsequently purified on QIAquick PCR purification columns. A-tails were then added to the DNA with Klenow and dATP in NEB buffer 2 at 37°C for 30 minutes and cleaned with Qiagen MiniElute PCR purification columns. Sequencing adapters were then ligated onto the DNA for 15 minutes at room temperature followed by cleaning with MiniElute columns. Samples were then run on 2% agarose gels and DNA from 216-366 bp (DNA plus adapters) were cut from the gel and purified with a Qiagen QIAquickGel Extraction kit. Concentrations were then checked on a bioanalyzer and 8 ng were PCR amplified with Phusion polymerase (Fisher) for 15 cycles (10 sec 98°C, 30 sec 65°C, 30 sec 72°C) followed by 5 minutes at 72°C. Samples were then cleaned with Ampure kits (Illumina) and washed with 80% ethanol. DNA samples were resuspended at the end of the cleanup into 17.5 μL buffer EB (Qiagen) and subjected to next generation sequencing on Illumina HiSeq platform according to manufacturers instructions.
+
+Library strategy	ChIP-Seq
+Library source	genomic
+Library selection	ChIP
+Instrument model	Illumina HiSeq 2000
+
+Data processing	Basecalls performed using CASAVA version 1.8.2
+For 46 bp paired-end Illumina HiSeq2000 sequencing data, reads were aligned against human genome (hg19) using BWA with default parameters. After alignment, duplicate reads were removed and only uniquely aligned reads were kept for further analysis. For 48 bp single-end Solid sequencing data, reads were aligned using Bowtie with default parameters and only uniquely aligned reads were kept for further analysis.
+For narrow histone modification peaks including H3K4Me3, H3K9Ac, H3K16Ac and H3K27ac, MACS2 were used for peak calling with default parameters. While for broad histone modifications peaks in including H3K36Me3, H3K27me3, H3K9Me2/3, and yH2AX, peak calling were performed using RSEG which is based on hidden Markov model (HMM) and specifically designed for identifying broad histone peaks.
+Genome_build: hg19
+Supplementary_files_format_and_content: bed files, called peaks by MACS2 and called domains by RSEG

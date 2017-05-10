@@ -1,0 +1,30 @@
+Series GSE89212		Query DataSets for GSE89212
+Status	Public on Mar 15, 2017
+Title	ChIP-seq analysis of coronavirus-infected human cells
+Organism	Homo sapiens
+Experiment type	Genome binding/occupancy profiling by high throughput sequencing
+Summary	The aim of the experiment is to identify chromatin and transcription factor binding dynamics in host gene expression upon infection of human Huh7 hepatoma carcinoma cells with human coronavirus HCoV-229E as compared to uninfected cells and in comparison to cells stimulated by IL-1alpha (10ng/ml) for 1h. All experiments have been performed at 33°C which is required for sufficient viral entry/replication.
+
+Overall design	ChIP-seq
+
+Contributor(s)	Kracht M, Bartkuhn M
+Citation missing	Has this study been published? Please login to update or notify GEO.
+Submission date	Oct 26, 2016
+Last update date	Mar 27, 2017
+Contact name	Marek Bartkuhn
+E-mail	marek.bartkuhn@gen.bio.uni-giessen.de
+Organization name	Justus-Liebig-University Giessen
+Department	Institute for Genetics
+Street address	Heinrich-Buff-Ring 58
+City	Giessen
+State/province	Hessen
+ZIP/Postal code	35392
+Country	Germany
+
+Platforms (1)
+GPL16791	Illumina HiSeq 2500 (Homo sapiens)
+Samples (23)
+More... More...
+GSM2360939	ChIP-seq analysis of H3K27ac in Huh7 cells ( control )
+GSM2360940	ChIP-seq analysis of H3K27ac in Huh7 cells ( CoV )
+GSM2360941	ChIP-seq analysis of H3K27ac in Huh7 cells ( IL-1 )

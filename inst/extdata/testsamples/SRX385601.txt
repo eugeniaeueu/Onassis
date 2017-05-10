@@ -1,0 +1,2 @@
+GSM1277168: Gal4BDSpo11_0h_IP; Saccharomyces cerevisiae; ChIP-Seq
+GEO Accession: GSM1277168

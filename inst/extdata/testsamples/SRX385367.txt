@@ -1,0 +1,3 @@
+GSM1276709: Mouse_ESCs_MLL2_FC/FC_H3K27me3; Mus musculus; ChIP-Seq
+GEO Accession: GSM1276709
+source_name: Embryonic Stem Cells (ESCs) || strain background: 129 || genotype/variation: induced Mll2 -/- || treated with: none || cell type: Embryonic Stem Cells (ESCs) || chip antibody: H3K27me3 || chip antibody vendor: Upstate (Millipore) || BioSampleModel: Generic
