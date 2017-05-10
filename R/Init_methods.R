@@ -12,9 +12,6 @@ initJavaLibs <- function(libLoc, mem = "12G") {
     # Adding the directory to the path
     path = Sys.glob(paste0(libLoc, "/*.jar"))
     # Check if access to the library directory is allowed
-    if (file.access(libLoc, "6") == -1)
-        stop("No read+write access to specified lib location")
-
 
     download_url1 = "https://sourceforge.net/projects/onassis/files/conceptmapping-0.0.1-SNAPSHOT-jar-with-dependencies.jar/download"
     download_url2 = "https://sourceforge.net/projects/onassis/files/similarity-0.0.1-SNAPSHOT-jar-with-dependencies.jar/download"
@@ -23,7 +20,11 @@ initJavaLibs <- function(libLoc, mem = "12G") {
 
     # Check if all the files are there
     if (length(available_local_files) == 0) {
+
         message("Onassis is attempting to download Java libraries. The process might take a while...")
+      if (file.access(libLoc, "6") == -1)
+        stop("No read+write access to specified lib location")
+
         complete_remote_files <- download.file(download_url1, destfile = file.path(libLoc, "conceptmapper-0.0.1-SNAPSHOT-jar-with-dependencies.jar"))
         similarity_lib <- download.file(download_url2, destfile = file.path(libLoc, "similarity-0.0.1-SNAPSHOT-jar-with-dependencies.jar"))
     }
