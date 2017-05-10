@@ -14,6 +14,7 @@
 #'The semantic similarity module has been obtained using the Java slib  (\url{http://www.semantic-measures-library.org/sml/})
 
 #' @name OnASSiS
+#' @rdname Onassis
 #' @title OnASSiS (Ontology Annotations and Semantic Similarity software)
 #' @docType package
 #' @aliases Onassis-package
