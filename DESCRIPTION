@@ -1,5 +1,5 @@
 Package: Onassis
-Version: 0.98.0
+Version: 0.99.1
 Date: 2017-05-10
 Title: OnASSIs Ontology Annotation and Semantic SImilarity software
 Author: Eugenia Galeota
@@ -9,14 +9,15 @@ Maintainer: Eugenia Galeota <eugenia.galeota@gmail.com>
 Description: A package that allows the annotation of text with ontology terms (mainly from OBO ontologies)
     and the computation of semantic similarity measures based on the structure of the ontology between different annotated
     samples.
+License: GPL-2
 Depends:
     R (>= 3.3), rJava
 Imports:
     GEOmetadb, RSQLite, SRAdb, data.table, methods, tools, utils 
 SystemRequirements: Java (>= 1.8)
 RoxygenNote: 6.0.1
-VignetteBuilder: rmarkdown
-Suggests: BiocStyle, knitr, rmarkdown, DT, htmltools
+VignetteBuilder: rmarkdown, knitr
+Suggests: BiocStyle, rmarkdown, knitr,  htmltools, DT 
 Encoding: UTF-8
 LazyData: yes
 biocViews: Annotation, DataImport, Clustering, Network, Software, GeneTarget
