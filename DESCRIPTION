@@ -1,5 +1,5 @@
 Package: Onassis
-Version: 0.99.2
+Version: 0.99.3
 Date: 2017-05-10
 Title: OnASSIs Ontology Annotation and Semantic SImilarity software
 Author: Eugenia Galeota
@@ -11,7 +11,7 @@ Description: A package that allows the annotation of text with ontology terms (m
     samples.
 License: GPL-2
 Depends:
-    R (>= 3.3), rJava
+    R (>= 3.4), rJava
 Imports:
     GEOmetadb, RSQLite, SRAdb, data.table, methods, tools, utils 
 SystemRequirements: Java (>= 1.8)

@@ -2,37 +2,50 @@
 # Init method that is called when a new CMdictionary is created
 initJavaLibs <- function(libLoc, mem = "12G") {
     # Check if library directory is missing
+
+  #Starting the java engine
+    .jinit(force.init=TRUE)
+    message('CLASSPATH')
+    message(.jclassPath())
     if (missing(libLoc)) {
         libLoc = system.file("java", package = "Onassis")
     }
     # Check if the provided directory is valid
-    if (!file.exists(libLoc) || !file.info(libLoc)$isdir) {
+    if (!file.exists(file.path(libLoc)) || !file.info(file.path(libLoc))$isdir) {
+      message("The library location does not exist. We are creating it")
       dir.create(libLoc)
     }
     # Adding the directory to the path
     path = Sys.glob(paste0(libLoc, "/*.jar"))
     # Check if access to the library directory is allowed
 
-    download_url1 = "https://sourceforge.net/projects/onassis/files/conceptmapping-0.0.1-SNAPSHOT-jar-with-dependencies.jar/download"
+    download_url1 = "https://sourceforge.net/projects/onassis/files/conceptmapper-0.0.1-SNAPSHOT-jar-with-dependencies.jar/download"
     download_url2 = "https://sourceforge.net/projects/onassis/files/similarity-0.0.1-SNAPSHOT-jar-with-dependencies.jar/download"
     # Listing files in the library directory
     available_local_files <- list.files(libLoc, full.names = FALSE, pattern = "\\.jar$")
 
     # Check if all the files are there
-    if (length(available_local_files) == 0) {
+    if (! "conceptmapper-0.0.1-SNAPSHOT-jar-with-dependencies.jar" %in% available_local_files) {
 
-        message("Onassis is attempting to download Java libraries. The process might take a while...")
-      if (file.access(libLoc, "6") == -1)
-        stop("No read+write access to specified lib location")
+      message("Onassis is attempting to download conceptmapper Java libraries. The process might take a while...")
 
-        complete_remote_files <- download.file(download_url1, destfile = file.path(libLoc, "conceptmapper-0.0.1-SNAPSHOT-jar-with-dependencies.jar"))
-        similarity_lib <- download.file(download_url2, destfile = file.path(libLoc, "similarity-0.0.1-SNAPSHOT-jar-with-dependencies.jar"))
+      cm_remote_file <- download.file(download_url1, destfile = file.path(libLoc, "conceptmapper-0.0.1-SNAPSHOT-jar-with-dependencies.jar"))
+    }
+
+    if (! "similarity-0.0.1-SNAPSHOT-jar-with-dependencies.jar" %in% available_local_files) {
+      message("Downaloadin similarity libraries...")
+
+      similarity_lib <- download.file(download_url2, destfile = file.path(libLoc, "similarity-0.0.1-SNAPSHOT-jar-with-dependencies.jar"))
     }
 
 
-    # Start java engine, if not already done, and add to classpath options(java.parameters = paste0('-Xmx', mem)) rJava::.jinit()
-    rJava::.jaddClassPath(path)
 
+    if(length(path) > 0 ){
+      sapply(path, function(path_entry) rJava::.jaddClassPath(path_entry))
+    }
+
+    message('PATH')
+    message(.jclassPath())
     # Determine if the jar files have been loaded correctly
     len = length(grep("*", basename(rJava::.jclassPath())))
     if (len == 0L)
