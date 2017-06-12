@@ -35,43 +35,35 @@ ef <- new('EntityFinder')
 
 opts <- new('CMoptions')
 
-dict_file <-  file.path(getwd(), 'cmDict-BrendaTissue.xml')
- if(!file.exists(dict_file))
-   download.file('https://sourceforge.net/projects/onassis/files/cmDict-BrendaTissue.xml',
-    destfile=file.path(getwd(), 'cmDict-BrendaTissue.xml'))
+cell_dict_file <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+sample_dict <- CMdictionary(inputFileOrDb=cell_dict_file, outputdir=getwd(),
+synonymType='ALL')
+samples <- findEntities(ef, system.file('extdata', 'test_samples',
+'test_samples.txt',
+package='Onassis'), multipleDocs=TRUE, configOpt=opts,
+ cmDict=sample_dict)
 
-brenda <- findEntities(ef, system.file('extdata', 'testsamples',
-package='Onassis'), multipleDocs=FALSE, configOpt=opts,
- cmDict=file.path(getwd(), 'cmDict-BrendaTissue.xml'))
+d_dict_file <-  system.file('extdata', 'sample.do.obo', package='OnassisJavaLibs')
+disease_dict <- CMdictionary(inputFileOrDb=d_dict_file,
+outputdir=getwd(), synonymType='ALL')
+disease <- findEntities(ef, system.file('extdata', 'test_samples',
+'test_samples.txt', package='Onassis'),
+ multipleDocs=TRUE, configOpt=opts,
+  cmDict=disease_dict)
 
-dict_file <-  file.path(getwd(), 'cmDict-doid.xml')
- if(!file.exists(dict_file))
-   download.file('https://sourceforge.net/projects/onassis/files/cmDict-doid.xml',
-    destfile=file.path(getwd(), 'cmDict-doid.xml'))
 
-disease <- findEntities(ef, system.file('extdata', 'testsamples', package='Onassis'),
- multipleDocs=FALSE, configOpt=opts,
-  cmDict=file.path(getwd(), 'cmDict-doid.xml'))
+cell_sim <- new('Similarity')
+ontology(cell_sim) <- cell_dict_file
 
-dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
- if(!file.exists(dict_file))
-   download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-    destfile=file.path(getwd(), 'BrendaTissue.obo'))
-
-brenda_sim <- new('Similarity')
-ontology(brenda_sim) <- file.path(getwd(), 'BrendaTissue.obo')
-
-dict_file <-  file.path(getwd(), 'doid.obo')
- if(!file.exists(dict_file))
-   download.file('https://sourceforge.net/projects/onassis/files/doid.obo',
-    destfile=file.path(getwd(), 'doid.obo'))
 disease_sim <- new('Similarity')
-ontology(disease_sim) <- file.path(getwd(), 'doid.obo')
+ontology(disease_sim) <- d_dict_file
 
-pairwiseConfig(brenda_sim) <- showOpts(brenda_sim)$pairwiseMeasures[9]
+pairwiseConfig(cell_sim) <- showOpts(cell_sim)$pairwiseMeasures[9]
 pairwiseConfig(disease_sim) <- showOpts(disease_sim)$pairwiseMeasures[9]
-groupwiseConfig(brenda_sim) <- showOpts(brenda_sim)$groupwiseMeasures[3]
+groupwiseConfig(cell_sim) <- showOpts(cell_sim)$groupwiseMeasures[3]
 groupwiseConfig(disease_sim) <- showOpts(disease_sim)$groupwiseMeasures[3]
-similarity <- multisim(list(brenda_sim, disease_sim),
-list(brenda, disease), brenda[1,1], brenda[3,1], 'mean')
+similarity <- multisim(list(cell_sim, disease_sim),
+list(samples, disease),
+as.character(as.vector(samples[1,1])),
+as.character(as.vector(samples[5,1])), 'mean')
 }

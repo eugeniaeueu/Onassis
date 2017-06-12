@@ -76,17 +76,12 @@ Direct groupwise measures directly compare the sets of concepts considering the 
 }
 \examples{
 sim <- new('Similarity')
-dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
- if(!file.exists(dict_file))
-   download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-    destfile=file.path(getwd(), 'BrendaTissue.obo'))
-ontology(sim) <- dict_file
+obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+ontology(sim) <- obo
 groupwiseConfig(sim)
 sim <- new('Similarity')
-dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
- if(!file.exists(dict_file))
-   download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-    destfile=file.path(getwd(), 'BrendaTissue.obo'))
-ontology(sim) <- dict_file#'  groupwiseConfig(sim) <- 'ui'
+obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+ontology(sim) <- obo
+groupwiseConfig(sim) <- 'ui'
 
 }

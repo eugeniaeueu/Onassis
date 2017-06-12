@@ -25,10 +25,7 @@ This method creates a semantic graph to compute semantic similarity between conc
 }
 \examples{
 sim <- new('Similarity')
-dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
- if(!file.exists(dict_file))
-   download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-    destfile=file.path(getwd(), 'BrendaTissue.obo'))
-ontology(sim) <- dict_file
+obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+ontology(sim) <- obo
 
 }

@@ -4,25 +4,19 @@
 #' @param outputdir the directory where the XML conceptmapper dictionary will be stored. Defaults to the tmp system's directory
 #' @return An object of type CMdictionary that can be used to annotate text with the \code{EntityFinder}.
 #' @examples
-#' \dontrun{
 #'
-#' ##This might take some time to download the dictionary
-#' dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
-#'  if(!file.exists(dict_file))
-#'    download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-#'     destfile=file.path(getwd(), 'BrendaTissue.obo'))
-#' dict <- CMdictionary(inputFile=file.path(getwd(), 'BrendaTissue.obo'
-#' ), outputdir=getwd(), synonymType='ALL')
-#' }
+#' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+#' sample_dict <- CMdictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
 #'
 #' @name CMdictionary
 #' @rdname CMdictionary-class
 #' @export
 #' @importFrom methods new validObject
+#' @importFrom AnnotationDbi toTable
 
-CMdictionary <- function(inputFile = NA_character_, dictType = "OBO", outputdir = getwd(), synonymType = "ALL", taxID = 0) {
+CMdictionary <- function(inputFileOrDb = NULL, dictType = "OBO", outputdir = getwd(), synonymType = "ALL", taxID = 0) {
     dictionary <- new("CMdictionary")
-    cmdictionary <- buildDictionary(dictionary, inputFile = inputFile, outputDir = outputdir, dictType = dictType, synonymType = synonymType,
+    cmdictionary <- buildDictionary(dictionary, inputFileOrDb =  inputFileOrDb, outputDir = outputdir, dictType = dictType, synonymType = synonymType,
         taxID = taxID)
     return(cmdictionary)
 }
@@ -51,13 +45,9 @@ dictionaryTypes <- function() {
 #' @return list of details about the dictionary
 #' @description This function shows the list of details of the conceptmapper dictionary
 #' @examples
-#' dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
-#'  if(!file.exists(dict_file))
-#'    download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-#'     destfile=file.path(getwd(), 'BrendaTissue.obo'))
-#' ontology_file <- file.path(getwd(), 'BrendaTissue.obo')
-#' dict <- CMdictionary(inputFile=ontology_file, outputdir=getwd(), synonymType='ALL')
-#' dictionaryInfo(dict)
+#' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+#' sample_dict <- CMdictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
+#' dictionaryInfo(sample_dict)
 #' @exportMethod dictInfo
 #' @export
 #'
@@ -89,16 +79,17 @@ showCMoptions <- function() {
 #'
 #' @name CMoptions
 #' @rdname CMoptions-class
-#' @param index the paramValueIndex of the options
-#' @return list of possible options that one cas net to run the entity finder
+#' @param options the list of parameters to set for conceptmapper
+#' @return list of possible options that one has to run the entity finder
 #' @description This function shows the list of possible combinations of options to run the entity finder
 #' @examples
-#' op <- CMoptions(40)
+#' op <- CMoptions(c('CONTIGUOUS_MATCH', 'CASE_IGNORE',
+#'  'BIOLEMMATIZER', 'NONE', 'OFF', 'YES', 'EXACT_ONLY'))
 #' @export
 
-CMoptions <- function(index = NA) {
+CMoptions <- function(options = NA) {
     opts <- new("CMoptions")
-    paramValueIndex(opts) <- index
+    CMargs(opts) <- as.list(options)
     return(opts)
 }
 
@@ -116,16 +107,13 @@ CMoptions <- function(index = NA) {
 #' @importFrom rJava is.jnull
 #' @importFrom tools file_ext
 #' @examples
-#' dict_file <-  file.path(getwd(), 'cmDict-BrendaTissue.xml')
-#'  if(!file.exists(dict_file))
-#'    download.file('https://sourceforge.net/projects/onassis/files/cmDict-BrendaTissue.xml',
-#'     destfile=file.path(getwd(), 'cmDict-BrendaTissue.xml'))
-#' brenda_dict <- CMdictionary(inputFile=file.path(getwd(),
-#' 'cmDict-BrendaTissue.xml'), dictType = 'CMDICT')
-#' myopts <- CMoptions(40)
-#' tissue_entities <- annotate(system.file('extdata',
-#''testsamples', package='Onassis'), options = myopts,
-#'  dictionary=brenda_dict)
+#' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+#' sample_dict <- CMdictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
+#' myopts <- new('CMoptions')
+#' paramValueIndex(myopts) <- 40
+#' entities <- annotate(system.file('extdata', 'vignette_data',
+#'  'GEO_human_chip.rds', package='Onassis'), options = myopts,
+#'  dictionary=sample_dict)
 #'
 #' @export
 #'
@@ -158,11 +146,11 @@ annotate <- function(inputFileorDf, dictionary, options = NA, outDir = tempdir()
         if (file.exists(dictionary)) {
             if (file_ext(dictionary) != "xml") {
                 dict <- new("CMdictionary")
-                dict <- buildDictionary(dict, inputFile = dictionary)
+                dict <- buildDictionary(dict, inputFileOrDb = dictionary)
             } else {
                 if (file_ext(dictionary) == "xml") {
                   dict <- new("CMdictionary")
-                  dict <- buildDictionary(dict, dictType = "CMDICT", inputFile = dictionary)
+                  dict <- buildDictionary(dict, dictType = "CMDICT", inputFileOrDb =  dictionary)
                 }
             }
         } else {
@@ -211,16 +199,13 @@ showSimilarities <- function() {
 #' @param pairConf a configuration for the pairwise meausres. Defaults to resnik and seco.
 #' @param groupConf one of the allowed configurations for groupwise measures
 #' @examples
-#' dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
-#'  if(!file.exists(dict_file))
-#'    download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-#'     destfile=file.path(getwd(), 'BrendaTissue.obo'))
-#' ontology_file <- file.path(getwd(), 'BrendaTissue.obo')
-#' term_list1 <- c('http://purl.obolibrary.org/obo/BTO_0001546',
-#' 'http://purl.obolibrary.org/obo/BTO_0000664')
-#' term_list2 <- c('http://purl.obolibrary.org/obo/BTO_0000759',
-#' 'http://purl.obolibrary.org/obo/BTO_0000759')
-#' sim <- similarity(ontology_file, term_list1, term_list2)
+#' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+#' sample_dict <- CMdictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
+#' myopts <- new('CMoptions')
+#' paramValueIndex(myopts) <- 40
+#' term_list1 <- c('http://purl.obolibrary.org/obo/CL_0000000', 'http://purl.obolibrary.org/obo/CL_0000236')
+#' term_list2 <- c('http://purl.obolibrary.org/obo/CL_0000542')
+#' sim <- similarity(obo, term_list1, term_list2)
 #' @export
 #'
 similarity <- function(ontologyFile, termlist1, termlist2, annotatedtab = NA, pairConf = c("resnik", "seco"), groupConf = "ui") {

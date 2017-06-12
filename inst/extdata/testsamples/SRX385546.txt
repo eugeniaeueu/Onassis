@@ -1,3 +1,0 @@
-GSM1277115: H3K9ac_HeLa_shADA3_ChIPseq; Homo sapiens; ChIP-Seq
-GEO Accession: GSM1277115
-source_name: HeLa cells || cell line: HeLa || stable expression of shrna: shADA3 || BioSampleModel: Generic

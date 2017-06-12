@@ -66,30 +66,20 @@ The following methods can be applied to EntityFinder
 
 \examples{
 finder <- new('EntityFinder')
-dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
-
- if(!file.exists(dict_file))
-   download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-    destfile=file.path(getwd(), 'BrendaTissue.obo'))
-dict <- CMdictionary(inputFile=file.path(getwd(), 'BrendaTissue.obo'),
- outputdir=getwd(), synonymType='ALL')
+obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+dict <- CMdictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
 
 opts <- new('CMoptions')
 ef <- new('EntityFinder')
-brenda_annotations <- findEntities(ef,
-system.file('extdata', 'testsamples', package='Onassis'), multipleDocs=FALSE,
+annotations <- findEntities(ef,
+system.file('extdata', 'test_samples', 'test_samples.txt', package='Onassis'), multipleDocs=TRUE,
  configOpt=opts, cmDict=dict)
 
-dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
-
- if(!file.exists(dict_file))
-   download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-    destfile=file.path(getwd(), 'BrendaTissue.obo'))
-brenda_dict <- CMdictionary(inputFile=file.path(getwd(), 'BrendaTissue.obo'),
- outputdir=getwd(), synonymType='ALL')
+obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+dict <- CMdictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
 opts <- new('CMoptions')
 ef <- new('EntityFinder')
 methylation <- readRDS(system.file('extdata', 'vignette_data',
 'GEOmethylation.rds', package='Onassis'))
-annotations <- annotateDF(ef, methylation[1:10, ], getwd(), opts, brenda_dict)
+annotations <- annotateDF(ef, methylation[1:10, ], getwd(), opts, dict)
 }

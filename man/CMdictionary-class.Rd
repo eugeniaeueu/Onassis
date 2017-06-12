@@ -19,18 +19,18 @@
 \alias{CMdictionary-method}
 \title{CMdictionary class that stores a Conceptmapper dictionary}
 \usage{
-CMdictionary(inputFile = NA_character_, dictType = "OBO",
-  outputdir = getwd(), synonymType = "ALL", taxID = 0)
+CMdictionary(inputFileOrDb = NULL, dictType = "OBO", outputdir = getwd(),
+  synonymType = "ALL", taxID = 0)
 
 dictTypes(.Object)
 
 dictInfo(.Object)
 
 buildDictionary(.Object, outputDir = tempdir(), dictType = "OBO",
-  synonymType = "EXACT", inputFile = NA_character_, taxID = 0)
+  synonymType = "EXACT", inputFileOrDb = NULL, taxID = 0)
 
 \S4method{buildDictionary}{CMdictionary}(.Object, outputDir = tempdir(),
-  dictType = "OBO", synonymType = "EXACT", inputFile = NA_character_,
+  dictType = "OBO", synonymType = "EXACT", inputFileOrDb = NULL,
   taxID = 0)
 
 \S4method{dictTypes}{CMdictionary}(.Object)
@@ -38,7 +38,7 @@ buildDictionary(.Object, outputDir = tempdir(), dictType = "OBO",
 \S4method{dictInfo}{CMdictionary}(.Object)
 }
 \arguments{
-\item{inputFile}{The local OBO/OWL ontology to be converted into an XML Conceptmapper dictionary. If NA is passed and the \code{dicType} parameter is not the generic OBO then the method tries to download the corresponding dictionary from the available repositories. For ENTREZ and TARGET dictionary types a file named gene_info.gz is automatically downloaded from \url{ftp://ncbi.nlm.nih.gov/gene/data/gene_info.gz} if not provided by the user.}
+\item{inputFileOrDb}{The local OBO/OWL ontology to be converted into an XML Conceptmapper dictionary. If NA is passed and the \code{dicType} parameter is not the generic OBO then the method tries to download the corresponding dictionary from the available repositories. For ENTREZ and TARGET dictionary types a file named gene_info.gz is automatically downloaded from \url{ftp://ncbi.nlm.nih.gov/gene/data/gene_info.gz} if not provided by the user. Alternatively an annotation package of the type Org.xx.eg.db from Bioconductor can be used. In this case the gene ids and their alternative identifiers will be retrieved from the annotation database without the need of downloading a gene_info file.}
 
 \item{dictType}{the type of input dictionary
 \describe{
@@ -131,29 +131,17 @@ The following methods can be applied to CMdictionary
 
 \examples{
 dict <- new('CMdictionary')
-\dontrun{
 
-##This might take some time to download the dictionary
-dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
- if(!file.exists(dict_file))
-   download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-    destfile=file.path(getwd(), 'BrendaTissue.obo'))
-dict <- CMdictionary(inputFile=file.path(getwd(), 'BrendaTissue.obo'
-), outputdir=getwd(), synonymType='ALL')
-}
+obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+sample_dict <- CMdictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
 
 dictionary <- new('CMdictionary')
 \dontrun{
 #' ##This might take some time to download the dictionary
+dict <- buildDictionary(dictionary, dictType = 'TARGET', inputFileOrDb='org.Hs.eg.db')
 
-dict <- buildDictionary(dictionary, dictType = 'TARGET')
-
-dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
- if(!file.exists(dict_file))
-   download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-    destfile=file.path(getwd(), 'BrendaTissue.obo'))
-
-dictionary <- buildDictionary(dictionary, inputFile=dict_file)
+dict_file <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+dictionary <- buildDictionary(dictionary, dictType='OBO', inputFileOrDb=dict_file)
 }
 dictionary <- new('CMdictionary')
 dictTypes(dictionary)

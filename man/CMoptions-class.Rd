@@ -18,7 +18,7 @@
 \alias{CMargs<-,CMoptions-method}
 \title{CMoptions}
 \usage{
-CMoptions(index = NA)
+CMoptions(options = NA)
 
 listCombinations(x)
 
@@ -43,7 +43,7 @@ CMargs(x) <- value
 \S4method{CMargs}{CMoptions}(x) <- value
 }
 \arguments{
-\item{index}{the paramValueIndex of the options}
+\item{options}{the list of parameters to set for conceptmapper}
 
 \item{x}{CMoptions instance}
 
@@ -52,7 +52,7 @@ CMargs(x) <- value
 \item{object}{CMoptions instance}
 }
 \value{
-list of possible options that one cas net to run the entity finder
+list of possible options that one has to run the entity finder
 
 the list of options
 
@@ -62,7 +62,7 @@ The paramValueIndex corresponding to the current options. If user has not change
 
 The updated CMoptions S4 object
 
-List of parameters
+list of parameters currently set
 
 The updated CMoptions S4 object
 }
@@ -193,7 +193,8 @@ The following methods can be applied to CMoptions
 
 \examples{
 options <- new('CMoptions')
-op <- CMoptions(40)
+op <- CMoptions(c('CONTIGUOUS_MATCH', 'CASE_IGNORE',
+ 'BIOLEMMATIZER', 'NONE', 'OFF', 'YES', 'EXACT_ONLY'))
 opt <- new('CMoptions')
 show(opt)
 opts <- new('CMoptions')
@@ -209,6 +210,6 @@ opts <- new('CMoptions')
 CMargs(opts)
 opts <- new('CMoptions')
 list_opts <- listCombinations(opts)
-CMargs(opts) <- as.list(c('1', 'CONTIGUOUS_MATCH', 'CASE_IGNORE',
+CMargs(opts) <- as.list(c('CONTIGUOUS_MATCH', 'CASE_IGNORE',
  'BIOLEMMATIZER', 'NONE', 'OFF', 'YES', 'EXACT_ONLY'))
 }

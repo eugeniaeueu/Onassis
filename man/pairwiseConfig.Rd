@@ -155,19 +155,13 @@ leaves(c) is the number of leaves corresponding to the concept c
 }
 \examples{
 sim <- new('Similarity')
-dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
- if(!file.exists(dict_file))
-   download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-    destfile=file.path(getwd(), 'BrendaTissue.obo'))
-ontology(sim) <- dict_file
+obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+ontology(sim) <- obo
 pairwiseConfig(sim)
 
 sim <- new('Similarity')
-dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
- if(!file.exists(dict_file))
-   download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-    destfile=file.path(getwd(), 'BrendaTissue.obo'))
-ontology(sim) <- dict_file
+obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+ontology(sim) <- obo
 pairwiseConfig(sim) <- 'edge_resnik'
 
  #The following configuration uses an information content based measure

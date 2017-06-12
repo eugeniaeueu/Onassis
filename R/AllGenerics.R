@@ -16,8 +16,8 @@ setGeneric("dictInfo", function(.Object) standardGeneric("dictInfo"))
 #' Method buildDictionary
 #' @name buildDictionary
 #' @rdname CMdictionary-class
-#' @exportMethod dictInfo
-setGeneric("buildDictionary", function(.Object, outputDir = tempdir(), dictType = "OBO", synonymType = "EXACT", inputFile = NA_character_,
+#' @exportMethod buildDictionary
+setGeneric("buildDictionary", function(.Object, outputDir = tempdir(), dictType = "OBO", synonymType = "EXACT", inputFileOrDb = NULL,
     taxID = 0) standardGeneric("buildDictionary"))
 
 

@@ -16,11 +16,7 @@ list of details about the dictionary
 This function shows the list of details of the conceptmapper dictionary
 }
 \examples{
-dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
- if(!file.exists(dict_file))
-   download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-    destfile=file.path(getwd(), 'BrendaTissue.obo'))
-ontology_file <- file.path(getwd(), 'BrendaTissue.obo')
-dict <- CMdictionary(inputFile=ontology_file, outputdir=getwd(), synonymType='ALL')
-dictionaryInfo(dict)
+obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+sample_dict <- CMdictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
+dictionaryInfo(sample_dict)
 }

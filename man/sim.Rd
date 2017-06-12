@@ -14,7 +14,7 @@ sim(object, term1, term2)
 \arguments{
 \item{object}{instance of the class \code{\link{Similarity-class}}}
 
-\item{term1}{The URI of the ontology term in the format http://purl.obolibrary.org/obo/Ontology_id (e.g http://purl.obolibrary.org/obo/BTO_0004732)}
+\item{term1}{The URI of the ontology term in the format http://purl.obolibrary.org/obo/Ontology_id (e.g 'http://purl.obolibrary.org/obo/CL_0000542')}
 
 \item{term2}{The URI of the ontology term}
 }
@@ -28,10 +28,9 @@ This method computes the semantic similarity between two terms of a given ontolo
 }
 \examples{
 sim <- new('Similarity')
-dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
- if(!file.exists(dict_file))
-   download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-    destfile=file.path(getwd(), 'BrendaTissue.obo'))
-ontology(sim) <- dict_file
+obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+ontology(sim) <- obo
 pairwiseConfig(sim) <- showOpts(sim)$pairwiseMeasures[9]
+similarity <- sim(sim, 'http://purl.obolibrary.org/obo/CL_0000542',
+'http://purl.obolibrary.org/obo/CL_0000236')
 }

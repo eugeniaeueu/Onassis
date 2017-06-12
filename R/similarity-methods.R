@@ -29,11 +29,8 @@ setMethod(f = "showOpts", signature("Similarity"), definition = function(object)
 #' @param value the ontology file
 #' @examples
 #' sim <- new('Similarity')
-#' dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
-#'  if(!file.exists(dict_file))
-#'    download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-#'     destfile=file.path(getwd(), 'BrendaTissue.obo'))
-#' ontology(sim) <- dict_file
+#' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+#' ontology(sim) <- obo
 #'
 #' @export
 setReplaceMethod(f = "ontology", signature = "Similarity", definition = function(object, value) {
@@ -52,11 +49,8 @@ setReplaceMethod(f = "ontology", signature = "Similarity", definition = function
 #' @return The pairwise measure
 #' @examples
 #' sim <- new('Similarity')
-#' dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
-#'  if(!file.exists(dict_file))
-#'    download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-#'     destfile=file.path(getwd(), 'BrendaTissue.obo'))
-#' ontology(sim) <- dict_file
+#' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+#' ontology(sim) <- obo
 #' pairwiseConfig(sim)
 #'
 #' @export
@@ -190,11 +184,8 @@ setMethod("pairwiseConfig", "Similarity", function(object) {
 #' @return instance of the Similarity class with the new pairwise option.
 #' @examples
 #' sim <- new('Similarity')
-#' dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
-#'  if(!file.exists(dict_file))
-#'    download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-#'     destfile=file.path(getwd(), 'BrendaTissue.obo'))
-#' ontology(sim) <- dict_file
+#' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+#' ontology(sim) <- obo
 #' pairwiseConfig(sim) <- 'edge_resnik'
 #'
 #'  #The following configuration uses an information content based measure
@@ -249,11 +240,8 @@ setReplaceMethod(f = "pairwiseConfig", signature = "Similarity", definition = fu
 #' @return groupwise configured measure for the similarity object provided as input
 #' @examples
 #' sim <- new('Similarity')
-#' dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
-#'  if(!file.exists(dict_file))
-#'    download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-#'     destfile=file.path(getwd(), 'BrendaTissue.obo'))
-#' ontology(sim) <- dict_file
+#' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+#' ontology(sim) <- obo
 #' groupwiseConfig(sim)
 #' @export
 setMethod("groupwiseConfig", "Similarity", function(object) {
@@ -306,11 +294,9 @@ setMethod("groupwiseConfig", "Similarity", function(object) {
 #' @return instance of the Similarity class with the new grouprwise option.
 #' @examples
 #' sim <- new('Similarity')
-#' dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
-#'  if(!file.exists(dict_file))
-#'    download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-#'     destfile=file.path(getwd(), 'BrendaTissue.obo'))
-#' ontology(sim) <- dict_file#'  groupwiseConfig(sim) <- 'ui'
+#' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+#' ontology(sim) <- obo
+#' groupwiseConfig(sim) <- 'ui'
 #'
 #' @export
 
@@ -338,18 +324,16 @@ setReplaceMethod(f = "groupwiseConfig", signature = "Similarity", definition = f
 #' @aliases sim-method
 #' @description This method computes the semantic similarity between two terms of a given ontology.
 #' @param object instance of the class \code{\link{Similarity-class}}
-#' @param term1 The URI of the ontology term in the format http://purl.obolibrary.org/obo/Ontology_id (e.g http://purl.obolibrary.org/obo/BTO_0004732)
+#' @param term1 The URI of the ontology term in the format http://purl.obolibrary.org/obo/Ontology_id (e.g 'http://purl.obolibrary.org/obo/CL_0000542')
 #' @param term2 The URI of the ontology term
 #' @return the semantic similarity of the two provided concepts
 #' @examples
 #' sim <- new('Similarity')
-#' dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
-#'  if(!file.exists(dict_file))
-#'    download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-#'     destfile=file.path(getwd(), 'BrendaTissue.obo'))
-#' ontology(sim) <- dict_file
+#' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+#' ontology(sim) <- obo
 #' pairwiseConfig(sim) <- showOpts(sim)$pairwiseMeasures[9]
-# similarity <- sim(sim, 'http://purl.obolibrary.org/obo/BTO_0004732', 'http://purl.obolibrary.org/obo/BTO_0001718')
+#' similarity <- sim(sim, 'http://purl.obolibrary.org/obo/CL_0000542',
+#' 'http://purl.obolibrary.org/obo/CL_0000236')
 #' @export
 
 setMethod(f = "sim", signature("Similarity", "character", "character"), definition = function(object, term1, term2) {
@@ -376,17 +360,13 @@ setMethod(f = "sim", signature("Similarity", "character", "character"), definiti
 #' @examples
 #'
 #' sim <- new('Similarity')
-#'
-#' dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
-#'  if(!file.exists(dict_file))
-#'    download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-#'     destfile=file.path(getwd(), 'BrendaTissue.obo'))
-#' ontology(sim) <- dict_file
+#' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+#' ontology(sim) <- obo
 #' pairwiseConfig(sim) <- showOpts(sim)$pairwiseMeasures[9]
 #' groupwiseConfig(sim) <- showOpts(sim)$groupwiseMeasures[3]
-#' similarity <- groupsim(sim, c('http://purl.obolibrary.org/obo/BTO_0004732',
-#' 'http://purl.obolibrary.org/obo/BTO_0001718'),
-#' c('http://purl.obolibrary.org/obo/BTO_0000815', 'http://purl.obolibrary.org/obo/BTO_0001912'))
+#' similarity <- groupsim(sim, c('http://purl.obolibrary.org/obo/CL_0000542',
+#'  'http://purl.obolibrary.org/obo/CL_0000236'),
+#' c('http://purl.obolibrary.org/obo/CL_0000000'))
 #' similarity
 #'
 #' @export
@@ -414,24 +394,22 @@ setMethod(f = "groupsim", signature("Similarity", "character", "character"), def
 #' @param annotated_df data frame with annotations obtained using entityFinder. The data frame should have at least a column named 'sample_id' with the sample identifier and a column named 'term_url' with the URL of the ontology terms annotating the sample. The ontology terms must belong to the ontology loaded in the Similarity class.
 #' @return The semantic similarity between the samples sample1 and sample2
 #' @examples
-#' ef <- new('EntityFinder')
-#' opts <- new('CMoptions')
-#' dict_file <-  file.path(getwd(), 'cmDict-BrendaTissue.xml')
-#'  if(!file.exists(dict_file))
-#'    download.file('https://sourceforge.net/projects/onassis/files/cmDict-BrendaTissue.xml',
-#'     destfile=file.path(getwd(), 'cmDict-BrendaTissue.xml'))
-#' brenda <- findEntities(ef, system.file('extdata', 'testsamples',
-#' package='Onassis'), multipleDocs=FALSE, configOpt=opts,
-#'  cmDict=file.path(getwd(), 'cmDict-BrendaTissue.xml'))
 #' sim <- new('Similarity')
-#' dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
-#'  if(!file.exists(dict_file))
-#'    download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-#'     destfile=file.path(getwd(), 'BrendaTissue.obo'))
-#' ontology(sim) <- file.path(getwd(), 'BrendaTissue.obo')
+#'
 #' pairwiseConfig(sim) <- showOpts(sim)$pairwiseMeasures[9]
 #' groupwiseConfig(sim) <- showOpts(sim)$groupwiseMeasures[3]
-#' similarity <- samplesim(sim, brenda[1,1], brenda[3,1], brenda)
+#' ef <- new('EntityFinder')
+#' opts <- new('CMoptions')
+#' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+#' ontology(sim) <- obo
+#' sample_dict <- CMdictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
+#' sra_chip_seq <- readRDS(system.file('extdata', 'vignette_data', 'GEO_human_chip.rds',
+#'   package='Onassis'))
+#' chipseq_dict_annot <- annotate(sra_chip_seq[1:20,c('sample_accession', 'title',
+#'  'experiment_attribute', 'sample_attribute', 'description')], dictionary=sample_dict,
+#'   options=opts)
+#' s <- samplesim(sim, as.character(as.vector(chipseq_dict_annot$sample_id[1])),
+#' as.character(as.vector(chipseq_dict_annot$sample_id[7])) , chipseq_dict_annot)
 #' @export
 setMethod(f = "samplesim", signature("Similarity", "character", "character", "data.frame"), definition = function(object, sample1,
     sample2, annotated_df) {
@@ -460,52 +438,43 @@ setMethod(f = "samplesim", signature("Similarity", "character", "character", "da
 #'
 #' opts <- new('CMoptions')
 #'
-#' dict_file <-  file.path(getwd(), 'cmDict-BrendaTissue.xml')
-#'  if(!file.exists(dict_file))
-#'    download.file('https://sourceforge.net/projects/onassis/files/cmDict-BrendaTissue.xml',
-#'     destfile=file.path(getwd(), 'cmDict-BrendaTissue.xml'))
+#' cell_dict_file <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+#' sample_dict <- CMdictionary(inputFileOrDb=cell_dict_file, outputdir=getwd(),
+#' synonymType='ALL')
+#' samples <- findEntities(ef, system.file('extdata', 'test_samples',
+#' 'test_samples.txt',
+#' package='Onassis'), multipleDocs=TRUE, configOpt=opts,
+#'  cmDict=sample_dict)
 #'
-#' brenda <- findEntities(ef, system.file('extdata', 'testsamples',
-#' package='Onassis'), multipleDocs=FALSE, configOpt=opts,
-#'  cmDict=file.path(getwd(), 'cmDict-BrendaTissue.xml'))
+#' d_dict_file <-  system.file('extdata', 'sample.do.obo', package='OnassisJavaLibs')
+#' disease_dict <- CMdictionary(inputFileOrDb=d_dict_file,
+#' outputdir=getwd(), synonymType='ALL')
+#' disease <- findEntities(ef, system.file('extdata', 'test_samples',
+#' 'test_samples.txt', package='Onassis'),
+#'  multipleDocs=TRUE, configOpt=opts,
+#'   cmDict=disease_dict)
 #'
-#' dict_file <-  file.path(getwd(), 'cmDict-doid.xml')
-#'  if(!file.exists(dict_file))
-#'    download.file('https://sourceforge.net/projects/onassis/files/cmDict-doid.xml',
-#'     destfile=file.path(getwd(), 'cmDict-doid.xml'))
 #'
-#' disease <- findEntities(ef, system.file('extdata', 'testsamples', package='Onassis'),
-#'  multipleDocs=FALSE, configOpt=opts,
-#'   cmDict=file.path(getwd(), 'cmDict-doid.xml'))
+#' cell_sim <- new('Similarity')
+#' ontology(cell_sim) <- cell_dict_file
 #'
-#' dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
-#'  if(!file.exists(dict_file))
-#'    download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-#'     destfile=file.path(getwd(), 'BrendaTissue.obo'))
-#'
-#' brenda_sim <- new('Similarity')
-#' ontology(brenda_sim) <- file.path(getwd(), 'BrendaTissue.obo')
-#'
-#' dict_file <-  file.path(getwd(), 'doid.obo')
-#'  if(!file.exists(dict_file))
-#'    download.file('https://sourceforge.net/projects/onassis/files/doid.obo',
-#'     destfile=file.path(getwd(), 'doid.obo'))
 #' disease_sim <- new('Similarity')
-#' ontology(disease_sim) <- file.path(getwd(), 'doid.obo')
+#' ontology(disease_sim) <- d_dict_file
 #'
-#' pairwiseConfig(brenda_sim) <- showOpts(brenda_sim)$pairwiseMeasures[9]
+#' pairwiseConfig(cell_sim) <- showOpts(cell_sim)$pairwiseMeasures[9]
 #' pairwiseConfig(disease_sim) <- showOpts(disease_sim)$pairwiseMeasures[9]
-#' groupwiseConfig(brenda_sim) <- showOpts(brenda_sim)$groupwiseMeasures[3]
+#' groupwiseConfig(cell_sim) <- showOpts(cell_sim)$groupwiseMeasures[3]
 #' groupwiseConfig(disease_sim) <- showOpts(disease_sim)$groupwiseMeasures[3]
-#' similarity <- multisim(list(brenda_sim, disease_sim),
-#' list(brenda, disease), brenda[1,1], brenda[3,1], 'mean')
+#' similarity <- multisim(list(cell_sim, disease_sim),
+#' list(samples, disease),
+#' as.character(as.vector(samples[1,1])),
+#' as.character(as.vector(samples[5,1])), 'mean')
 #' @export
 setMethod(f = "multisim", signature("list", "list", "character", "character"), definition = function(similarities, annotations,
     sample1, sample2, aggregating_function = "mean") {
     lapply(similarities, function(similarity) {
         if (!class(similarity) == "Similarity")
             stop(paste0("Invalid Similarity object ", similarity))
-        print(similarity)
     })
 
     lapply(annotations, function(annot_df) {
@@ -521,10 +490,10 @@ setMethod(f = "multisim", signature("list", "list", "character", "character"), d
         sim <- similarities[[i]]
         annot <- annotations[[i]]
 
-        term_list1 <- annot$term_url[which(annot$sample_id == sample1)]
-        term_list2 <- annot$term_url[which(annot$sample_id == sample2)]
+        term_list1 <- as.character(as.vector(annot$term_url[which(annot$sample_id == sample1)]))
+        term_list2 <- as.character(as.vector(annot$term_url[which(annot$sample_id == sample2)]))
         if (identical(term_list1, character(0)) | identical(term_list2, character(0)))
-            similarity_score <- 0 else similarity_score <- groupsim(sim, as.character(unlist(term_list1)), as.character(unlist(as.list(term_list2))))
+            similarity_score <- 0 else similarity_score <- groupsim(sim, as.character(unlist(as.list(term_list1))), as.character(unlist(as.list(term_list2))))
         all_similarities[i] <- similarity_score
     }
     aggr_f <- match.fun(aggregating_function)

@@ -25,15 +25,12 @@ dataframe of annotations
 this function runs the entityfinder on given input
 }
 \examples{
-dict_file <-  file.path(getwd(), 'cmDict-BrendaTissue.xml')
- if(!file.exists(dict_file))
-   download.file('https://sourceforge.net/projects/onassis/files/cmDict-BrendaTissue.xml',
-    destfile=file.path(getwd(), 'cmDict-BrendaTissue.xml'))
-brenda_dict <- CMdictionary(inputFile=file.path(getwd(),
-'cmDict-BrendaTissue.xml'), dictType = 'CMDICT')
-myopts <- CMoptions(40)
-tissue_entities <- annotate(system.file('extdata',
-'testsamples', package='Onassis'), options = myopts,
- dictionary=brenda_dict)
+obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+sample_dict <- CMdictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
+myopts <- new('CMoptions')
+paramValueIndex(myopts) <- 40
+entities <- annotate(system.file('extdata', 'vignette_data',
+ 'GEO_human_chip.rds', package='Onassis'), options = myopts,
+ dictionary=sample_dict)
 
 }

@@ -29,22 +29,20 @@ Method samplesim
 This method computes the semantic similarity between two named samples annotated with a group of ontolgy terms belonging to the same ontology
 }
 \examples{
-ef <- new('EntityFinder')
-opts <- new('CMoptions')
-dict_file <-  file.path(getwd(), 'cmDict-BrendaTissue.xml')
- if(!file.exists(dict_file))
-   download.file('https://sourceforge.net/projects/onassis/files/cmDict-BrendaTissue.xml',
-    destfile=file.path(getwd(), 'cmDict-BrendaTissue.xml'))
-brenda <- findEntities(ef, system.file('extdata', 'testsamples',
-package='Onassis'), multipleDocs=FALSE, configOpt=opts,
- cmDict=file.path(getwd(), 'cmDict-BrendaTissue.xml'))
 sim <- new('Similarity')
-dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
- if(!file.exists(dict_file))
-   download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-    destfile=file.path(getwd(), 'BrendaTissue.obo'))
-ontology(sim) <- file.path(getwd(), 'BrendaTissue.obo')
+
 pairwiseConfig(sim) <- showOpts(sim)$pairwiseMeasures[9]
 groupwiseConfig(sim) <- showOpts(sim)$groupwiseMeasures[3]
-similarity <- samplesim(sim, brenda[1,1], brenda[3,1], brenda)
+ef <- new('EntityFinder')
+opts <- new('CMoptions')
+obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+ontology(sim) <- obo
+sample_dict <- CMdictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
+sra_chip_seq <- readRDS(system.file('extdata', 'vignette_data', 'GEO_human_chip.rds',
+  package='Onassis'))
+chipseq_dict_annot <- annotate(sra_chip_seq[1:20,c('sample_accession', 'title',
+ 'experiment_attribute', 'sample_attribute', 'description')], dictionary=sample_dict,
+  options=opts)
+s <- samplesim(sim, as.character(as.vector(chipseq_dict_annot$sample_id[1])),
+as.character(as.vector(chipseq_dict_annot$sample_id[7])) , chipseq_dict_annot)
 }

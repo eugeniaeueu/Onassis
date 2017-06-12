@@ -30,17 +30,13 @@ This method computes the semantic similarity between two groups of terms of a gi
 \examples{
 
 sim <- new('Similarity')
-
-dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
- if(!file.exists(dict_file))
-   download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-    destfile=file.path(getwd(), 'BrendaTissue.obo'))
-ontology(sim) <- dict_file
+obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+ontology(sim) <- obo
 pairwiseConfig(sim) <- showOpts(sim)$pairwiseMeasures[9]
 groupwiseConfig(sim) <- showOpts(sim)$groupwiseMeasures[3]
-similarity <- groupsim(sim, c('http://purl.obolibrary.org/obo/BTO_0004732',
-'http://purl.obolibrary.org/obo/BTO_0001718'),
-c('http://purl.obolibrary.org/obo/BTO_0000815', 'http://purl.obolibrary.org/obo/BTO_0001912'))
+similarity <- groupsim(sim, c('http://purl.obolibrary.org/obo/CL_0000542',
+ 'http://purl.obolibrary.org/obo/CL_0000236'),
+c('http://purl.obolibrary.org/obo/CL_0000000'))
 similarity
 
 }

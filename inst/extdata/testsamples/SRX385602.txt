@@ -1,2 +1,0 @@
-GSM1277169: input_3h; Saccharomyces cerevisiae; ChIP-Seq
-GEO Accession: GSM1277169

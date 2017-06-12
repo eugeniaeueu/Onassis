@@ -8,18 +8,13 @@
 #' @param configOpt Object of type CMoptions in which the parameters to run Conceptmapper are stored
 #' @return A data frame of annotations containing the sample name, the id of the OBO concept, the corresponding name, the part of the text containing the annotation
 #' @examples
-#' dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
-#'
-#'  if(!file.exists(dict_file))
-#'    download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-#'     destfile=file.path(getwd(), 'BrendaTissue.obo'))
-#' dict <- CMdictionary(inputFile=file.path(getwd(), 'BrendaTissue.obo'),
-#'  outputdir=getwd(), synonymType='ALL')
+#' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+#' dict <- CMdictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
 #'
 #' opts <- new('CMoptions')
 #' ef <- new('EntityFinder')
-#' brenda_annotations <- findEntities(ef,
-#' system.file('extdata', 'testsamples', package='Onassis'), multipleDocs=FALSE,
+#' annotations <- findEntities(ef,
+#' system.file('extdata', 'test_samples', 'test_samples.txt', package='Onassis'), multipleDocs=TRUE,
 #'  configOpt=opts, cmDict=dict)
 #'
 #' @aliases findEntities,EntityFinder-method
@@ -30,6 +25,8 @@ setMethod(f = "findEntities", signature = "EntityFinder", definition = function(
         stop("Invalid input directory or file")
     if (!dir.exists(outDir))
         dir.create(outDir)
+    if(file.access(outDir, mode=2)!=0)
+      stop('outDir not writable, please specify a valid output directory for the annotator output')
     do.call(file.remove, list(list.files(outDir, pattern = ".a1$", full.names = TRUE)))
 
     if (!isS4(cmDict)) {
@@ -145,18 +142,13 @@ setMethod(f = "findEntities", signature = "EntityFinder", definition = function(
 #' @param cmDict Object of type CMdictionary containing the reference to a previously created Conceptmapper dictionary. Alternatively the path to a Conceptmapper xml file can be passed.
 #' @return A data frame of annotations containing the sample name, the id of the OBO concept, the corresponding name, the part of the text containing the annotation
 #' @examples
-#' dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
-#'
-#'  if(!file.exists(dict_file))
-#'    download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-#'     destfile=file.path(getwd(), 'BrendaTissue.obo'))
-#' brenda_dict <- CMdictionary(inputFile=file.path(getwd(), 'BrendaTissue.obo'),
-#'  outputdir=getwd(), synonymType='ALL')
+#' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+#' dict <- CMdictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
 #' opts <- new('CMoptions')
 #' ef <- new('EntityFinder')
 #' methylation <- readRDS(system.file('extdata', 'vignette_data',
 #' 'GEOmethylation.rds', package='Onassis'))
-#' annotations <- annotateDF(ef, methylation[1:10, ], getwd(), opts, brenda_dict)
+#' annotations <- annotateDF(ef, methylation[1:10, ], getwd(), opts, dict)
 #' @rdname EntityFinder-class
 #' @aliases annotateDF,EntityFinder-method
 #' @import data.table

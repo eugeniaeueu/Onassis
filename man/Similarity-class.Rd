@@ -63,14 +63,11 @@ The following methods can be applied to Similarity
 \examples{
 sim <- new('Similarity')
 
-dict_file <-  file.path(getwd(), 'BrendaTissue.obo')
- if(!file.exists(dict_file))
-   download.file('https://sourceforge.net/projects/onassis/files/BrendaTissue.obo',
-    destfile=file.path(getwd(), 'BrendaTissue.obo'))
-ontology_file <- file.path(getwd(), 'BrendaTissue.obo')
-term_list1 <- c('http://purl.obolibrary.org/obo/BTO_0001546',
-'http://purl.obolibrary.org/obo/BTO_0000664')
-term_list2 <- c('http://purl.obolibrary.org/obo/BTO_0000759',
-'http://purl.obolibrary.org/obo/BTO_0000759')
-sim <- similarity(ontology_file, term_list1, term_list2)
+obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+sample_dict <- CMdictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
+myopts <- new('CMoptions')
+paramValueIndex(myopts) <- 40
+term_list1 <- c('http://purl.obolibrary.org/obo/CL_0000000', 'http://purl.obolibrary.org/obo/CL_0000236')
+term_list2 <- c('http://purl.obolibrary.org/obo/CL_0000542')
+sim <- similarity(obo, term_list1, term_list2)
 }

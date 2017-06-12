@@ -12,35 +12,43 @@ vignette: >
   %\VignetteDepends{Onassis}
 ---
 
-```{r importa, echo=FALSE,eval=TRUE, message=FALSE}
+```{r imports, echo=FALSE,eval=TRUE, message=FALSE}
 library(Onassis)
-#library(data.table)
 library(DT)
-#library(htmltools)
-#library(BiocStyle)
+library(gplots)
+library(org.Hs.eg.db)
 ```
+
 # Introduction to OnASSis 
 
-<b>OnASSiS</b> (Ontology Annotations and Semantic Similarity software) is a package that uses Conceptmapper, an Apache UIMA (Unstructured Information Management Architecture) dictionary lookup tool to retrieve dictionary terms in a given text. https://uima.apache.org/downloads/sandbox/ConceptMapperAnnotatorUserGuide/ConceptMapperAnnotatorUserGuide.html  
-In particular, a Conceptmapper wrapper, specific for the biomedical domain, ccp-nlp, (https://github.com/UCDenver-ccp/ccp-nlp) has been personalized to retrieve concepts from OBO ontologies in a given text with different settable options.
-The package also provides the possibility to annotate Gene Expression Omnibus (GEO) metadata retrieved using `r BiocStyle::Biocpkg("GEOmetadb")` or hight througput sequencing metadata from `r BiocStyle::Biocpkg("SRAdb")` with concepts from any given ontology. It is also possible to annotate genes, histone marks and histone modifications.
+Public repositories contain thousands of experiments and samples that are difficult to mine. Annotating the description of this data with controlled vocabularies or ontology terms could improve the retrieval of data of interest both programmatically or manually [@galeota2016ontology].
+<b>OnASSiS</b> (Ontology Annotations and Semantic Similarity software) is a package aimed at matching metadata associated with biological experiments with concepts from ontologies, thus aiming at obtaining semantically coherent omics datasets, possibly representing various data types ad derived from independent studies. The recognition of domain specific entities not only allows users to retrieve samples related to a given cell type or experimental condition, but also to discover different and not immediately obvious relationships between experiments. Onassis applies Natural Language Processing techniques to analyze sample's and experiments' descriptions, recognize concepts from a multitude of biomedical ontologies and to quantify the similarities/divergences between pairs or groups of query studies.
+In particular the software includes modules to assist on: 
+<ul>
+<li> the <b>retrieval</b> of samples’ metadata from repositories of large scale biologial data </li>
+<li> the <b>annotation</b> of these data with concepts belonging to OBO   biomedical ontologies </li> 
+<li> the organization of available samples in comparable and coherent groups based on <b>semantic similarity</b> measures </li>
+</ul>
+Onassis uses Conceptmapper, an Apache UIMA (Unstructured Information Management Architecture) dictionary lookup tool to retrieve dictionary terms in a given text. https://uima.apache.org/downloads/sandbox/ConceptMapperAnnotatorUserGuide/ConceptMapperAnnotatorUserGuide.html  
+In particular, the ccp-nlp Conceptmapper wrapper, specific for the biomedical domain, implements a pipeline through which it is possible to retrieve concepts from OBO ontologies in any given text with different adjustable options [@Verspoor:2009b].
 
-The semantic similarity module uses different semantic similarity measures to determine the semantic similarity of concepts in a given ontology, groups of concepts or experiments and samples annotated with ontology terms. 
-This step is particularly useful for a better retrieval of data of interest from public repositories such as GEO http://www.ncbi.nlm.nih.gov/geo/ or SRA http://www.ncbi.nlm.nih.gov/sra. 
-The semantic similarity module has been developed on the basis of the Java slib http://www.semantic-measures-library.org/sml.
+Onassis can handle any type of text as input, but is particularly well suited for the analysis of the metadata from Gene Expression Omnibus (GEO) or Sequence Read Archive (SRA). This represents a fundamental first step in the integrative analysis of the data from those repositories [@galeota2016ontology]. Indeed it provides the possibility to associate concepts from any OBO ontology to GEO or SRA metadata retrieved using `r BiocStyle::Biocpkg("GEOmetadb")` or `r BiocStyle::Biocpkg("SRAdb")`. In addition to the ontological concepts, the recognition of gene/protein symbols or epigenetic modifications can be highly relevant, especially for experiments directed to those specific factor or mark (such as ChIP-seq experiments).
+
+The semantic similarity module uses different semantic similarity measures to determine the semantic similarity of concepts in a given ontology. This
+module has been developed on the basis of the Java slib http://www.semantic-measures-library.org/sml.
 To run Onassis Java (>= 1.8) is needed. 
 
 # Retrieving public repositories metadata
 
-Public repositories contain thousands of experiments and samples that are difficult to mine. Annotating the description of this data with controlled vocabularies or ontology terms could improve the retrieval of data of interest both programmatically or manually [@galeota2016ontology].
-One of the most straightforward ways to retrieve GEO metadata is the `r BiocStyle::Biocpkg("GEOmetadb")` package. In order to use it through Onassis the user should download the SQLite database following the instructions provided in the vignette of the package (https://www.bioconductor.org/packages/release/bioc/vignettes/GEOmetadb/inst/doc/GEOmetadb.html). Since users are usually interested in getting experiments or samples we provide functions to help the retrieval of their metadata without the need of explicitly making queries to the database.  
+One of the most straightforward ways to retrieve GEO metadata is through `r BiocStyle::Biocpkg("GEOmetadb")` or `r BiocStyle::Biocpkg("SRAdb")` packages. In order to use them through Onassis the user should download the corresponding SQLite databases following the instructions provided in those packages vignettes. While the SQLite packages are required, Onassis allows to access to those data without any knowledge on SQL programming, thus providing functions to help the metadat retrieval without the need of explicitly making queries to the database.
 
 ## Handling GEO (Gene Expression Omnibus) Metadata
 
-To ease the usage of `r BiocStyle::Biocpkg("GEOmetadb")` Onassis provides several functions to retrieve data of interest without explicitly using SQL queries. Firstly it is necessary to get a connection to the database. The user should provide the path of the SQLite file downloaded. If not found the function automatically downloads the file into the current working directory and returns a connection to the database. Since the download process of the database could be slow, we have provided an already available dataset for the subsequent analyses. Users can skip this section and go directly to the [Annotating text with Ontology Concepts] section.    
+First, it is necessary to obtain and get a connection to the SQLite database. `connectToGEODB` returns a connection to the database given the path of the SQLite file. If the latter is missing, it is automatically downloaded into the current working directory. Because of the size of these files (0.5-4GB), the results of the queries illustrated below are available into Onassis for subsequent analysis illustrated in this document. Then, the `getGEOmetadata` function can be used to retrieve the metadata of specific GEO samples, taking as minimal parameters the connection to the database and one of the experiment types available. Optionally it is possible to specify the organism and the platform.
+
 
 ```{r connectTodb, echo=TRUE,eval=FALSE}
-## Running this function might take a long time if the database has to be downloaded.
+## Running this function might take long time if the database has to be downloaded.
 geo_con <- connectToGEODB(system.file(getwd(), 'GEOmetadb.sqlite'))
 
 #Showing the experiment types available in GEO
@@ -50,38 +58,55 @@ experiments <- experiment_types(geo_con)
 species <- organism_types(geo_con)
 
 #Retrieving the metadata associated to experiment type "Methylation profiling by high througput sequencing"
-methylation <- getGEOMetadata(geo_con, 'Methylation profiling by high throughput sequencing', 'Homo sapiens')
+meth_metadata <- getGEOMetadata(geo_con, experiment_type='Methylation profiling by high throughput sequencing', organism = 'Homo sapiens')
 
-#Retrieving Human gene expression data, knowing the GEO platform identifier, e.g. the Affymetrix Human Genome U133 Plus 2.0 Array
-expression <- getGEOMetadata(geo_con, 'Expression profiling by array', gpl='GPL570')
+#Retrieving Human gene expression metadata, knowing the GEO platform identifier, e.g. the Affymetrix Human Genome U133 Plus 2.0 Array
+expression <- getGEOMetadata(geo_con, experiment_type='Expression profiling by array', gpl='GPL570')
 ```
 
-The experiment types available are the following:
+Some of the experiment types available are the following:
 
 ```{r experimentTypesshow, echo=FALSE, eval=TRUE}
 experiments <- readRDS(system.file('extdata', 'vignette_data', 'experiment_types.rds', package='Onassis'))
-head(experiments)
+knitr::kable(experiments[1:10], rownames=FALSE, 
+              caption = htmltools::tags$caption(
+                style = 'caption-side: top-left; text-align: left;',
+                'Table 1: ', htmltools::em('Experiments available in GEO')),
+              options=list(
+                pageLength =5,
+                autoWidth = TRUE, 
+                scrollX='300px',
+                rownames=FALSE))
+
+
 ```
 
-The organisms available are the following:
+Some of the organisms available are the following:
 
 ```{r speciesShow, echo=FALSE,eval=TRUE}
 species <- readRDS(system.file('extdata', 'vignette_data', 'organisms.rds', package='Onassis'))
-head(species)
+knitr::kable(species[1:10], rownames=FALSE, 
+              caption = htmltools::tags$caption(
+                style = 'caption-side: top-left; text-align: left;',
+                'Table 1: ', htmltools::em('Species available in GEO')),
+              options=list(
+                pageLength =5,
+                autoWidth = TRUE, 
+                scrollX='300px',
+                rownames=FALSE))
 ```
 
-To easily obtain a data frame with the metadata of interest the function `getGEOmetadata` can be used. The function takes as parameters the connection to the database and one of the experiment types available. Optionally it is possible to specify the organism and the platform. To load the data of the previous query run:
+To avoid installing GEOmetadb meth_metadata was previously saved and can be loaded from Onassis:  
 
 ```{r loadgeoMetadata, echo=TRUE, eval=TRUE}
-methylation <- readRDS(system.file('extdata', 'vignette_data', 'GEOmethylation.rds', package='Onassis'))
-getwd()
+meth_metadata <- readRDS(system.file('extdata', 'vignette_data', 'GEOmethylation.rds', package='Onassis'))
 ```
 
 ```{r printmeta, echo=FALSE,eval=TRUE}
 
-methylation_tmp <- methylation
+methylation_tmp <- meth_metadata
 methylation_tmp$experiment_summary <- sapply(methylation_tmp$experiment_summary, function(x) substr(x, 1, 50))
-knitr::kable(methylation_tmp, rownames=FALSE, 
+knitr::kable(methylation_tmp[1:10,], rownames=FALSE, 
               caption = htmltools::tags$caption(
                 style = 'caption-side: top-left; text-align: left;',
                 'Table 1: ', htmltools::em('Methylation profiling by high througput sequencing metadata from GEOmetadb.')),
@@ -102,14 +127,14 @@ knitr::kable(methylation_tmp, rownames=FALSE,
 
 ## Handling SRA (Sequence Read Archive) Metadata
 
-As for GEO, it is possible to retrieve metadata of high througput sequencing data stored in SRA. To query the database the `r BiocStyle::Biocpkg("SRAdb")` package is available. To facilitate the retrieval of experiment types in SRA, the function `library_strategies` can be used. Filters for the sample's material (*GENOMIC*, *TRANSCRIPTOMIC*, *METAGENOMIC*...), the species and the center hosting the data are allowed.
-For example, to obtain SRA metadata of ChIP-Seq human samples and Bisulfite sequencing samples, without explicitly querying the db with SQL statements the following lines of code can be used. Since the database file is quite large, as for GEOmetadb, users can skip this part and directly load the resulting dataset.  
+As for GEO, the `getSRAMetadata` function allows the retrieval of metadata of high througput sequencing data stored in SRA through the `BiocStyle::Biocpkg("SRAdb")` package. To facilitate the retrieval of experiment types in SRA, the Onassis function `library_strategies` can be used. Filters for the sample's material (*GENOMIC*, *TRANSCRIPTOMIC*, *METAGENOMIC*...), the species and the center hosting the data are allowed.
+For example, to obtain SRA metadata of ChIP-Seq human samples and Bisulfite sequencing samples the following code can be used. 
 
 ```{r connectSRA, echo=TRUE,eval=FALSE}
-# Connection to the SRAmetadb
+# Connection to the SRAmetadb and potential download of the sqlite file
 sra_con <- connectToSRADB()
 
-# Query for the ChIP-Seq experiments contained in GEO for human cell lines 
+# Query for the ChIP-Seq experiments contained in GEO for human samples 
 sra_chip_seq <- getSRAMetadata(sra_con, library_strategy='ChIP-Seq', library_source='GENOMIC', taxon_id=9606, center_name='GEO')
 
 # The following example allows to retrieve Bisulfite sequencing samples' metadata.
@@ -118,7 +143,7 @@ bisulfite_seq <- getSRAMetadata(sra_con, library_strategy='Bisulfite-Seq', libra
 
 ```
 
-To load already selected ChIP-seq data run the following : 
+To avoid installing GEOmetadb sra_chip_seq was previously saved and can be loaded from Onassis: 
 
 ```{r readCHIP, echo=TRUE, eval=TRUE}
 sra_chip_seq <- readRDS(system.file('extdata', 'vignette_data', 'GEO_human_chip.rds',  package='Onassis'))
@@ -126,7 +151,7 @@ sra_chip_seq <- readRDS(system.file('extdata', 'vignette_data', 'GEO_human_chip.
 
 ```{r printchromatinIP, echo=FALSE,eval=TRUE}
 
-knitr::kable(head(sra_chip_seq, 20), rownames=FALSE, 
+knitr::kable(head(sra_chip_seq, 10), rownames=FALSE, 
   caption = htmltools::tags$caption(
     style = 'caption-side: top-left; text-align: left;',
     'Table: ', htmltools::em('ChIP-Seq metadata obtained from SRAdb.')),
@@ -147,24 +172,19 @@ knitr::kable(head(sra_chip_seq, 20), rownames=FALSE,
 
 # Annotating text with Ontology Concepts
 
-Onassis has the capability of annotating any text with dictionary terms. More specifically, we are using as dictionaries the concepts contained in OBO (http://www.obofoundry.org/) ontologies in order to use the structure of the ontology to find relationships between different samples annotated with different ontology concepts. Onassis' text annotator, `EntityFinder` is based on a Java implementation of the Conceptmaper tool (https://uima.apache.org/downloads/sandbox/ConceptMapperAnnotatorUserGuide/ConceptMapperAnnotatorUserGuide.html), that defines a particular type system, the CCP type system, to annotate text with ontology concepts [@Verspoor:2009b]. The Java source code with the definition of the type system and the wrapper for Conceptmapper are available at (https://github.com/UCDenver-ccp/ccp-nlp/tree/master/ccp-nlp-wrapper-conceptmapper).  
+The Onassis `EntityFinder` class has methods for annotating any text with dictionary terms. More specifically, Onassis can take advantage of the OBO dictionaries (http://www.obofoundry.org/), as shown in the next section where we will define relationships between different samples annotated with different ontology concepts  thanks to the structure of the ontology.
 
 ## Data preparation
 
-Input text can be provided to `EntityFinder`, the object that calls Conceptmapper to annotate text, in different formats:
+Input text can be provided as:
 
-  * The path of a directory containing named documents. 
-  * The path of a single file containing multiple documents. In this case each row contains the name/identifier of the document followed by a '|' separator and the text to annotate. 
-
-It is also possito to annotate text from a data frame with the `annotateDF` function. In this case users should provide
-
-  * A data frame in which each row represents a document. The values of the first column of the data frame will be used as column identifiers and the content of the other columns will be considered as the text of the document. For metadata retrieved from `r BiocStyle::Biocpkg("GEOmetadb")` anb `r BiocStyle::Biocpkg("SRAdb")` a preprocessing step is applied to retrieve data of interest. 
-
-Any type of text content is allowed in text files. 
+  * The path of a directory containing named documents (findEntities method). 
+  * The path of a single file containing multiple documents. In this case each row contains the name/identifier of the document followed by a '|' separator and the text to annotate (findEntities method). 
+  * A data frame. In this case each row represents a document, first column has to be the document identifier, and the remaining columns will be combined and contain the text to analyze  (annotateDF method). This option can be conveniently used with the metadata retrieved from `r BiocStyle::Biocpkg("GEOmetadb")` and `r BiocStyle::Biocpkg("SRAdb")`, possibly selecting a subset of columns.
 
 ## Creation of a Conceptmapper Dictionary
 
-Conceptmapper dictionaries are XML files with a set of entries specified by the xml tag ```<token>```  with a canonical name (the name of the entry) and one or more variants (synonyms).  Additional properties are allowed. The following code represents a sample of the Conceptmapper dictionary obtained from the Brenda OBO ontology.  
+Conceptmapper dictionaries are XML files with a set of entries specified by the xml tag ```<token>```  with a canonical name (the name of the entry) and one or more variants (synonyms).  Additional properties are allowed. The following code represents a sample of the Conceptmapper dictionary obtained from the Brenda tissue ontology.  
 
 ```xml 
    <?xml version="1.0" encoding="UTF-8" ?>
@@ -184,48 +204,29 @@ Conceptmapper dictionaries are XML files with a set of entries specified by the 
       </token>
   </synonym>
 ```
+The function dict `CMdictionary` creates an instance of the class `CMdictionary` (by internally calling the method `buildDictionary`). 
 
-To build Conceptmapper dictionaries from OBO ontologies in OBO or OWL format, Onassis provides the S4 class `CMdictionary`. The dictionary representation consists of
+  * If an XML file containing the Conceptmapper dictionary is already available,  it can be uploaded into Onassis indicating its path and setting the `dictType` option to "CMDICT".
+  * If the dictionary has to be built from an OBO ontology (as a file in the OBO or OWL format), its path has to be provided and dictType has to be set to "OBO". The synonymType argument can be set to EXACT_ONLY or ALL to consider only canonical concept names or also to include any synonym. The resulting XML file is written in the indicated outputdir.
+  * To build a dictionary containing only gene/protein names, dictType has to be set to either TARGET or ENTREZ, to include histone types and marks or not, respetively. If a specific Org.xx.eg.db Bioconductor library is indicated in the inputFileOrDb parameter as a character string, gene names will be derived from it. Alterantively, if a specific species is indicated in the taxID parameter, the gene_info.gz file hosted at NCBI is used. If available, this file can be located with the inputFile parameter. Otherwise, it will be automatically downloaded (300MB).
 
-  * `dictLocation` The path of the dictionary file
-  * `dictInfo` Info about the dictionary. It includes the type of dictionary (e.g. OBO, ENTREZ...), the source file  from which the dictionary has been created, the synonym types and eventually the id of the organism.
-  * `dictRef` java reference to the Conceptmapper dictionary created
-
-The function `dictionaryTypes` shows the types of dictionary that can be created through Onassis. 
-
-```{r dictionaryTypes, echo=TRUE, eval=TRUE}
-dictTypes <-  dictionaryTypes()
-head(dictTypes)
-```
-
-Dictionaries can be built with different options. 
-We firstly downloaded an OBO ontology from (http://www.berkeleybop.org/ontologies/bto.obo). Alternatively the following file can be downloaded https://sourceforge.net/projects/onassis/files/BrendaTissue.obo/download. To build a dictionary from an OBO file the `CMdictionary` class provides the `buildDictionary` method.
-
-To create a dictionary for histone marks, histone modification and human Entrez gene names users can run the following code. If not specified, this function will automatically download the gene_info.gz file from ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/gene_info.gz.
-
-To use a previously created or a custom dictionary it is possible to skip the building part and assing a reference to the Conceptmapper XML file throught the same function, using as dictType the value 'CMDICT'. We have provided a Conceptmapper dictionary built from BRENDA ontology at the following link: https://sourceforge.net/projects/onassis/files/cmDict-BrendaTissue.xml/download 
-
-The function dict `CMdictionary` can be used to easily create a dictionary. 
-
-```{r createBrendaAndTargetDict, echo=TRUE,eval=FALSE, message=FALSE}
-
-#Creation of a dictionary from the file BrendaTissue.obo
-brenda_dict <- CMdictionary(inputFile=system.file(getwd(), 'BrendaTissue.obo'), outputdir=getwd(), synonymType='ALL')
-
-# Creation of a dictionary for ChIP-seq targets
-targets <- CMdictionary(dictType='TARGET', taxID=9606)
-
+```{r createSampleAndTargetDict, echo=TRUE,eval=TRUE, message=FALSE}
 # If a Conceptmapper dictionary is already available the dictType CMDICT can be specified and the corresponding file loaded
-brenda_dict <- CMdictionary(inputFile=system.file(getwd(), 'cmDict-BrendaTissue.xml'), dictType = 'CMDICT')
+sample_dict <- CMdictionary(inputFileOrDb=system.file('extdata', 'cmDict-sample.cs.xml', package = 'Onassis'), dictType = 'CMDICT')
 
+#Creation of a dictionary from the file sample.cs.obo available in OnassisJavaLibs
+obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+
+sample_dict <- CMdictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
+
+# Creation of a dictionary for human genes/proteins
+require(org.Hs.eg.db)
+targets <- CMdictionary(dictType='TARGET', inputFileOrDb = 'org.Hs.eg.db')
 ```
+
 
 ## Setting the options for the annotator
-
-An S4 class, `CMoptions` sets the configuration parameters to run Conceptmapper. Eeach combination of parameters is associated to an integer index stored in the slot `paramValueIndex`.  
-CMoptions is a class that represents Conceptmapper configurations. It allows users to show and set the possible combinations of different parameters for Conceptmapper running. The function `showCMoptions` shows all the possible configuration combinations. To set the options the function `CMoptions` can be used, using as parameters the paramValueIndex corresponding to the desired combination, or a list of parameters to set. `CMargs` method shows the current options settings. 
- 
-In the case of tissues 
+Conceptmapper includes 7 different options controlling the annotation step. These are documented in detail in the documentaiton of the CMoption function. They can be listed through the `showCMoptions` function, and they can be set through the `CMoptions` function. The set options are thus stored in an object of class CMoptions that will be required for the subsequent step of annotation.  
 
 ```{r settingOptions, echo=TRUE,eval=TRUE}
 
@@ -233,32 +234,28 @@ In the case of tissues
 list_opts <- showCMoptions()  
 
 #Setting the combination of parameters through the paramValueIndex value
-myopts <- CMoptions(40)
-
-#Showing the current options
-CMargs(myopts)
-
-# Alternatively it is possible to choose a combination of parameters passing a list. In this case the paramValueIndex is automatically updated based on the value of the other arguments
-CMargs(myopts) <- as.list(c("CONTIGUOUS_MATCH", "CASE_IGNORE", "BIOLEMMATIZER", "NONE", "OFF", "YES", "EXACT_ONLY"))
-```
-
-
-## Running the Conceptmapper to find entities
-
-The class `EntityFinder` has methods to find concepts of any OBO ontology in a given text provided in a single file or a directory of files. The method `annotateDF` instead is used to annotate data frames where the first column contains the document identifier and the second column the text to annotate. The function 'annotate' runs the entity finder on the given input. For example, to annotate the methylation metadata obtained from GEO with tissue and cell line concpets belonging to BRENDA ontology (http://www.brenda-enzymes.info/) the following instructions can be used
-
-```{r annotateDF, echo=TRUE, eval=FALSE}
-
-methylation_brenda_annot <- annotate(methylation[sample(nrow(methylation), 20),c('gsm', 'title', 'source_name_ch1', 'characteristics_ch1', 'description')], dictionary=brenda_dict, options=myopts)
+myopts <- CMoptions(c("CONTIGUOUS_MATCH", "CASE_INSENSITIVE", 'BIOLEMMATIZER', 'PUBMED', 'ON', 'YES', 'ALL'))
 
 ```
 
-The resulting table contains a column with the document/sample identifier. Each row representes an annotation for the given document. The annotation is reported with the term_id, the term name, its URL in the obo format and the sentence of the document from which the annotation has been extracted.
+
+## Running the entity finder
+
+The class `EntityFinder` has methods to find concepts of any OBO ontology in a given text. The `findEntities` and `annotateDF` methods accept text within files or data.frame, respetively, as described in Section 3.1. Alternatively, the function `annotate` automatically adapts to the provided input type. 
+For example, to annotate the metadata derived from ChIP-seq experiments obtained from SRA with tissue and cell type concepts belonging to BRENDA ontology the following code can be used:
+
+```{r annotateDF, echo=TRUE, eval=TRUE}
+chipseq_dict_annot <- annotate(sra_chip_seq[1:20,c('sample_accession', 'title', 'experiment_attribute', 'sample_attribute', 'description')], dictionary=sample_dict, options=myopts)
+
+```
+
+The resulting data.frame contains for each row a match to the provided dictionary for a specific document/sample (indicated in the first column). The annotation is reported with the id of the concept (term_id), its canonical name (term name), its URL in the obo format, and the matching sentence of the document.
 
 ```{r showmethilationresults, echo=FALSE, eval=TRUE, message=FALSE}
 
-methylation_brenda_annot <- readRDS(system.file('extdata', 'vignette_data', 'methylation_brenda_annot.rds', package='Onassis'))
-knitr::kable(head(methylation_brenda_annot, 20), rownames=FALSE, 
+#methylation_brenda_annot <- readRDS(system.file('extdata', 'vignette_data', 'methylation_brenda_annot.rds', package='Onassis'))
+#UPDATE con ChIP-seq
+knitr::kable(head(chipseq_dict_annot, 20), rownames=FALSE, 
   caption = htmltools::tags$caption(
     style = 'caption-side: top-left; text-align: left;',
     'Table: ', htmltools::em('Annotations of the methylation profiling by high througput sequencing metadata obtained from GEO with BRENDA ontology concepts')),
@@ -280,24 +277,16 @@ knitr::kable(head(methylation_brenda_annot, 20), rownames=FALSE,
 
 \r
 \r
-In the following example the function `annotate` is used to retrieve gene names and histone modifications in the set of test samples provided in the Onassis. To create the dictionary the gene_info.gz file has been downloaded from (ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/gene_info.gz). Alternatively the function automatically downloads the gene_info.gz file.   
+The function `annotate` can also be used to identify the targeted entity of each ChIP-seq experiment, by retrieving gene names and histone types or modifications in the ChIP-seq metadata.   
 
-```{r annotateGenes, echo=TRUE, eval=FALSE, message=FALSE}
-#Creating the dictionary of genes, this operation might take a while. 
-targets <- CMdictionary(dictType='CMDICT', inputFile = system.file('extdata', 'cmDict-Target.xml', package='Onassis'))
+```{r annotateGenes, echo=TRUE, eval=TRUE, message=FALSE}
 
-#setting the proper options
-myopts <- CMoptions(227)
 #Finding the TARGET entities
-target_entities <- annotate(system.file('extdata', 'testsamples', package='Onassis'), options = myopts, dictionary=targets) 
+target_entities <- annotate(inputFileorDf=sra_chip_seq[1:20,c('sample_accession', 'title', 'experiment_attribute', 'sample_attribute', 'description')], options = myopts, dictionary=targets) 
 ```
 
-
-```{r annotateGenesVAL, echo=FALSE, eval=TRUE, message=FALSE}
-#Instantiating the EntityFinder
-#Creating the dictionary
-target_entities <- readRDS(system.file('extdata', 'vignette_data', 'target_entities.rds', package='Onassis')) 
-knitr::kable(target_entities[sample(nrow(target_entities), 20),], rownames=FALSE, 
+```{r printKable, echo=FALSE, eval=TRUE}
+knitr::kable(target_entities, rownames=FALSE, 
   caption = htmltools::tags$caption(
     style = 'caption-side: top-left; text-align: left;',
     'Table: ', htmltools::em('Annotations of ChIP-seq test metadata obtained from SRAdb and stored into files with the TARGETs (genes and histone variants)')),
@@ -317,26 +306,27 @@ columnDefs = list(list(targets= c(0,1,2,3,4),
 ```
 
 
-## Semantic similarity 
+# Semantic similarity 
 
-With Onassis it is possible to quantify the semantic similarity between the concepts of a given ontology using different semantic similarity measures. 
-`Similarity` is an S4 class that wraps some methods of the Java library slib \url{http://www.semantic-measures-library.org/sml/} [@harispe2014semantic]. The class has methods to build a semantic graph starting from OBO ontology concepts and their hierarchical relationships. The library allows the computation of semantic similarity between single terms (pairwise measures), but also between group of terms groupwise measures). Pairwise measures are based on the underlying structure of the ontology. Roughly speaking, they can be classified in two categories: edge_based and information-content based measures. The first rely only on the structure of the ontology, while the latter also consider the information that each term in the ontology carries. Groupwise measures compute semantic similarity between groups of concepts. These can be indirect if they compute the pairwise similarity between each couple of terms belonging to the different groups or direct, if they consider the set of concepts as a whole. Onassis also provides the possibility of computing the semantic similarity between documents/samples.
+With Onassis it is possible to quantify the semantic similarity between the concepts of a given ontology using different semantic similarity measures. `Similarity` is an Onassis class applying methods of the Java library slib \url{http://www.semantic-measures-library.org/sml/} [@harispe2014semantic], which builds a semantic graph starting from OBO ontology concepts and their hierarchical relationships.
+The following methods are available and are automatically chosen depending on the settings of the `Similarity` function. The `sim` and `groupsim` methods allow the computation of semantic similarity between single terms (pairwise measures) and between group of terms (groupwise measures), respectively. Pairwise measures can be edge based, if they rely only on the structure of the ontology, or information-content based if they also consider the information that each term in the ontology carries. Rather, groupwise measures can be indirect, if they compute the pairwise similarity between each couple of terms, or direct if they consider each set of concepts as a whole.
+The `samplesim` method allows to determine the semantic similarity between two documents, each possibly associated to multiple concepts, using groupwise measures. Finally, the `multisim` method allows to determine the semantic similarity between documents annotated with two or more ontologies: first `samplesim` is run for each ontology, then a user defined function can be used to aggregate the resulting semantic similarities for each pair of documents.  
 
-The function `showSimilarities` shows all the possible measures supported by Onassis. For details about the measures run `{?Similarity}` 
+The function `showSimilarities` shows all the measures supported by Onassis. For details about the measures run `{?Similarity}`.
 
 ```{r similarity, echo=TRUE, eval=TRUE, message=FALSE}
 #Instantiating the Similarity
 similarities <- showSimilarities()
 ```
 
-The function similarity builds a semantic graph from an OBO ontology and computes the semantic similarity. The function can call the methods `sim`, `groupsim` and `samplesim` that in turn are used to compute the similarity between two terms of the ontology, between two list of terms of the ontology and between samples/documents annotated with terms of the ontology. The following example shows the pairwise similarities between BRENDA concepts obtained annotating the methylation samples' metadata.  To compute the similarity the <b>resnik</b> information content based measure has been selected. This measure computes the similarity between two concepts based on the information content of the most informative common ancestors of the compared concepts. The <b> seco </b> measure estimates the specificity of the concepts based on the number of concepts they subsumers. 
+The following example shows the pairwise similarities between sample cell concepts obtained annotating the ChIP-seq metadata. The <b>resnik</b> similarity measure is used by default, which is based on the information content of the most informative common ancestor of the considered concepts. In particular, the <b> seco </b> information content is used by default, which determines the specificity of each concept based on the number of concepts it subsumes. 
 
-```{r computing measures, echo=TRUE, eval=FALSE, message=FALSE}
+```{r computing measures, echo=TRUE, eval=TRUE, message=FALSE}
 
-found_terms <- unique(methylation_brenda_annot$term_url)
+found_terms <- unique(chipseq_dict_annot$term_url)
 n <- length(found_terms)
 
-ontologyfile <- system.file(getwd(), 'BrendaTissue.obo')
+ontologyfile <- obo
 pairwise_results <- data.frame(term1 = character(0), term2= character(0), value = double(0L))
 for(i in 1:(n-1)){
   term1 <- as.character(found_terms[i])
@@ -349,9 +339,9 @@ for(i in 1:(n-1)){
   }
 }
 pairwise_results <- unique(pairwise_results)
-pairwise_results <- merge(pairwise_results, methylation_brenda_annot[, c('term_url', 'term_name')], by.x='term1', by.y='term_url', all.x=TRUE)
+pairwise_results <- merge(pairwise_results, chipseq_dict_annot[, c('term_url', 'term_name')], by.x='term1', by.y='term_url', all.x=TRUE)
 colnames(pairwise_results)[length(colnames(pairwise_results))] <- 'term1_name'
-pairwise_results <- merge(pairwise_results, methylation_brenda_annot[, c('term_url', 'term_name')], by.x='term2', by.y='term_url', all.x=TRUE)
+pairwise_results <- merge(pairwise_results, chipseq_dict_annot[, c('term_url', 'term_name')], by.x='term2', by.y='term_url', all.x=TRUE)
 colnames(pairwise_results)[length(colnames(pairwise_results))] <- 'term2_name'
 pairwise_results <- unique(pairwise_results)
 
@@ -360,11 +350,11 @@ pairwise_results <- unique(pairwise_results)
 
 ```{r showing_similarity1, echo=FALSE, eval=TRUE, message=FALSE}
 
-pairwise_results <- readRDS(system.file('extdata', 'vignette_data', 'pairwise_results.rds', package='Onassis'))
-knitr::kable(pairwise_results[sample(nrow(pairwise_results), 20),], rownames=FALSE, 
+
+knitr::kable(pairwise_results, rownames=FALSE, 
   caption = htmltools::tags$caption(
     style = 'caption-side: top-left; text-align: left;',
-    'Table: ', htmltools::em('Pairwise similarities of BRENDA terms annotating the Methylation profiling by high througput sequencing metadata')),
+    'Table: ', htmltools::em('Pairwise similarities of cell line terms annotating the ChIP-seq metadata')),
   options=list(
   pageLength =10,
   autoWidth = TRUE, 
@@ -380,55 +370,36 @@ knitr::kable(pairwise_results[sample(nrow(pairwise_results), 20),], rownames=FAL
 
 ```
 
-In the following code the semantic similarity between two groups of terms is computed using the <b>ui</b> measure, a groupwise direct measure that includes the intersection and the union of the set of ancestors of the two groups of concepts. 
+In the following code the semantic similarity between two groups of terms is computed using the <b>ui</b> measure, a groupwise direct measure combining the intersection and the union of the set of ancestors of the two groups of concepts. 
 
-```{r groupwise_measures, echo=TRUE, eval=FALSE, message=FALSE}
+```{r groupwise_measures, echo=TRUE, eval=TRUE, message=FALSE}
 
-ontologyfile <- system.file(getwd(), 'BrendaTissue.obo')
-term_list1 <- c("http://purl.obolibrary.org/obo/BTO_0001546", "http://purl.obolibrary.org/obo/BTO_0000664", "http://purl.obolibrary.org/obo/BTO_0003807")
-term_list2 <- c("http://purl.obolibrary.org/obo/BTO_0000759", "http://purl.obolibrary.org/obo/BTO_0000759", "http://purl.obolibrary.org/obo/BTO_0000664")
+similarity(obo, found_terms[1:2], found_terms[3:4])
 
-sim_t1_t2 <- similarity(ontologyfile, term_list1, term_list2)
 ```
 
-```{r showGroupWiseResults, echo=FALSE, eval=TRUE, message=FALSE}
-print('0.4358974')
-```
+Finally, the pariwise semantic similarity between ChIP-seq samples is illustrated.
 
-It is also possible to compute the semantic similarity between samples annotated with different ontology terms.
+```{r samples_similarity, echo=TRUE, eval=TRUE, message=FALSE}
 
-```{r samples_similarity, echo=TRUE, eval=FALSE, message=FALSE}
-
-annotated_samples <- as.character(as.vector(unique(methylation_brenda_annot$sample_id)))
+annotated_samples <- as.character(as.vector(unique(chipseq_dict_annot$sample_id)))
 n <- length(annotated_samples)
 
 
 samples_results <- data.frame(sample1 = character(0), sample2= character(0), value = double(0L))
+samples_results <- matrix(0, nrow=n, ncol=n)
+rownames(samples_results) <- colnames(samples_results) <- annotated_samples
 for(i in 1:(n-1)){
   sample1 <- as.character(annotated_samples[i])
   j = i + 1 
   for(k in j:n){
     sample2 <- as.character(annotated_samples[k])
-    two_samples_similarity <- similarity(ontologyfile, sample1, sample2, methylation_brenda_annot )
-    new_row <- cbind(sample1, sample2, two_samples_similarity)
-    samples_results <- rbind(samples_results, new_row )
+    two_samples_similarity <- similarity(ontologyfile, sample1, sample2, chipseq_dict_annot)
+    samples_results[i, k] <- samples_results[k, i] <- two_samples_similarity
   }
 }
-```
-
-```{r showing_similarity, echo=FALSE, eval=TRUE, message=FALSE}
-
-samples_results <- readRDS(system.file('extdata', 'vignette_data', 'samples_similarity.rds', package='Onassis'))
-
-knitr::kable(head(samples_results, 20), rownames=FALSE, 
-  caption = htmltools::tags$caption(
-    style = 'caption-side: top-left; text-align: left;',
-    'Table: ', htmltools::em("Pairwise similarities of samples in th the Methylation profiling by high througput sequencing metadata, annotated with different BRENDA concepts'")),
-  options=list(
-  pageLength =10,
-  autoWidth = TRUE, 
-  rownames=FALSE))
-
+diag(samples_results) <- 1
+heatmap.2(samples_results, density.info = "none", trace="none", main='Semantic similarity of annotated samples', margins=c(2,2))
 ```
 
 # References
