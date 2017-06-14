@@ -339,10 +339,10 @@ for(i in 1:(n-1)){
   }
 }
 pairwise_results <- unique(pairwise_results)
-pairwise_results <- merge(pairwise_results, chipseq_dict_annot[, c('term_url', 'term_name')], by.x='term1', by.y='term_url', all.x=TRUE)
-colnames(pairwise_results)[length(colnames(pairwise_results))] <- 'term1_name'
 pairwise_results <- merge(pairwise_results, chipseq_dict_annot[, c('term_url', 'term_name')], by.x='term2', by.y='term_url', all.x=TRUE)
 colnames(pairwise_results)[length(colnames(pairwise_results))] <- 'term2_name'
+pairwise_results <- merge(pairwise_results, chipseq_dict_annot[, c('term_url', 'term_name')], by.x='term1', by.y='term_url', all.x=TRUE)
+colnames(pairwise_results)[length(colnames(pairwise_results))] <- 'term1_name'
 pairwise_results <- unique(pairwise_results)
 
 ```
@@ -399,7 +399,7 @@ for(i in 1:(n-1)){
   }
 }
 diag(samples_results) <- 1
-heatmap.2(samples_results, density.info = "none", trace="none", main='Semantic similarity of annotated samples', margins=c(2,2))
+heatmap.2(samples_results, density.info = "none", trace="none", main='Semantic similarity of annotated samples', margins=c(5,5))
 ```
 
 # References
