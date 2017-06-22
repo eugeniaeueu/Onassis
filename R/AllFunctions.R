@@ -89,7 +89,10 @@ showCMoptions <- function() {
 
 CMoptions <- function(options = NA) {
     opts <- new("CMoptions")
-    CMargs(opts) <- as.list(options)
+    if(!is.na(options))
+      CMargs(opts) <- as.list(options)
+    else
+      paramValueIndex(opts) <- 32
     return(opts)
 }
 
