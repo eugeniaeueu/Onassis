@@ -122,7 +122,7 @@ setMethod(f = "findEntities", signature = "EntityFinder", definition = function(
     J("org.uimafit.pipeline.SimplePipeline")$runPipeline(collection_reader, pipeline_ae_list)
 
     print(outDir)
-    outdf <- loadEntities(outDir, FALSE)
+    outdf <- loadEntities(outDir, TRUE)
 
     if (is.null(outdf))
         message("No annotations available") else message(paste0("Conceptmapper annotations created in directory: ", outDir))

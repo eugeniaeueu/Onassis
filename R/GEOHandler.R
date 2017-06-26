@@ -3,6 +3,7 @@
 #' @rdname connectToGEODB
 #' @param sqliteFileName optional SQLite file path of the SQLite database if already downloaded
 #' @param download If TRUE allow the automatic downloading of the database file.
+#' @param optional destination directory 
 #' @return A connection to the GEOmetadb
 #' @description This method allows users to connect to the GEOmetadb downloaded. If no parameter is provided than the function retrieves the database in sqlite format and returns a connection to query the database
 #' @examples
@@ -13,24 +14,26 @@
 #' @export
 #' @importFrom GEOmetadb getSQLiteFile
 #' @importFrom RSQLite dbConnect SQLite
-connectToGEODB <- function(sqliteFileName=NULL, download=FALSE){
+connectToGEODB <- function(sqliteFileName=NULL, download=FALSE, destdir=getwd()){
   geo_con <- NA
   if(is.null(sqliteFileName)){
     #set the filename to default
-    sqliteFileName <- system.file(getwd(), "GEOmetadb.sqlite")
+    sqliteFileName <- "GEOmetadb.sqlite"
   }
-  if(! file.exists(sqliteFileName) & download==TRUE){
-    sqlfile <- GEOmetadb::getSQLiteFile(destdir=getwd())
-    #creation of the connection to the database
+  
+  
+  if(! file.exists(file.path(destdir, sqliteFileName)) & download==TRUE){
+    sqlfile <- GEOmetadb::getSQLiteFile(destdir=destdir)
+  } 
+  
+  if(file.exists(file.path(destdir, sqliteFileName)))
     geo_con <- RSQLite::dbConnect(SQLite(), sqliteFileName)
-  } else {
-    message('Please provide a valid input file or run (connectToGEODB(download=TRUE))')
-
-  }
-  if(file.exists(sqliteFileName))
-    geo_con <- RSQLite::dbConnect(SQLite(), sqliteFileName)
+  else 
+    stop('please provide a valid connection')
   return(geo_con)
 }
+
+
 
 
 #' \code{experiment_types}
