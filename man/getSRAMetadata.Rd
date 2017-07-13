@@ -16,7 +16,7 @@ getSRAMetadata(sra_con, library_strategy, library_source = NA,
 
 \item{taxon_id}{Optional taxon id of the organism. If no taxon_id is passed as parameter the query will retrieve all the organisms}
 
-\item{center_name}{Optional center name identifier. Possible values can be obtained querying the database e.g. dbGetQuery(sra_con, "select distinct center_name from sample")}
+\item{center_name}{Optional center name identifier. Possible values can be obtained querying the database e.g. dbGetQuery(sra_con, 'select distinct center_name from sample')}
 }
 \value{
 A data frame with the queried samples' metadata

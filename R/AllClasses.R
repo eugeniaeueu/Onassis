@@ -64,10 +64,13 @@ NULL
 #' @examples
 #'dict <- new('CMdictionary')
 #' @exportClass CMdictionary
-setClass(Class = "CMdictionary", representation(dict_location = "character", dictInfo = "list", dictRef = "jobjRef"), validity = function(object) {
+setClass(Class = "CMdictionary", representation(dict_location = "character",
+    dictInfo = "list", dictRef = "jobjRef"), validity = function(object) {
+    text <- character()
     if (is.na(object@dict_location) | !file.info(object@dict_location)$isdir)
-        stop("Invalid directory Path: You should provide a valid directory for the Conceptmapper dictionary")
-    TRUE
+        text <- c("Invalid directory Path: You should provide a valid directory for the Conceptmapper dictionary")
+    if (length(text))
+        text else TRUE
 })
 
 
@@ -126,27 +129,32 @@ setClass(Class = "CMdictionary", representation(dict_location = "character", dic
 #'
 #'\code{\link{paramValueIndex}} \cr
 #'\code{\link{show}}  \cr
-#'\code{\link{CMargs}} \cr
+#'\code{\link{arguments}} \cr
 #'\code{\link{listCombinations}} \cr
 #' @examples
 #' options <- new('CMoptions')
 #' @exportClass CMoptions
 #' @export
-setClass(Class = "CMoptions", representation(arguments = "list"), validity = function(object) {
-
-    options_combinations <- readRDS(system.file("extdata", "Options_table.rds", package = "Onassis"))
-    if (class(object@arguments) != "list")
-        stop("Invalid arguments: Arguments should be a list")
-    if (length(object@arguments) != 8)
-        stop("Arguments missing. The number of arguments should be 8")
-    for (argument_name in names(object@arguments)) {
-        if (!argument_name %in% colnames(options_combinations))
-            stop("Invalid argument name")
-        if (!(as.character(object@arguments[[argument_name]]) %in% levels(options_combinations[, c(argument_name)])))
-            stop(paste0("Invalid argument value for argument ", argument_name))
-    }
-    TRUE
-})
+setClass(Class = "CMoptions", representation(arguments = "list"),
+    validity = function(object) {
+        text <- character()
+        options_combinations <- readRDS(system.file("extdata",
+            "Options_table.rds", package = "Onassis"))
+        if (class(object@arguments) != "list")
+            text <- c("Invalid arguments: Arguments should be a list")
+        if (length(object@arguments) != 8)
+            text <- c("Arguments missing. The number of arguments should be 8")
+        for (argument_name in names(object@arguments)) {
+            if (!argument_name %in% colnames(options_combinations))
+                text <- c("Invalid argument name")
+            if (!(as.character(object@arguments[[argument_name]]) %in%
+                levels(options_combinations[, c(argument_name)])))
+                text <- c("Invalid argument value for argument ",
+                  argument_name)
+        }
+        if (length(text))
+            text else TRUE
+    })
 
 
 
@@ -182,14 +190,14 @@ setClass(Class = "EntityFinder", representation = representation(typeSystemRef =
 #' @slot pairwiseConfigRef The reference to the Java object of type CMconf corresponding to the pairwise configuration
 #' @slot groupConfig The groupwise configuration to compute the semantic similarity between groups of concepts.
 #' @slot icConfig The information content measure
-#'@slot graph The reference to the Java object corresponding to the DAG created from the ontology.
 #'@slot groupwiseConfigRef The reference to the Java configuration object for the computation of semantic similarity between groups of concepts
+#' @slot ontology The ontology to compute semantic similarities
 
 #' @details The following methods can be applied to Similarity
 #'
 #'\code{\link{ontology<-}} \cr
 #'\code{\link{pairwiseConfig}} \cr
-#'\code{\link{groupwiseConfig}} \cr
+#'\code{\link{groupConfig}} \cr
 #'\code{\link{showOpts}} \cr
 #'\code{\link{sim}} \cr
 #'\code{\link{groupsim}} \cr
@@ -199,8 +207,10 @@ setClass(Class = "EntityFinder", representation = representation(typeSystemRef =
 #'
 #' @exportClass Similarity
 #' @export
-setClass(Class = "Similarity", representation = representation(similarityInstance = "jobjRef", pairwiseConfig = "character", pairwiseConfigRef = "jobjRef",
-    icConfig = "character", groupConfig = "character", groupwiseConfigRef = "jobjRef", graph = "jobjRef"))
+setClass(Class = "Similarity", representation = representation(similarityInstance = "jobjRef",
+    pairwiseConfig = "character", pairwiseConfigRef = "jobjRef",
+    icConfig = "character", groupConfig = "character",
+    groupwiseConfigRef = "jobjRef", ontology = "jobjRef"))
 
 
 

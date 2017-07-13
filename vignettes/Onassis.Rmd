@@ -204,7 +204,7 @@ Conceptmapper dictionaries are XML files with a set of entries specified by the 
       </token>
   </synonym>
 ```
-The function dict `CMdictionary` creates an instance of the class `CMdictionary` (by internally calling the method `buildDictionary`). 
+The function dict `dictionary` creates an instance of the class `CMdictionary` (by internally calling the method `buildDictionary`). 
 
   * If an XML file containing the Conceptmapper dictionary is already available,  it can be uploaded into Onassis indicating its path and setting the `dictType` option to "CMDICT".
   * If the dictionary has to be built from an OBO ontology (as a file in the OBO or OWL format), its path has to be provided and dictType has to be set to "OBO". The synonymType argument can be set to EXACT_ONLY or ALL to consider only canonical concept names or also to include any synonym. The resulting XML file is written in the indicated outputdir.
@@ -212,27 +212,27 @@ The function dict `CMdictionary` creates an instance of the class `CMdictionary`
 
 ```{r createSampleAndTargetDict, echo=TRUE,eval=TRUE, message=FALSE}
 # If a Conceptmapper dictionary is already available the dictType CMDICT can be specified and the corresponding file loaded
-sample_dict <- CMdictionary(inputFileOrDb=system.file('extdata', 'cmDict-sample.cs.xml', package = 'Onassis'), dictType = 'CMDICT')
+sample_dict <- dictionary(inputFileOrDb=system.file('extdata', 'cmDict-sample.cs.xml', package = 'Onassis'), dictType = 'CMDICT')
 
 #Creation of a dictionary from the file sample.cs.obo available in OnassisJavaLibs
 obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
 
-sample_dict <- CMdictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
+sample_dict <- dictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
 
 # Creation of a dictionary for human genes/proteins
 require(org.Hs.eg.db)
-targets <- CMdictionary(dictType='TARGET', inputFileOrDb = 'org.Hs.eg.db')
+targets <- dictionary(dictType='TARGET', inputFileOrDb = 'org.Hs.eg.db')
 ```
 
 
 ## Setting the options for the annotator
-Conceptmapper includes 7 different options controlling the annotation step. These are documented in detail in the documentaiton of the CMoption function. They can be listed through the `showCMoptions` function, and they can be set through the `CMoptions` function. The set options are thus stored in an object of class CMoptions that will be required for the subsequent step of annotation.  
+Conceptmapper includes 7 different options controlling the annotation step. These are documented in detail in the documentation of the CMoptions function. They can be listed through the `listCombinations` method after creating a 'CMoptions' object, and they can be set through the `CMoptions` function. The set options are thus stored in an object of class CMoptions that will be required for the subsequent step of annotation.  
 
 ```{r settingOptions, echo=TRUE,eval=TRUE}
 
 #Showing configuration permutations 
-list_opts <- showCMoptions()  
-
+opts <- CMoptions()  
+combinations <- listCombinations(opts)
 #Setting the combination of parameters through the paramValueIndex value
 myopts <- CMoptions(c("CONTIGUOUS_MATCH", "CASE_INSENSITIVE", 'BIOLEMMATIZER', 'PUBMED', 'ON', 'YES', 'ALL'))
 
@@ -251,7 +251,7 @@ chipseq_dict_annot <- annotate(sra_chip_seq[1:20,c('sample_accession', 'title', 
 
 The resulting data.frame contains for each row a match to the provided dictionary for a specific document/sample (indicated in the first column). The annotation is reported with the id of the concept (term_id), its canonical name (term name), its URL in the obo format, and the matching sentence of the document.
 
-```{r showmethilationresults, echo=FALSE, eval=TRUE, message=FALSE}
+```{r showchipresults, echo=FALSE, eval=TRUE, message=FALSE}
 
 #methylation_brenda_annot <- readRDS(system.file('extdata', 'vignette_data', 'methylation_brenda_annot.rds', package='Onassis'))
 #UPDATE con ChIP-seq
@@ -374,7 +374,7 @@ In the following code the semantic similarity between two groups of terms is com
 
 ```{r groupwise_measures, echo=TRUE, eval=TRUE, message=FALSE}
 
-similarity(obo, found_terms[1:2], found_terms[3:4])
+similarity(obo, found_terms[1:2], found_terms[3])
 
 ```
 

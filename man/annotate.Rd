@@ -26,8 +26,8 @@ this function runs the entityfinder on given input
 }
 \examples{
 obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-sample_dict <- CMdictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
-myopts <- new('CMoptions')
+sample_dict <- dictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
+myopts <- CMoptions()
 paramValueIndex(myopts) <- 40
 entities <- annotate(system.file('extdata', 'vignette_data',
  'GEO_human_chip.rds', package='Onassis'), options = myopts,

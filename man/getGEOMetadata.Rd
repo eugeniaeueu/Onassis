@@ -24,8 +24,10 @@ This method retrierves the descriptive fields of the samples in GEO for a given 
 \examples{
 if(file.exists('GEOmetadb.sqlite')){
  geo_con <- connectToGEODB('GEOmetadb.sqlite')
-methilation <- getGEOMetadata(geo_con, 'Methylation profiling by high throughput sequencing', 'Homo sapiens')
-expression <- getGEOMetadata(geo_con, 'Expression profiling by array', 'Homo sapiens', 'GPL570')
+methilation <- getGEOMetadata(geo_con,
+'Methylation profiling by high throughput sequencing', 'Homo sapiens')
+expression <- getGEOMetadata(geo_con,
+ 'Expression profiling by array', 'Homo sapiens', 'GPL570')
 }else{
  print('You need to download GEOmetadb.sqlite to run this example')
 }

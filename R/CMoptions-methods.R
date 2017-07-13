@@ -1,3 +1,62 @@
+#' \code{arguments}
+#'
+#' @description This method retrieves the list of parameters currently set to run Conceptmapper
+#' @rdname CMoptions-class
+#' @aliases arguments,CMoptions-method
+#' @return list of parameters currently set
+#' @examples
+#' opts <- CMoptions()
+#' arguments(opts)
+
+setMethod("arguments", "CMoptions", function(x) {
+    x@arguments
+})
+
+
+
+#' \code{arguments<-}
+#' @aliases arguments<-,CMoptions-method
+#' @description This method sets a list of parameters and updates the paramValueIndex to the correct value if necessary.
+#' @param value a list of arguments in the containing paramValueIndex (options), SearchStrategy, CaseMatch, Stemmer, Stopwords, OrderIndependentLookup, FindAllMatches and SynonymType parameters in the specified order.
+#' @rdname CMoptions-class
+#' @return The updated CMoptions S4 object
+#' @examples
+#' opts <- CMoptions()
+#' arguments(opts) <- as.list(c('CONTIGUOUS_MATCH', 'CASE_IGNORE',
+#'  'BIOLEMMATIZER', 'NONE', 'OFF', 'YES', 'EXACT_ONLY'))
+
+setReplaceMethod("arguments", "CMoptions", function(x, 
+    value) {
+    if (length(value) == (length(x@arguments) - 1)) 
+        value <- c("1", value)
+    options_combinations <- readRDS(system.file("extdata", 
+        "Options_table.rds", package = "Onassis"))
+    lev <- lapply(x@arguments, levels)
+    nam <- names(x@arguments)
+    x@arguments <- value
+    names(x@arguments) <- nam
+    
+    index <- apply(options_combinations, 1, function(entire_row) {
+        row <- as.character(entire_row[2:length(entire_row)])
+        
+        argument_row <- x@arguments[2:length(x@arguments)]
+        argument_row <- unname(sapply(argument_row, 
+            as.character))
+        if (identical(argument_row, row)) 
+            return(TRUE) else return(FALSE)
+    })
+    paramValueIndex <- options_combinations[index == 
+        TRUE, 1]
+    x@arguments$paramValueIndex <- paramValueIndex
+    x@arguments <- lapply(1:length(x@arguments), function(z) factor(as.character(x@arguments[[z]]), 
+        levels = lev[[z]]))
+    names(x@arguments) <- nam
+    validObject(x)
+    x
+})
+
+
+
 #' \code{show}
 #'
 #' @rdname CMoptions-class
@@ -6,13 +65,13 @@
 #' @return the list of options
 #' @description This method shows the list of options to run the Entity finder
 #' @examples
-#' opt <- new('CMoptions')
+#' opt <- CMoptions()
 #' show(opt)
 setMethod("show", "CMoptions", function(object) {
     message("CMoptions object to set ConceptMapper Options")
     for (i in 2:length(object@arguments)) {
-        message(paste0(names(object@arguments)[i], ": ", as.character(object@arguments[[i]])))
-
+        message(names(object@arguments)[i], ": ", as.character(object@arguments[[i]]))
+        
     }
 })
 
@@ -69,12 +128,13 @@ setMethod("show", "CMoptions", function(object) {
 #' @aliases listCombinations,CMoptions-method
 #' @return The data frame with all the possible parameter combinations
 #' @examples
-#' opts <- new('CMoptions')
+#' opts <- CMoptions()
 #' listCombinations(opts)
 
 
 setMethod("listCombinations", "CMoptions", function(x) {
-    options_combinations <- readRDS(system.file("extdata", "Options_table.rds", package = "Onassis"))
+    options_combinations <- readRDS(system.file("extdata", 
+        "Options_table.rds", package = "Onassis"))
     options_combinations[, 2:ncol(options_combinations)]
 })
 
@@ -88,7 +148,7 @@ setMethod("listCombinations", "CMoptions", function(x) {
 #' @param x CMoptions instance
 #' @return The paramValueIndex corresponding to the current options. If user has not changed the options this is set to 31
 #' @examples
-#' opts <- new('CMoptions')
+#' opts <- CMoptions()
 #' paramValueIndex(opts)
 #'
 
@@ -104,75 +164,23 @@ setMethod("paramValueIndex", "CMoptions", function(x) {
 #' @aliases paramValueIndex<-,CMoptions-method
 #' @return The updated CMoptions S4 object
 #' @examples
-#' opts <- new('CMoptions')
+#' opts <- CMoptions()
 #' list_opts <- listCombinations(opts)
 #'
 #' paramValueIndex(opts) <- 2
 
-setReplaceMethod("paramValueIndex", "CMoptions", function(x, value) {
-    options_combinations <- readRDS(system.file("extdata", "Options_table.rds", package = "Onassis"))
-
-    if (!value %in% options_combinations$paramValueIndex)
+setReplaceMethod("paramValueIndex", "CMoptions", function(x, 
+    value) {
+    options_combinations <- readRDS(system.file("extdata", 
+        "Options_table.rds", package = "Onassis"))
+    
+    if (!value %in% options_combinations$paramValueIndex) 
         stop("Invalid param Value Index")
     value <- value + 1
-    x@arguments <- as.list(options_combinations[(value), ])
+    x@arguments <- as.list(options_combinations[(value), 
+        ])
     x
 })
-
-
-#' \code{CMargs}
-#'
-#' @description This method retrieves the list of parameters currently set to run Conceptmapper
-#' @rdname CMoptions-class
-#' @aliases CMargs,CMoptions-method
-#' @return list of parameters currently set
-#' @examples
-#' opts <- new('CMoptions')
-#' CMargs(opts)
-
-setMethod("CMargs", "CMoptions", function(x) {
-    x@arguments
-})
-
-
-
-#' \code{CMargs<-}
-#' @aliases CMargs<-,CMoptions-method
-#' @description This method sets a list of parameters and updates the paramValueIndex to the correct value if necessary.
-#' @param value a list of arguments in the containing paramValueIndex (options), SearchStrategy, CaseMatch, Stemmer, Stopwords, OrderIndependentLookup, FindAllMatches and SynonymType parameters in the specified order.
-#' @rdname CMoptions-class
-#' @return The updated CMoptions S4 object
-#' @examples
-#' opts <- new('CMoptions')
-#' list_opts <- listCombinations(opts)
-#' CMargs(opts) <- as.list(c('CONTIGUOUS_MATCH', 'CASE_IGNORE',
-#'  'BIOLEMMATIZER', 'NONE', 'OFF', 'YES', 'EXACT_ONLY'))
-
-setReplaceMethod("CMargs", "CMoptions", function(x, value) {
-    if (length(value) == (length(x@arguments)-1))
-        value <- c("1", value)
-    options_combinations <- readRDS(system.file("extdata", "Options_table.rds", package = "Onassis"))
-    lev <- lapply(x@arguments, levels)
-    nam <- names(x@arguments)
-    x@arguments <- value
-    names(x@arguments) <- nam
-
-    index <- apply(options_combinations, 1, function(entire_row) {
-        row <- as.character(entire_row[2:length(entire_row)])
-
-        argument_row <- x@arguments[2:length(x@arguments)]
-        argument_row <- unname(sapply(argument_row, as.character))
-        if (identical(argument_row, row))
-            return(TRUE) else return(FALSE)
-    })
-    paramValueIndex <- options_combinations[index == TRUE, 1]
-    x@arguments$paramValueIndex <- paramValueIndex
-    x@arguments <- lapply(1:length(x@arguments), function(z) factor(as.character(x@arguments[[z]]), levels = lev[[z]]))
-    names(x@arguments) <- nam
-    validObject(x)
-    x
-})
-
 
 
 

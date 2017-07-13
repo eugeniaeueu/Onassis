@@ -2,7 +2,8 @@
 #' @import OnassisJavaLibs
 .onLoad <- function(libname, pkgname) {
     .jpackage(pkgname, lib.loc = libname)
-    tools::vignetteEngine("knitr", pattern = "[.]Rmd$", package = "knitr")
+    tools::vignetteEngine("knitr", pattern = "[.]Rmd$", 
+        package = "knitr")
     # .jinit(force.init=TRUE)
     initJavaLibs()
 }

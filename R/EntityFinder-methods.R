@@ -1,3 +1,49 @@
+#' \code{typeSystemRef}
+#'
+#' @description This method sets the type system to the ccp-nlp one to run the EntityFinder
+#' @rdname EntityFinder-class
+#' @aliases typeSystemRef, EntityFinder-method
+#' @return the reference to the Java type system currently set
+#' @param x instance of the class EntityFinder
+#' @examples
+#' ef <- EntityFinder()
+#' typeSystemRef(ef)
+#' @export
+setMethod("typeSystemRef", "EntityFinder", function(x) {
+    x@typeSystemRef
+})
+
+
+
+#' \code{typeSystemRef<-}
+#' @aliases typeSystemRef<-,EntityFinder-method
+#' @description This method sets the type system to the ccp-nlp one to run the EntityFinder
+#' @param value the java type system to detect concepts from ontologies.
+#' @rdname EntityFinder-class
+#' @return The updated EntityFinder S4 object
+#' @examples
+#' ef <- EntityFinder()
+#'type_system_array_list <- .jnew('java/util/ArrayList')
+#' ccp_nlp_type_system <- .jfield('edu/ucdenver/ccp/nlp/uima/util/TypeSystemUtil',
+#'  name = 'CCP_TYPE_SYSTEM')
+#' sentence_detector_type_system_str <- 'org.cleartk.token.type.Sentence'
+#' conceptmapper_type_system <-
+#' 'edu.ucdenver.ccp.nlp.wrapper.conceptmapper.TypeSystem'
+#' dictTerm <- 'analysis_engine.primitive.DictTerm'
+#' tokenizer <- 'org.apache.uima.conceptMapper.support.tokenizer.TokenAnnotation'
+#' vector_of_ts <- c(ccp_nlp_type_system, sentence_detector_type_system_str,
+#'  conceptmapper_type_system, dictTerm, tokenizer)
+#' type_system_description <-
+#' J('org/uimafit/factory/TypeSystemDescriptionFactory')$createTypeSystemDescription(vector_of_ts)
+#' typeSystemRef(ef) <- type_system_description
+#' @export
+setReplaceMethod("typeSystemRef", "EntityFinder", function(x,
+    value) {
+    ef@typeSystemRef <- value
+})
+
+
+
 #' \code{findEntities}
 #'
 #' @description This method finds concepts of a Conceptmapper Dictionary of type CMdictionary in a given directory or in a single pipe separated file containing a named document in each row, with a specified configuration of type CMoptions.
@@ -9,31 +55,37 @@
 #' @return A data frame of annotations containing the sample name, the id of the OBO concept, the corresponding name, the part of the text containing the annotation
 #' @examples
 #' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-#' dict <- CMdictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
+#' dict <- dictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
 #'
-#' opts <- new('CMoptions')
-#' ef <- new('EntityFinder')
+#' opts <- CMoptions()
+#' ef <- EntityFinder()
 #' annotations <- findEntities(ef,
-#' system.file('extdata', 'test_samples', 'test_samples.txt', package='Onassis'), multipleDocs=TRUE,
+#' system.file('extdata', 'test_samples', 'test_samples.txt', package='Onassis'), multipleDocs=TRUE, outDir=getwd(),
 #'  configOpt=opts, cmDict=dict)
 #'
 #' @aliases findEntities,EntityFinder-method
 #' @rdname EntityFinder-class
-setMethod(f = "findEntities", signature = "EntityFinder", definition = function(object, inputDirOrFile, multipleDocs = FALSE, outDir = tempdir(),
+setMethod(f = "findEntities", signature(object = "EntityFinder",
+    inputDirOrFile = "character", multipleDocs = "logical",
+    outDir = "character", configOpt = "CMoptions",
+    cmDict = "CMdictionary"), definition = function(object,
+    inputDirOrFile, multipleDocs = FALSE, outDir = tempdir(),
     configOpt, cmDict) {
     if (!dir.exists(inputDirOrFile) & !file.exists(inputDirOrFile))
         stop("Invalid input directory or file")
     if (!dir.exists(outDir))
         dir.create(outDir)
-    if(file.access(outDir, mode=2)!=0)
-      stop('outDir not writable, please specify a valid output directory for the annotator output')
-    do.call(file.remove, list(list.files(outDir, pattern = ".a1$", full.names = TRUE)))
+    if (file.access(outDir, mode = 2) != 0)
+        stop("outDir not writable, please specify a valid output directory for the annotator output")
+    do.call(file.remove, list(list.files(outDir, pattern = ".a1$",
+        full.names = TRUE)))
 
     if (!isS4(cmDict)) {
         if (!file.exists(cmDict))
             stop("Invalid dictionary file path")
-        cmDictobj <- new("CMdictionary")
-        cmDictobj@dictRef <- .jnew("java/io/File", cmDict)
+        cmDictobj <- CMdictionary()
+        cmDictobj@dictRef <- .jnew("java/io/File",
+            cmDict)
         cmDict <- cmDictobj
     }
     if (!isS4(configOpt)) {
@@ -49,18 +101,24 @@ setMethod(f = "findEntities", signature = "EntityFinder", definition = function(
 
         inputFile <- .jnew("java/io/File", inputDirOrFile)
 
-        collection_reader <- J("edu.ucdenver.ccp.nlp.uima.collections.line.DocumentPerLineCollectionReader")$createCollectionReader(.jcast(object@typeSystemRef,
-            "org.apache.uima.resource.metadata.TypeSystemDescription"), inputFile, as.integer(0), as.integer(1e+08), J("edu.ucdenver.ccp.nlp.uima.collections.line.SimpleLinePipeDocumentExtractor")$class,
+        collection_reader <- J("edu.ucdenver.ccp.nlp.uima.collections.line.DocumentPerLineCollectionReader")$createCollectionReader(.jcast(typeSystemRef(object),
+            "org.apache.uima.resource.metadata.TypeSystemDescription"),
+            inputFile, as.integer(0), as.integer(1e+08),
+            J("edu.ucdenver.ccp.nlp.uima.collections.line.SimpleLinePipeDocumentExtractor")$class,
             J("edu.ucdenver.ccp.nlp.uima.shims.document.impl.CcpDocumentMetadataHandler")$class)
 
     } else {
 
         inputDirOrFile <- .jnew("java/io/File", inputDirOrFile)
 
-        collection_reader_description <- J("edu.ucdenver.ccp.nlp.uima.collections.file.FileSystemCollectionReader")$createDescription(.jcast(object@typeSystemRef,
-            "org.apache.uima.resource.metadata.TypeSystemDescription"), inputDirOrFile, .jcall("java/lang/Boolean", "Z", "parseBoolean",
-            "true"), J("edu.ucdenver.ccp.common.file.CharacterEncoding")$UTF_8, .jnew("java/lang/String", "en"), .jcall("java/lang/Boolean",
-            "Z", "parseBoolean", "false"), as.integer(1e+08), as.integer(0), .jnew("java/lang/String", J("edu.ucdenver.ccp.nlp.uima.util.View")$DEFAULT$viewName()),
+        collection_reader_description <- J("edu.ucdenver.ccp.nlp.uima.collections.file.FileSystemCollectionReader")$createDescription(.jcast(typeSystemRef(object),
+            "org.apache.uima.resource.metadata.TypeSystemDescription"),
+            inputDirOrFile, .jcall("java/lang/Boolean",
+                "Z", "parseBoolean", "true"), J("edu.ucdenver.ccp.common.file.CharacterEncoding")$UTF_8,
+            .jnew("java/lang/String", "en"), .jcall("java/lang/Boolean",
+                "Z", "parseBoolean", "false"), as.integer(1e+08),
+            as.integer(0), .jnew("java/lang/String",
+                J("edu.ucdenver.ccp.nlp.uima.util.View")$DEFAULT$viewName()),
             .jarray(c("txt")))
 
         collection_reader <- J("org.uimafit.factory.CollectionReaderFactory")$createCollectionReader(collection_reader_description,
@@ -68,64 +126,81 @@ setMethod(f = "findEntities", signature = "EntityFinder", definition = function(
 
     }
 
-    sentence_detector_parameter_array <- .jarray(c(.jnew("java/lang/String", J("org.cleartk.syntax.opennlp.SentenceAnnotator")$PARAM_SENTENCE_MODEL_PATH),
-        .jnew("java/lang/String", "/models/en-sent.bin"), .jnew("java/lang/String", J("org.cleartk.syntax.opennlp.SentenceAnnotator")$PARAM_WINDOW_CLASS_NAMES),
-        .jnull(), .jnew("java/lang/String", J("org.cleartk.syntax.opennlp.SentenceAnnotator")$PARAM_SENTENCE_TYPE_NAME), .jnew("java/lang/String",
-            J("org.cleartk.token.type.Sentence")$class$getName())))
+    sentence_detector_parameter_array <- .jarray(c(.jnew("java/lang/String",
+        J("org.cleartk.syntax.opennlp.SentenceAnnotator")$PARAM_SENTENCE_MODEL_PATH),
+        .jnew("java/lang/String", "/models/en-sent.bin"),
+        .jnew("java/lang/String", J("org.cleartk.syntax.opennlp.SentenceAnnotator")$PARAM_WINDOW_CLASS_NAMES),
+        .jnull(), .jnew("java/lang/String", J("org.cleartk.syntax.opennlp.SentenceAnnotator")$PARAM_SENTENCE_TYPE_NAME),
+        .jnew("java/lang/String", J("org.cleartk.token.type.Sentence")$class$getName())))
 
     # Analysis engine to detect sentences
 
     sentence_detector_engine_description <- J("org.uimafit.factory.AnalysisEngineFactory")$createPrimitiveDescription(J("org.cleartk.syntax.opennlp.SentenceAnnotator")$class,
         sentence_detector_parameter_array)
 
-    # Creating an aggregate analysis engine: sentence detector, offset tokenizer and conceptmapper type system
+    # Creating an aggregate analysis engine: sentence
+    # detector, offset tokenizer and conceptmapper type
+    # system
 
     configuration_parameter <- as.integer(as.character(paramValueIndex(configOpt)))
 
 
 
     conceptMapperAggregateDesc <- J("edu.ucdenver.ccp.nlp.wrapper.conceptmapper.ConceptMapperPermutationFactory")$buildConceptMapperAggregatePermutation(configuration_parameter,
-        .jcast(object@typeSystemRef, "org.apache.uima.resource.metadata.TypeSystemDescription"), cmDict@dictRef, J("org.cleartk.token.type.Sentence")$class)
+        .jcast(typeSystemRef(object), "org.apache.uima.resource.metadata.TypeSystemDescription"),
+        cmDict@dictRef, J("org.cleartk.token.type.Sentence")$class)
 
     conceptMapperAggregateDesc$setAnnotatorImplementationName("aggregate descriptor")
 
-    # Convert the CM OntologyTerm annotation class to CCPTextAnnotation classes The true parameter tells the converter to keep slots
-    # (this is to retrieve the canonical name of the ontology id)
+    # Convert the CM OntologyTerm annotation class to
+    # CCPTextAnnotation classes The true parameter
+    # tells the converter to keep slots (this is to
+    # retrieve the canonical name of the ontology id)
 
-    cmToCcpTypeSystemDesc <- J("edu.ucdenver.ccp.nlp.wrapper.conceptmapper.typesystem.ConceptMapper2CCPTypeSystemConverter_AE")$createAnalysisEngineDescription(.jcast(object@typeSystemRef,
-        "org.apache.uima.resource.metadata.TypeSystemDescription"), .jcall("java/lang/Boolean", "Z", "parseBoolean", "true"))
+    cmToCcpTypeSystemDesc <- J("edu.ucdenver.ccp.nlp.wrapper.conceptmapper.typesystem.ConceptMapper2CCPTypeSystemConverter_AE")$createAnalysisEngineDescription(.jcast(typeSystemRef(object),
+        "org.apache.uima.resource.metadata.TypeSystemDescription"),
+        .jcall("java/lang/Boolean", "Z", "parseBoolean",
+            "true"))
 
-    # Removes all token annotations as we don't want them to be output as RDF
+    # Removes all token annotations as we don't want
+    # them to be output as RDF
 
-    tokenRemoval <- J("edu.ucdenver.ccp.nlp.uima.annotators.filter.ClassMentionRemovalFilter_AE")$createAnalysisEngineDescription(.jcast(object@typeSystemRef,
-        "org.apache.uima.resource.metadata.TypeSystemDescription"), .jarray(c(J("edu.ucdenver.ccp.nlp.core.mention.ClassMentionType")$TOKEN$typeName())))
+    tokenRemoval <- J("edu.ucdenver.ccp.nlp.uima.annotators.filter.ClassMentionRemovalFilter_AE")$createAnalysisEngineDescription(.jcast(typeSystemRef(object),
+        "org.apache.uima.resource.metadata.TypeSystemDescription"),
+        .jarray(c(J("edu.ucdenver.ccp.nlp.core.mention.ClassMentionType")$TOKEN$typeName())))
 
 
     cm_pipelineAeDescriptors <- J("edu.ucdenver.ccp.common.collections.CollectionsUtil")$createList(.jcast(conceptMapperAggregateDesc,
-        "java/lang/Object"), .jcast(cmToCcpTypeSystemDesc, "java/lang/Object"), .jcast(tokenRemoval, "java/lang/Object"))
+        "java/lang/Object"), .jcast(cmToCcpTypeSystemDesc,
+        "java/lang/Object"), .jcast(tokenRemoval, "java/lang/Object"))
 
-    duplicate_removal_filter <- J("edu.ucdenver.ccp.nlp.uima.annotators.filter.DuplicateAnnotationRemovalFilter_AE")$createAnalysisEngineDescription(.jcast(object@typeSystemRef,
+    duplicate_removal_filter <- J("edu.ucdenver.ccp.nlp.uima.annotators.filter.DuplicateAnnotationRemovalFilter_AE")$createAnalysisEngineDescription(.jcast(typeSystemRef(object),
         "org.apache.uima.resource.metadata.TypeSystemDescription"))
 
     # Bionlp format printer in BRAT
     outputDir <- .jnew("java/io/File", outDir)
 
-    bionlp_format_printer <- J("edu.ucdenver.ccp.nlp.uima.serialization.bionlp.BionlpFormatPrinter_AE")$createAnalysisEngineDescription(.jcast(object@typeSystemRef,
-        "org.apache.uima.resource.metadata.TypeSystemDescription"), outputDir, .jcall("java/lang/Boolean", "Z", "parseBoolean",
-        "true"))
+    bionlp_format_printer <- J("edu.ucdenver.ccp.nlp.uima.serialization.bionlp.BionlpFormatPrinter_AE")$createAnalysisEngineDescription(.jcast(typeSystemRef(object),
+        "org.apache.uima.resource.metadata.TypeSystemDescription"),
+        outputDir, .jcall("java/lang/Boolean", "Z",
+            "parseBoolean", "true"))
 
-    pipeline_ae_list <- .jarray(list(sentence_detector_engine_description, conceptMapperAggregateDesc, cmToCcpTypeSystemDesc, tokenRemoval,
-        duplicate_removal_filter, bionlp_format_printer), contents.class = "org/apache/uima/analysis_engine/AnalysisEngineDescription")
+    pipeline_ae_list <- .jarray(list(sentence_detector_engine_description,
+        conceptMapperAggregateDesc, cmToCcpTypeSystemDesc,
+        tokenRemoval, duplicate_removal_filter, bionlp_format_printer),
+        contents.class = "org/apache/uima/analysis_engine/AnalysisEngineDescription")
 
     # Running the pipeline
 
-    J("org.uimafit.pipeline.SimplePipeline")$runPipeline(collection_reader, pipeline_ae_list)
+    J("org.uimafit.pipeline.SimplePipeline")$runPipeline(collection_reader,
+        pipeline_ae_list)
 
     print(outDir)
     outdf <- loadEntities(outDir, TRUE)
 
     if (is.null(outdf))
-        message("No annotations available") else message(paste0("Conceptmapper annotations created in directory: ", outDir))
+        message("No annotations available") else message("Conceptmapper annotations created in directory: ",
+        outDir)
     return(outdf)
 
 })
@@ -143,26 +218,34 @@ setMethod(f = "findEntities", signature = "EntityFinder", definition = function(
 #' @return A data frame of annotations containing the sample name, the id of the OBO concept, the corresponding name, the part of the text containing the annotation
 #' @examples
 #' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-#' dict <- CMdictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
-#' opts <- new('CMoptions')
-#' ef <- new('EntityFinder')
+#' dict <- dictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
+#' opts <- CMoptions()
+#' ef <- EntityFinder()
 #' methylation <- readRDS(system.file('extdata', 'vignette_data',
 #' 'GEOmethylation.rds', package='Onassis'))
 #' annotations <- annotateDF(ef, methylation[1:10, ], getwd(), opts, dict)
 #' @rdname EntityFinder-class
 #' @aliases annotateDF,EntityFinder-method
 #' @import data.table
-setMethod(f = "annotateDF", signature = "EntityFinder", definition = function(object, descr_df, outDir = tempdir(), configOpt,
-    cmDict) {
+setMethod(f = "annotateDF", signature(object = "EntityFinder",
+    descr_df = "data.frame", outDir = "character",
+    configOpt = "CMoptions"), definition = function(object,
+    descr_df, outDir = tempdir(), configOpt, cmDict) {
     if (!colnames(descr_df)[1] == "ID")
         colnames(descr_df)[1] = "ID"
     descr_df[is.na(descr_df)] <- ""
     descr_df <- setDT(descr_df)
-    descr_df <- descr_df[, lapply(.SD, function(x) toString(unique(x))), by = ID]
-    descr_df[, `:=`(NEW, do.call(paste, c(.SD, sep = " "))), .SDcols = -1]
+    descr_df <- descr_df[, lapply(.SD, function(x) toString(unique(x))),
+        by = ID]
+    descr_df[, `:=`(NEW, do.call(paste, c(.SD, sep = " "))),
+        .SDcols = -1]
     descr_df <- descr_df[, c(1, ncol(descr_df)), with = FALSE]
-    file_name <- tempfile(pattern = "df_annotations", tmpdir = tempdir(), fileext = ".txt")
-    utils::write.table(descr_df, file = file_name, col.names = FALSE, row.names = FALSE, sep = "|", quote = FALSE)
-    out_df <- findEntities(object, file_name, TRUE, outDir = outDir, configOpt = configOpt, cmDict = cmDict)
+    file_name <- tempfile(pattern = "df_annotations",
+        tmpdir = tempdir(), fileext = ".txt")
+    utils::write.table(descr_df, file = file_name,
+        col.names = FALSE, row.names = FALSE, sep = "|",
+        quote = FALSE)
+    out_df <- findEntities(object, file_name, TRUE,
+        outDir = outDir, configOpt = configOpt, cmDict = cmDict)
     return(out_df)
 })
