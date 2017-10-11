@@ -10,6 +10,7 @@
 #'
 #' granges <- readRDS(system.file('extdata', 'sample_granges.rds', package='Onassis'))
 #' ref_granges <- granges[[1]]
+#'
 #' for(i in 2:length(granges)) {
 #'  ref_granges <- GenomicRanges::union(ref_granges, granges[[i]])
 #' }
