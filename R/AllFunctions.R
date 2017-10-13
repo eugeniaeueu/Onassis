@@ -221,4 +221,3 @@ filterTerms <- function(annotated_df, termlist=c()){
   }
   return( annotated_df)
 }
-

@@ -1,4 +1,3 @@
-# Calling the java garbage collector
 #' @importFrom rJava .jcall
 jgc <- function() {
     .jcall("java/lang/System", method = "gc")
@@ -7,6 +6,7 @@ jgc <- function() {
 
 # This function reads the .a1 files obtained from
 # conceptmapper execution and converts them into a
+<<<<<<< HEAD
 # data frame.
 #' @importFrom utils read.table tail
 loadEntities <- function(entityDirectory, deleteDir = TRUE) {

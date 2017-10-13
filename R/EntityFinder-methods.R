@@ -196,8 +196,7 @@ setMethod(f = "findEntities", signature(object = "EntityFinder",
         pipeline_ae_list)
 
     print(outDir)
-    outdf <- loadEntities(outDir, FALSE)
-
+    outdf <- loadEntities(outDir, TRUE)
     if (is.null(outdf))
         message("No annotations available") else message("Conceptmapper annotations created in directory: ",
         outDir)
