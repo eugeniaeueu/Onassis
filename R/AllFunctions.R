@@ -190,7 +190,9 @@ showSimilarities <- function() {
 #' @export
 
 findHealthy <- function(metadata_df){
-  markers <-"disease state: normal|tissuetype: normal|no ad present|healthy|disease: healthy|disease: normal|disease: presumed normal|disease: none|disease: null|disease: na|disease status: normal|tumor: none"
+  markers <-"disease state: normal|no ad present|healthy|disease: healthy|disease: normal|disease: presumed normal|disease: none|disease: null|disease: na|disease status: normal|tumor: none|uninfected: disease|disease: no ad present|disease: no ad evident|tissuetype: normal"
+
+
   gsm_list <- c()
   for(i in 2:ncol(metadata_df)){
     gsms <- metadata_df[,1][grep(markers, tolower(metadata_df[,i]))]
