@@ -1,3 +1,36 @@
+#' \code{Onassis}
+#'
+#' @description This constructor instantiates an Onassis object.
+#' @return An object of type Onassis that can be used to analyze metadata
+#' @examples
+#'
+#' onassis <- Onassis()
+#'
+#' @name Onassis
+#' @rdname Onassis
+#' @param dictionary The path of the dictionary file
+#' @param entities a data frame to store entities
+#' @param similarity A matrix of the similarities between entities
+#' @param score The result of comparisons of the elements in the entities
+#' @export
+#' @importFrom methods new validObject
+
+Onassis <- function(dictionary = NA_character_,
+                         entities = data.frame(), similarity = matrix(),
+                    scores=matrix()) {
+  o <- new("Onassis")
+  if(!is.na(dictionary))
+    dictionary(o) <- dictionary
+  if(is.data.frame(entities) & nrow(entities)>0)
+    entities(o) <- entities
+  if(is.matrix(similarity) )
+    similarity(o) <- similarity
+  if(is.matrix(scores))
+    scores(o) <- scores
+  return(o)
+}
+
+
 #' \code{CMdictionary}
 #'
 #' @description This constructor instantiates a dictionary object for Conceptmapper.
@@ -72,5 +105,6 @@ EntityFinder <- function(typeSystemRef = .jnull()) new("EntityFinder")
 #' @export
 Similarity <- function(pairwiseConfig = NA_character_,
     icConfig = NA_character_, groupConfig = NA_character_) new("Similarity")
+
 
 

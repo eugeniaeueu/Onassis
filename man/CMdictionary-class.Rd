@@ -77,7 +77,7 @@ buildDictionary(.Object, outputDir = tempdir(), dictType = "OBO",
 
 
   \S4method{buildDictionary}{CMdictionary,character,character,character,character,numeric}(.Object,
-  outputDir = tempdir(), dictType = "OBO", synonymType = "EXACT",
+  outputDir = tmpdir(), dictType = "OBO", synonymType = "EXACT",
   inputFileOrDb = NULL, taxID = 0)
 
 \S4method{dictTypes}{CMdictionary}(.Object)

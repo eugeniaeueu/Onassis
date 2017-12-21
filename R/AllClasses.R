@@ -23,6 +23,32 @@ NULL
 
 
 
+#' Onassis-class
+#'
+#' @name Onassis-class
+#' @rdname Onassis-class
+#' @description Onassis is a container class for annotating samples metadata with concepts from dictionaries/ontologies, creating semantic sets of unique annotations, computing the distances between different semantic sets and eventually comparing the different identified conditions.
+#' @slot dictionary One or more input dictionaries to annotate samples metadata
+#' @slot entities a data frame containing the result of the annotation of the input with ontology terms
+#' @slot similarity A matrix of the similarities between the entries in the entities slot
+#' @slot score An optional score matrix containing genomic units on the rows (genes, regions) and on the columns the elements on the rows of the entities slot
+#' @details The following methods can be applied to Onassis
+#'
+#'\code{\link{annot}} \cr
+#'\code{\link{collapse}} \cr
+#'\code{\link{compare}} \cr
+#' @exportClass Onassis
+setClass(Class = "Onassis", representation(dictionary = "character",
+                                                entities = "data.frame", similarity = "matrix", scores="matrix"), validity = function(object) {
+                                                  text <- character()
+
+                                                  if (length(text))
+                                                    text else TRUE
+                                                })
+
+
+
+
 
 #' CMdictionary class that stores a Conceptmapper dictionary
 #
@@ -67,7 +93,7 @@ NULL
 setClass(Class = "CMdictionary", representation(dict_location = "character",
     dictInfo = "list", dictRef = "jobjRef"), validity = function(object) {
     text <- character()
-    if (is.na(object@dict_location) | !file.info(object@dict_location)$isdir)
+    if (is.na(object@dict_location) | !file.exists(object@dict_location))
         text <- c("Invalid directory Path: You should provide a valid directory for the Conceptmapper dictionary")
     if (length(text))
         text else TRUE

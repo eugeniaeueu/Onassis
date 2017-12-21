@@ -269,13 +269,13 @@ setGeneric(name = "showOpts", def = function(object) {
 })
 
 #' Method sim
-#' @name sim
-#' @aliases sim, Similarity-method
-#' @rdname Similarity-class
-#' @exportMethod sim
-setGeneric(name = "sim", def = function(object, term1,
+#' @name pairsim
+#' @aliases pairsim, Similarity-method
+#' @rdname pairsim
+#' @exportMethod pairsim
+setGeneric(name = "pairsim", def = function(object, term1,
     term2) {
-    standardGeneric("sim")
+    standardGeneric("pairsim")
 })
 
 #' Method groupsim
@@ -304,3 +304,120 @@ setGeneric(name = "multisim", def = function(similarities,
     annotations, sample1, sample2, aggregating_function) {
     standardGeneric("multisim")
 })
+
+### Generics for the class Onassis ####
+
+#' Method dictionary
+#' @name dict
+#' @rdname dict
+#' @exportMethod dict
+setGeneric(name = "dict", def = function(object) {
+  standardGeneric("dict")
+})
+
+
+#' Method dict<-
+#' @name dict<-
+#' @rdname dict
+#' @exportMethod dict<-
+setGeneric(name = "dict<-", def = function(object,
+                                               value) {
+  standardGeneric("dict<-")
+})
+
+#' Method simil
+#' @name simil
+#' @rdname simil
+#' @exportMethod simil
+setGeneric(name = "simil", def = function(object) {
+  standardGeneric("simil")
+})
+
+
+#' Method simil<-
+#' @name simil<-
+#' @rdname simil
+#' @exportMethod simil<-
+setGeneric(name = "simil<-", def = function(object,
+                                                 value) {
+  standardGeneric("simil<-")
+})
+
+
+#' Method entities
+#' @name entities
+#' @rdname entities
+#' @exportMethod entities
+setGeneric(name = "entities", def = function(object) {
+  standardGeneric("entities")
+})
+
+
+#' Method entities<-
+#' @name entities<-
+#' @rdname entities
+#' @exportMethod entities<-
+setGeneric(name = "entities<-", def = function(object,
+                                                 value) {
+  standardGeneric("entities<-")
+})
+
+
+#' Method scores
+#' @name scores
+#' @rdname scores
+#' @exportMethod scores
+setGeneric(name = "scores", def = function(object) {
+  standardGeneric("scores")
+})
+
+
+#' Method scores<-
+#' @name scores<-
+#' @rdname scores
+#' @exportMethod scores<-
+setGeneric(name = "scores<-", def = function(object,
+                                               value) {
+  standardGeneric("scores<-")
+})
+
+#' @name annot
+#' @rdname annot
+#' @exportMethod annot
+setGeneric(name='annot', signature= c("input", "dictType", "dictionary"), def=function(input=NA, dictType=NA, dictionary=NA, ...) standardGeneric('annot')
+)
+
+
+#' @name sim
+#' @rdname sim
+#' @exportMethod sim
+setGeneric(name='sim', signature= c("onassis"), def=function(onassis=NA, ...) standardGeneric('sim')
+)
+
+
+#' @name collapse
+#' @rdname collapse
+#' @exportMethod collapse
+setGeneric(name='collapse', signature= c("onassis"), def=function(onassis=NA, simil_thresh) standardGeneric('collapse')
+)
+
+
+
+#' @name mergeonassis
+#' @rdname mergeonassis
+#' @exportMethod mergeonassis
+setGeneric(name='mergeonassis', signature= c("onassis1", "onassis2"), def=function(onassis1=NA, onassis2=NA) standardGeneric('mergeonassis')
+)
+
+#' @name compare
+#' @rdname compare
+#' @exportMethod compare
+setGeneric(name='compare', signature=c('onassis'), def=function(onassis, ...) standardGeneric('compare'))
+
+
+
+
+#' @name filterconcepts
+#' @rdname filterconcepts
+#' @exportMethod filterconcepts
+setGeneric(name='filterconcepts', signature=c('onassis'), def=function(onassis, concepts_to_filter) standardGeneric('filterconcepts'))

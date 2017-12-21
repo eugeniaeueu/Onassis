@@ -22,9 +22,6 @@
 \alias{ontology}
 \alias{ontology<-}
 \alias{showOpts}
-\alias{sim}
-\alias{sim,}
-\alias{Similarity-method}
 \alias{groupsim}
 \alias{samplesim}
 \alias{multisim}
@@ -34,7 +31,6 @@
 \alias{similarityInstance<-}
 \alias{icConfig,Similarity-method}
 \alias{icConfig}
-\alias{icConfig<-,Similarity-method}
 \alias{icConfig<-}
 \alias{pairwiseConfigRef,Similarity-method}
 \alias{pairwiseConfigRef}
@@ -58,8 +54,6 @@
 \alias{ontology<-}
 \alias{ontology,Similarity-method}
 \alias{ontology}
-\alias{sim,Similarity,character,character-method}
-\alias{sim}
 \alias{groupsim,Similarity,character,character-method}
 \alias{groupsim}
 \alias{samplesim,Similarity,character,character,data.frame-method}
@@ -105,8 +99,6 @@ ontology(object) <- value
 
 showOpts(object)
 
-sim(object, term1, term2)
-
 groupsim(object, termList1, termList2)
 
 samplesim(object, sample1, sample2, annotated_df)
@@ -143,8 +135,6 @@ multisim(similarities, annotations, sample1, sample2, aggregating_function)
 
 \S4method{ontology}{Similarity}(object)
 
-\S4method{sim}{Similarity,character,character}(object, term1, term2)
-
 \S4method{groupsim}{Similarity,character,character}(object, termList1,
   termList2)
 
@@ -176,10 +166,6 @@ multisim(similarities, annotations, sample1, sample2, aggregating_function)
 \item{object}{Instance of the class \code{\link{Similarity-class}}}
 
 \item{value}{the reference to a java Similarity object}
-
-\item{term1}{The URI of the ontology term in the format http://purl.obolibrary.org/obo/Ontology_id (e.g 'http://purl.obolibrary.org/obo/CL_0000542')}
-
-\item{term2}{The URI of the ontology term}
 
 \item{termList1}{A vector of URIs of ontology terms in the format \url{http://purl.obolibrary.org/obo/Ontology_id} (e.g \url{http://purl.obolibrary.org/obo/BTO_0004732})}
 
@@ -230,8 +216,6 @@ The Similarity object where 'ontology' slot refers to the Java graph created
 
 Ontology object
 
-the semantic similarity of the two provided concepts
-
 the semantic similarity of the two provided groups of concepts
 
 The semantic similarity between the samples sample1 and sample2
@@ -275,8 +259,6 @@ Method ontology<-
 
 Method showOpts
 
-Method sim
-
 Method groupsim
 
 Method samplesim
@@ -312,8 +294,6 @@ This method shows a list of the possible measures to compute pairwise and groupw
 This method creates a semantic graph to compute semantic similarity between concepts. It takes as input an OBO ontology in RDF, OWL or OBO format.
 
 This method shows the ontology.
-
-This method computes the semantic similarity between two terms of a given ontology.
 
 This method computes the semantic similarity between two groups of terms of a given ontology.
 
@@ -567,12 +547,6 @@ ontology(sim) <- obo
 sim <- Similarity()
 ontology(sim)
 
-sim <- Similarity()
-obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-ontology(sim) <- obo
-pairwiseConfig(sim) <- showOpts(sim)$pairwiseMeasures[9]
-similarity <- sim(sim, 'http://purl.obolibrary.org/obo/CL_0000542',
-'http://purl.obolibrary.org/obo/CL_0000236')
 
 sim <- Similarity()
 obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')

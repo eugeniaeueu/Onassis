@@ -23,7 +23,7 @@ annotateTissueDisease(geo_metadb_path, gsm_list, tissue_obo, disease_obo,
 \item{score_matrix}{A matrix where rows represent units (GRanges or genes) and columns represent GSMs.}
 }
 \value{
-A list of the tissue semantic sets defined by Onassis. For each tissue, a list of diseases and for each disease the columns of the score_matrix that were annotated with a given tissue and a given disease based
+A list of the tissue semantic sets defined by Onassis. For each tissue, a list of diseases and for each disease the columns of the score_matrix that were annotated with a given tissue and a given disease
 }
 \description{
 annotateTissueDisease connects to the GEOmetadb to retrieve the metadata of the samples provided in the gsm_list parameter. A dictionary for tissues/cell lines is built rom the tissue_obo file provided. All the samples' metadata are annotated with tissue concepts from the tissue_obo and samples are clustered based on the semantic similarity (default measure) of the samples. In particular, the samples are clustered and then the function cutree is used to cut the clustering tree at the specified height. Tissue semantic sets are then created associating all the samples that are similar above the provided height_threshold. Within each semantic set, samples are annotated with disease concepts from disease_obo parameter. For each disease the function retrieves the columns of the score matrix.

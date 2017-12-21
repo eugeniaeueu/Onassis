@@ -240,6 +240,7 @@ setMethod(f = "annotateDF", signature(object = "EntityFinder",
     descr_df[, `:=`(NEW, do.call(paste, c(.SD, sep = " "))),
         .SDcols = -1]
     descr_df <- descr_df[, c(1, ncol(descr_df)), with = FALSE]
+
     file_name <- tempfile(pattern = "df_annotations",
         tmpdir = tempdir(), fileext = ".txt")
     utils::write.table(descr_df, file = file_name,

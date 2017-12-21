@@ -1,6 +1,4 @@
 #' \code{createScoreMatrix}
-#'
-#'
 #' @rdname createScoreMatrix
 #' @param ref_granges An object of type GRanges to be considered as the reference GRanges
 #' @param granges_list A list of GRanges, one for each sample, to be mapped on the reference granges
@@ -40,7 +38,7 @@ create_score_matrix <- function(ref_granges, granges_list) {
 #' @param outdir The directory where the results will be stored
 #' @param height_threshold The percentage of clusters to merge based on the height of the dendrogram produced by the hclust method. Height_threshold is defined in the range [0, 1].
 #' @param score_matrix A matrix where rows represent units (GRanges or genes) and columns represent GSMs.
-#' @return A list of the tissue semantic sets defined by Onassis. For each tissue, a list of diseases and for each disease the columns of the score_matrix that were annotated with a given tissue and a given disease based
+#' @return A list of the tissue semantic sets defined by Onassis. For each tissue, a list of diseases and for each disease the columns of the score_matrix that were annotated with a given tissue and a given disease
 #' @description annotateTissueDisease connects to the GEOmetadb to retrieve the metadata of the samples provided in the gsm_list parameter. A dictionary for tissues/cell lines is built rom the tissue_obo file provided. All the samples' metadata are annotated with tissue concepts from the tissue_obo and samples are clustered based on the semantic similarity (default measure) of the samples. In particular, the samples are clustered and then the function cutree is used to cut the clustering tree at the specified height. Tissue semantic sets are then created associating all the samples that are similar above the provided height_threshold. Within each semantic set, samples are annotated with disease concepts from disease_obo parameter. For each disease the function retrieves the columns of the score matrix.
 #'
 #' @examples
@@ -187,7 +185,7 @@ annotateTissueDisease <- function(geo_metadb_path, gsm_list, tissue_obo, disease
 #' @param score_matrix A matrix where rows represent units (GRanges or genes) and columns #' represent GSMs.
 #' @param list_of_annotations A list of lists where the firt level elements represent a tissue/cell line semantic set, the second level elements represent disease semantic sets and each element of the list is a named score matrix with column names corresponding to sample (GSM) identifiers
 #' @param fun_name The name of a testing function to measure the differences between semantic classes. For the test_type parameter =  'pair' the semanticdifference function applies the test function to the tissue semantic states including 'Healthy' and one or or more diseases. In this case the function (e.g. wilcoxon.test) should take as input a couple of vectors and return as output the value of the of the statistic '$statistic' field and a p-value '$p.value' field.  For the test_type = 'multiple' the function tests if there are differences between the semantic disease classes within the tissue class. The function (e.g. kruskal.test) takes as input a list of vectors (one for each disease semantic set) and returns the value of the statistic in the '$statistic' field and the corresponding p-value.
-#' @param test_type This value can be 'pair' or 'multiple'. In case it is set to pair the function to provide in fun_name requires the tissue semantic class to include at least two disease semantic classes of which one has to be 'Healthy' to compare diseases against healthy. For example the 'wilcoxon.test'. When set to multiple the fun_name provided should take as input a list of input vectors corresponding to the different disease conditions. A minimum of three is required. For example the 'kruskal.test' can be used.
+#' @param test_type This value can be 'pair' or 'multiple'. In case it is set to pair the function to provide in fun_name requires the tissue semantic class to include at least two disease semantic classes of which one has to be 'Healthy' to compare diseases against healthy. For example the 'wilcox.test'. When set to multiple the fun_name provided should take as input a list of input vectors corresponding to the different disease conditions. A minimum of three is required. For example the 'kruskal.test' can be used.
 #' @return The semanticdifference function returns a list where each element corresponds to a tissue/cell line semantic state. The content of the list for 'multiple' test types a matrix of the test results and corresponding p.values.
 #' @description semanticdifference function allows to test, within a given tissue class, the difference between i) the healthy samples and one or more disease states and ii) if there is a significant difference between the different disease states for each unit represented in each row of a scorematrix containing as rows genomic units and as columns GEO sample ids.
 #'

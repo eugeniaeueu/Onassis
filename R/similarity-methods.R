@@ -45,6 +45,7 @@ setMethod("icConfig", signature = "Similarity", definition= function(object) {
 })
 
 #' \code{icConfig<-}
+#' @name icConfig<-
 #' @rdname Similarity-class
 #' @aliases icConfig<-
 #' @description This method sets the configuration of the intrinsic information content measure by taking as parameter the short flag associated to the information measure. To have details about the available short flags see the pairwiseConfig help
@@ -56,6 +57,7 @@ setMethod("icConfig", signature = "Similarity", definition= function(object) {
 setReplaceMethod("icConfig", "Similarity", function(object,
     value) {
     object@icConfig <- value
+    return(object)
 })
 
 
@@ -503,9 +505,9 @@ setMethod(f = "ontology", signature = "Similarity",
     })
 
 
-#' \code{sim}
-#' @rdname Similarity-class
-#' @aliases sim
+#' \code{pairsim}
+#' @rdname pairsim
+#' @aliases pairsim
 #' @description This method computes the semantic similarity between two terms of a given ontology.
 #' @param term1 The URI of the ontology term in the format http://purl.obolibrary.org/obo/Ontology_id (e.g 'http://purl.obolibrary.org/obo/CL_0000542')
 #' @param term2 The URI of the ontology term
@@ -515,10 +517,10 @@ setMethod(f = "ontology", signature = "Similarity",
 #' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
 #' ontology(sim) <- obo
 #' pairwiseConfig(sim) <- showOpts(sim)$pairwiseMeasures[9]
-#' similarity <- sim(sim, 'http://purl.obolibrary.org/obo/CL_0000542',
+#' similarity <- pairsim(sim, 'http://purl.obolibrary.org/obo/CL_0000542',
 #' 'http://purl.obolibrary.org/obo/CL_0000236')
 #' @export
-setMethod(f = "sim", signature("Similarity", "character",
+setMethod(f = "pairsim", signature("Similarity", "character",
     "character"), definition = function(object, term1,
     term2) {
     URI1 <- .jcast(object@similarityInstance$createURI(term1),

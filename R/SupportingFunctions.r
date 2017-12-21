@@ -26,11 +26,12 @@ loadEntities <- function(entityDirectory, deleteDir = TRUE) {
                   as.is = TRUE, quote = "")
                 even <- seq(1, nrow(x), 2)
                 odd <- seq(2, nrow(x), 2)
+
                 sample_id <- strsplit(entityfile, ".a1")[[1]][1]
                 term_id <- sub(".*/", "", x[odd, 2])
                 matched_sentence <- as.character(as.vector(x[even,
                   3]))
-                term_name <- x[odd, 3]
+                term_name <- gsub("\"","", x[odd, 3])
                 if (grepl("_", term_id[1])) {
                   term_url <- as.character(sapply(term_id,
                     function(single_term) {
@@ -180,3 +181,7 @@ prepareEntrezDictionary <- function(gene_symbols, gene_synonyms = NA) {
         collapse = "\n")
     return(dictionaryContent)
 }
+
+
+
+
