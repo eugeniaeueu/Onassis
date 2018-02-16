@@ -10,7 +10,7 @@
 
 <meta name="author" content="Eugenia Galeota" />
 
-<meta name="date" content="2017-08-01" />
+<meta name="date" content="2018-02-16" />
 
 <title>Onassis: Ontology Annotation and Semantic Similarity software</title>
 
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="header">
 <h1 class="title">Onassis: Ontology Annotation and Semantic Similarity software</h1>
 <h4 class="author"><em>Eugenia Galeota</em></h4>
-<h4 class="date"><em>2017-08-01</em></h4>
+<h4 class="date"><em>2018-02-16</em></h4>
 </div>
 
 <h1>Contents</h1>
@@ -86,15 +86,18 @@ the <b>annotation</b> of these data with concepts belonging to OBO biomedical on
 <li>
 the organization of available samples in comparable and coherent groups based on <b>semantic similarity</b> measures
 </li>
+<li>
+the comparison of semantic sets based on given matrix of scores related to the annotated entities
+</li>
 </ul>
 <p>Onassis uses Conceptmapper, an Apache UIMA (Unstructured Information Management Architecture) dictionary lookup tool to retrieve dictionary terms in a given text. <a href="https://uima.apache.org/downloads/sandbox/ConceptMapperAnnotatorUserGuide/ConceptMapperAnnotatorUserGuide.html" class="uri">https://uima.apache.org/downloads/sandbox/ConceptMapperAnnotatorUserGuide/ConceptMapperAnnotatorUserGuide.html</a><br />
 In particular, the ccp-nlp Conceptmapper wrapper, specific for the biomedical domain, implements a pipeline through which it is possible to retrieve concepts from OBO ontologies in any given text with different adjustable options <span class="citation">(Verspoor et al. 2009)</span>.</p>
-<p>Onassis can handle any type of text as input, but is particularly well suited for the analysis of the metadata from Gene Expression Omnibus (GEO) or Sequence Read Archive (SRA). This represents a fundamental first step in the integrative analysis of the data from those repositories <span class="citation">(Galeota and Pelizzola 2016)</span>. Indeed it provides the possibility to associate concepts from any OBO ontology to GEO or SRA metadata retrieved using <em><a href="http://bioconductor.org/packages/GEOmetadb">GEOmetadb</a></em> or <em><a href="http://bioconductor.org/packages/SRAdb">SRAdb</a></em>. In addition to the ontological concepts, the recognition of gene/protein symbols or epigenetic modifications can be highly relevant, especially for experiments directed to those specific factor or mark (such as ChIP-seq experiments).</p>
+<p>Onassis can handle any type of text as input, but is particularly well suited for the analysis of the metadata from Gene Expression Omnibus (GEO). This represents a fundamental first step in the integrative analysis of the data from those repositories <span class="citation">(Galeota and Pelizzola 2016)</span>. Indeed it provides the possibility to associate concepts from any OBO ontology to GEO, but also SRA metadata retrieved using <em><a href="http://bioconductor.org/packages/GEOmetadb">GEOmetadb</a></em>. In addition to the ontological concepts, the recognition of gene/protein symbols or epigenetic modifications can be highly relevant, especially for experiments directed to those specific factors or marks (such as ChIP-seq experiments).</p>
 <p>The semantic similarity module uses different semantic similarity measures to determine the semantic similarity of concepts in a given ontology. This module has been developed on the basis of the Java slib <a href="http://www.semantic-measures-library.org/sml" class="uri">http://www.semantic-measures-library.org/sml</a>. To run Onassis Java (&gt;= 1.8) is needed.</p>
 </div>
 <div id="retrieving-public-repositories-metadata" class="section level1">
 <h1><span class="header-section-number">2</span> Retrieving public repositories metadata</h1>
-<p>One of the most straightforward ways to retrieve GEO metadata is through <em><a href="http://bioconductor.org/packages/GEOmetadb">GEOmetadb</a></em> or <em><a href="http://bioconductor.org/packages/SRAdb">SRAdb</a></em> packages. In order to use them through Onassis the user should download the corresponding SQLite databases following the instructions provided in those packages vignettes. While the SQLite packages are required, Onassis allows to access to those data without any knowledge on SQL programming, thus providing functions to help the metadat retrieval without the need of explicitly making queries to the database.</p>
+<p>One of the most straightforward ways to retrieve GEO metadata is through <em><a href="http://bioconductor.org/packages/GEOmetadb">GEOmetadb</a></em> package. In order to use them through Onassis the user should download the corresponding SQLite database following the instructions provided in the packages vignette. While the SQLite source databases are required, Onassis allows to access to those data without any knowledge on SQL programming, thus providing functions to help the metadata retrieval without the need of explicitly making queries to the database.</p>
 <div id="handling-geo-gene-expression-omnibus-metadata" class="section level2">
 <h2><span class="header-section-number">2.1</span> Handling GEO (Gene Expression Omnibus) Metadata</h2>
 <p>First, it is necessary to obtain and get a connection to the SQLite database. <code>connectToGEODB</code> returns a connection to the database given the path of the SQLite file. If the latter is missing, it is automatically downloaded into the current working directory. Because of the size of these files (0.5-4GB), the results of the queries illustrated below are available into Onassis for subsequent analysis illustrated in this document. Then, the <code>getGEOmetadata</code> function can be used to retrieve the metadata of specific GEO samples, taking as minimal parameters the connection to the database and one of the experiment types available. Optionally it is possible to specify the organism and the platform.</p>
@@ -348,12 +351,25 @@ Table 1: <em>Methylation profiling by high througput sequencing metadata from GE
 </div>
 <div id="handling-sra-sequence-read-archive-metadata" class="section level2">
 <h2><span class="header-section-number">2.2</span> Handling SRA (Sequence Read Archive) Metadata</h2>
-<p>As for GEO, the <code>getSRAMetadata</code> function allows the retrieval of metadata of high througput sequencing data stored in SRA through the <code>BiocStyle::Biocpkg(&quot;SRAdb&quot;)</code> package. To facilitate the retrieval of experiment types in SRA, the Onassis function <code>library_strategies</code> can be used. Filters for the sample’s material (<em>GENOMIC</em>, <em>TRANSCRIPTOMIC</em>, <em>METAGENOMIC</em>…), the species and the center hosting the data are allowed. For example, to obtain SRA metadata of ChIP-Seq human samples and Bisulfite sequencing samples the following code can be used.</p>
+<p>In this section we provide an example showing how it is possible to retrieve data from other databases such as SRA. Since the <code>BiocStyle::Biocpkg(&quot;SRAdb&quot;)</code> package, containing SRA metadata is not supported on Windows platforms, we query the database and store the metadata in a data frame. First it was necessary to download the SRAdb.sqlite file and then create a connection to the database and execute the queries as in the following code.</p>
+<p>we As for GEO, the <code>getSRAMetadata</code> function allows the retrieval of metadata of high througput sequencing data stored in SRA through . To facilitate the retrieval of experiment types in SRA, the Onassis function <code>library_strategies</code> can be used. Filters for the sample’s material (<em>GENOMIC</em>, <em>TRANSCRIPTOMIC</em>, <em>METAGENOMIC</em>…), the species and the center hosting the data are allowed. For example, to obtain SRA metadata of ChIP-Seq human samples and Bisulfite sequencing samples the following code can be used.</p>
 <pre class="r"><code># Connection to the SRAmetadb and potential download of the sqlite file
-sra_con &lt;- connectToSRADB()
+sqliteFileName &lt;- './data/SRAdb.sqlite'
+sra_con &lt;- dbConnect(SQLite(), sqliteFileName)()
 
 # Query for the ChIP-Seq experiments contained in GEO for human samples 
-sra_chip_seq &lt;- getSRAMetadata(sra_con, library_strategy='ChIP-Seq', library_source='GENOMIC', taxon_id=9606, center_name='GEO')
+library_strategy &lt;- 'ChIP-Seq'
+library_source='GENOMIC'
+taxon_id=9606
+ center_name='GEO'
+ 
+samples_query &lt;- paste0(&quot;select sample_accession, description, sample_attribute, sample_url_link from sample where taxon_id='&quot;, taxon_id, &quot;' and sample_accession IS NOT NULL&quot;, &quot; and center_name='&quot;, center_name, &quot;'&quot;,  )
+
+experiment_query &lt;- paste0(&quot;select experiment_accession, center_name, title, sample_accession, sample_name, experiment_alias, library_strategy, library_layout, experiment_url_link, experiment_attribute from experiment where library_strategy='&quot;, 
+        library_strategy, &quot;'&quot; , &quot; and library_source ='&quot;, library_source, 
+            &quot;' &quot; )
+
+sra_chip_seq &lt;- getSRAMetadata(sra_con, , library_source='GENOMIC', taxon_id=9606, center_name='GEO')
 
 # The following example allows to retrieve Bisulfite sequencing samples' metadata.
 bisulfite_seq &lt;- getSRAMetadata(sra_con, library_strategy='Bisulfite-Seq', library_source='GENOMIC', taxon_id=9606, center_name='GEO' )</code></pre>
@@ -563,16 +579,16 @@ Table: <em>ChIP-Seq metadata obtained from SRAdb.</em>
 <li>To build a dictionary containing only gene/protein names, dictType has to be set to either TARGET or ENTREZ, to include histone types and marks or not, respetively. If a specific Org.xx.eg.db Bioconductor library is indicated in the inputFileOrDb parameter as a character string, gene names will be derived from it. Alterantively, if a specific species is indicated in the taxID parameter, the gene_info.gz file hosted at NCBI is used. If available, this file can be located with the inputFile parameter. Otherwise, it will be automatically downloaded (300MB).</li>
 </ul>
 <pre class="r"><code># If a Conceptmapper dictionary is already available the dictType CMDICT can be specified and the corresponding file loaded
-sample_dict &lt;- dictionary(inputFileOrDb=system.file('extdata', 'cmDict-sample.cs.xml', package = 'Onassis'), dictType = 'CMDICT')
+sample_dict &lt;- CMdictionary(inputFileOrDb=system.file('extdata', 'cmDict-sample.cs.xml', package = 'Onassis'), dictType = 'CMDICT')
 
 #Creation of a dictionary from the file sample.cs.obo available in OnassisJavaLibs
 obo &lt;- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
 
-sample_dict &lt;- dictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
+sample_dict &lt;- CMdictionary(inputFileOrDb=obo, outputDir=getwd(), synonymType='ALL')
 
 # Creation of a dictionary for human genes/proteins
 require(org.Hs.eg.db)
-targets &lt;- dictionary(dictType='TARGET', inputFileOrDb = 'org.Hs.eg.db')</code></pre>
+targets &lt;- CMdictionary(dictType='TARGET', inputFileOrDb = 'org.Hs.eg.db')</code></pre>
 </div>
 <div id="setting-the-options-for-the-annotator" class="section level2">
 <h2><span class="header-section-number">3.3</span> Setting the options for the annotator</h2>
@@ -587,8 +603,28 @@ myopts &lt;- CMoptions(c(&quot;CONTIGUOUS_MATCH&quot;, &quot;CASE_INSENSITIVE&qu
 <h2><span class="header-section-number">3.4</span> Running the entity finder</h2>
 <p>The class <code>EntityFinder</code> has methods to find concepts of any OBO ontology in a given text. The <code>findEntities</code> and <code>annotateDF</code> methods accept text within files or data.frame, respetively, as described in Section 3.1. Alternatively, the function <code>annotate</code> automatically adapts to the provided input type. For example, to annotate the metadata derived from ChIP-seq experiments obtained from SRA with tissue and cell type concepts belonging to BRENDA ontology the following code can be used:</p>
 <pre class="r"><code>chipseq_dict_annot &lt;- annotate(sra_chip_seq[1:20,c('sample_accession', 'title', 'experiment_attribute', 'sample_attribute', 'description')], dictionary=sample_dict, options=myopts)</code></pre>
-<pre><code>## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//RtmpQXsf8Q&quot;</code></pre>
-<pre><code>## Conceptmapper annotations created in directory: /var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//RtmpQXsf8Q</code></pre>
+<pre><code>## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS115184.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS117344.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS213443.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS241934.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS266173.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS285318.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS336079.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS346539.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS362733.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS362801.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS365824.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS371783.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS376074.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS410226.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS421364.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS468164.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS494656.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS598154.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS636394.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS724993.a1&quot;</code></pre>
+<pre><code>## Conceptmapper annotations created in directory: /var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6</code></pre>
 <p>The resulting data.frame contains for each row a match to the provided dictionary for a specific document/sample (indicated in the first column). The annotation is reported with the id of the concept (term_id), its canonical name (term name), its URL in the obo format, and the matching sentence of the document.</p>
 Table:
 <caption style="caption-side: top-left; text-align: left;">
@@ -750,7 +786,27 @@ Table: <em>Annotations of the methylation profiling by high througput sequencing
 <p>The function <code>annotate</code> can also be used to identify the targeted entity of each ChIP-seq experiment, by retrieving gene names and histone types or modifications in the ChIP-seq metadata.</p>
 <pre class="r"><code>#Finding the TARGET entities
 target_entities &lt;- annotate(inputFileorDf=sra_chip_seq[1:20,c('sample_accession', 'title', 'experiment_attribute', 'sample_attribute', 'description')], options = myopts, dictionary=targets) </code></pre>
-<pre><code>## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//RtmpQXsf8Q&quot;</code></pre>
+<pre><code>## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS115184.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS117344.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS213443.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS241934.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS266173.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS285318.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS336079.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS346539.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS362733.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS362801.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS365824.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS371783.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS376074.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS410226.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS421364.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS468164.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS494656.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS598154.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS636394.a1&quot;
+## [1] &quot;/var/folders/q_/8dbblh555679_58y7qxs8q940000gn/T//Rtmpk98Qx6/SRS724993.a1&quot;</code></pre>
 Table:
 <caption style="caption-side: top-left; text-align: left;">
 Table: <em>Annotations of ChIP-seq test metadata obtained from SRAdb and stored into files with the TARGETs (genes and histone variants)</em>
@@ -758,7 +814,6 @@ Table: <em>Annotations of ChIP-seq test metadata obtained from SRAdb and stored 
 <table>
 <thead>
 <tr class="header">
-<th align="left">FALSE</th>
 <th align="left">sample_id</th>
 <th align="left">term_id</th>
 <th align="left">term_name</th>
@@ -768,7 +823,6 @@ Table: <em>Annotations of ChIP-seq test metadata obtained from SRAdb and stored 
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">1</td>
 <td align="left">SRS115184</td>
 <td align="left">Reference T1 H3K4me3</td>
 <td align="left">H3K4me3</td>
@@ -776,340 +830,95 @@ Table: <em>Annotations of ChIP-seq test metadata obtained from SRAdb and stored 
 <td align="left">H3K4me3</td>
 </tr>
 <tr class="even">
-<td align="left">2</td>
 <td align="left">SRS117344</td>
-<td align="left">Reference T1 9514</td>
-<td align="left">GAL3ST1</td>
-<td align="left">NA</td>
-<td align="left">CST</td>
-</tr>
-<tr class="odd">
-<td align="left">3</td>
-<td align="left">SRS117344</td>
-<td align="left">Reference T2 10559</td>
-<td align="left">SLC35A1</td>
-<td align="left">NA</td>
-<td align="left">CST</td>
-</tr>
-<tr class="even">
-<td align="left">4</td>
-<td align="left">SRS117344</td>
-<td align="left">Reference T3 54897</td>
-<td align="left">CASZ1</td>
-<td align="left">NA</td>
-<td align="left">CST</td>
-</tr>
-<tr class="odd">
-<td align="left">5</td>
-<td align="left">SRS117344</td>
-<td align="left">Reference T4 H3K27me3</td>
+<td align="left">Reference T1 H3K27me3</td>
 <td align="left">H3K27me3</td>
 <td align="left">NA</td>
 <td align="left">H3K27me3</td>
 </tr>
-<tr class="even">
-<td align="left">6</td>
-<td align="left">SRS213443</td>
-<td align="left">Reference T1 10664</td>
-<td align="left">CTCF</td>
+<tr class="odd">
+<td align="left">SRS362733</td>
+<td align="left">Reference T1 H3K79me2</td>
+<td align="left">H3K79me2</td>
 <td align="left">NA</td>
-<td align="left">CTCF</td>
+<td align="left">H3K79me2</td>
+</tr>
+<tr class="even">
+<td align="left">SRS362733</td>
+<td align="left">Reference T2 H3K79me2</td>
+<td align="left">H3K79me2</td>
+<td align="left">NA</td>
+<td align="left">H3K79me2</td>
 </tr>
 <tr class="odd">
-<td align="left">7</td>
-<td align="left">SRS213443</td>
-<td align="left">Reference T2 10664</td>
-<td align="left">CTCF</td>
+<td align="left">SRS362733</td>
+<td align="left">Reference T3 H3K79me2</td>
+<td align="left">H3K79me2</td>
 <td align="left">NA</td>
-<td align="left">CTCF</td>
+<td align="left">H3K79me2</td>
 </tr>
 <tr class="even">
-<td align="left">8</td>
-<td align="left">SRS241934</td>
-<td align="left">Reference T1 604</td>
-<td align="left">BCL6</td>
+<td align="left">SRS362733</td>
+<td align="left">Reference T4 H3K79me2</td>
+<td align="left">H3K79me2</td>
 <td align="left">NA</td>
-<td align="left">BCL6</td>
+<td align="left">H3K79me2</td>
 </tr>
 <tr class="odd">
-<td align="left">9</td>
-<td align="left">SRS266173</td>
-<td align="left">Reference T1 10664</td>
-<td align="left">CTCF</td>
-<td align="left">NA</td>
-<td align="left">CTCF</td>
-</tr>
-<tr class="even">
-<td align="left">19</td>
-<td align="left">SRS285318</td>
-<td align="left">Reference T10 23133</td>
-<td align="left">PHF8</td>
-<td align="left">NA</td>
-<td align="left">PHF8</td>
-</tr>
-<tr class="odd">
-<td align="left">25</td>
-<td align="left">SRS336079</td>
-<td align="left">Reference T6 100616102</td>
-<td align="left">ERVK-9</td>
-<td align="left">NA</td>
-<td align="left">polymerase</td>
-</tr>
-<tr class="even">
-<td align="left">26</td>
-<td align="left">SRS336079</td>
-<td align="left">Reference T7 100862685</td>
-<td align="left">ERVK-19</td>
-<td align="left">NA</td>
-<td align="left">polymerase</td>
-</tr>
-<tr class="odd">
-<td align="left">27</td>
-<td align="left">SRS336079</td>
-<td align="left">Reference T8 100862688</td>
-<td align="left">ERVK-11</td>
-<td align="left">NA</td>
-<td align="left">polymerase</td>
-</tr>
-<tr class="even">
-<td align="left">33</td>
-<td align="left">SRS336079</td>
-<td align="left">Reference T14 1283</td>
-<td align="left">CTD</td>
-<td align="left">NA</td>
-<td align="left">CTD</td>
-</tr>
-<tr class="odd">
-<td align="left">36</td>
-<td align="left">SRS336079</td>
-<td align="left">Reference T17 100616102</td>
-<td align="left">ERVK-9</td>
-<td align="left">NA</td>
-<td align="left">polymerase</td>
-</tr>
-<tr class="even">
-<td align="left">37</td>
-<td align="left">SRS336079</td>
-<td align="left">Reference T18 100862685</td>
-<td align="left">ERVK-19</td>
-<td align="left">NA</td>
-<td align="left">polymerase</td>
-</tr>
-<tr class="odd">
-<td align="left">38</td>
-<td align="left">SRS336079</td>
-<td align="left">Reference T19 100862688</td>
-<td align="left">ERVK-11</td>
-<td align="left">NA</td>
-<td align="left">polymerase</td>
-</tr>
-<tr class="even">
-<td align="left">49</td>
 <td align="left">SRS362733</td>
 <td align="left">Reference T5 H3K79me2</td>
 <td align="left">H3K79me2</td>
 <td align="left">NA</td>
 <td align="left">H3K79me2</td>
 </tr>
-<tr class="odd">
-<td align="left">50</td>
-<td align="left">SRS362733</td>
-<td align="left">Reference T6 H3K79me2</td>
-<td align="left">H3K79me2</td>
-<td align="left">NA</td>
-<td align="left">H3K79me2</td>
-</tr>
 <tr class="even">
-<td align="left">51</td>
-<td align="left">SRS362733</td>
-<td align="left">Reference T7 H3K79me2</td>
+<td align="left">SRS362801</td>
+<td align="left">Reference T1 H3K79me2</td>
 <td align="left">H3K79me2</td>
 <td align="left">NA</td>
 <td align="left">H3K79me2</td>
 </tr>
 <tr class="odd">
-<td align="left">52</td>
-<td align="left">SRS362733</td>
-<td align="left">Reference T8 H3K79me2</td>
+<td align="left">SRS362801</td>
+<td align="left">Reference T2 H3K79me2</td>
 <td align="left">H3K79me2</td>
 <td align="left">NA</td>
 <td align="left">H3K79me2</td>
 </tr>
 <tr class="even">
-<td align="left">53</td>
-<td align="left">SRS362733</td>
-<td align="left">Reference T9 H3K79me2</td>
+<td align="left">SRS362801</td>
+<td align="left">Reference T3 H3K79me2</td>
 <td align="left">H3K79me2</td>
 <td align="left">NA</td>
 <td align="left">H3K79me2</td>
 </tr>
 <tr class="odd">
-<td align="left">54</td>
 <td align="left">SRS362801</td>
-<td align="left">Reference T1 929</td>
-<td align="left">CD14</td>
-<td align="left">NA</td>
-<td align="left">CD14</td>
-</tr>
-<tr class="even">
-<td align="left">55</td>
-<td align="left">SRS362801</td>
-<td align="left">Reference T2 4695</td>
-<td align="left">NDUFA2</td>
-<td align="left">NA</td>
-<td align="left">CD14</td>
-</tr>
-<tr class="odd">
-<td align="left">56</td>
-<td align="left">SRS362801</td>
-<td align="left">Reference T3 929</td>
-<td align="left">CD14</td>
-<td align="left">NA</td>
-<td align="left">CD14</td>
-</tr>
-<tr class="even">
-<td align="left">57</td>
-<td align="left">SRS362801</td>
-<td align="left">Reference T4 4695</td>
-<td align="left">NDUFA2</td>
-<td align="left">NA</td>
-<td align="left">CD14</td>
-</tr>
-<tr class="odd">
-<td align="left">63</td>
-<td align="left">SRS362801</td>
-<td align="left">Reference T10 H3K79me2</td>
+<td align="left">Reference T4 H3K79me2</td>
 <td align="left">H3K79me2</td>
 <td align="left">NA</td>
 <td align="left">H3K79me2</td>
 </tr>
 <tr class="even">
-<td align="left">64</td>
 <td align="left">SRS362801</td>
-<td align="left">Reference T11 H3K79me2</td>
+<td align="left">Reference T5 H3K79me2</td>
 <td align="left">H3K79me2</td>
 <td align="left">NA</td>
 <td align="left">H3K79me2</td>
 </tr>
 <tr class="odd">
-<td align="left">65</td>
-<td align="left">SRS362801</td>
-<td align="left">Reference T12 H3K79me2</td>
-<td align="left">H3K79me2</td>
-<td align="left">NA</td>
-<td align="left">H3K79me2</td>
-</tr>
-<tr class="even">
-<td align="left">66</td>
-<td align="left">SRS362801</td>
-<td align="left">Reference T13 H3K79me2</td>
-<td align="left">H3K79me2</td>
-<td align="left">NA</td>
-<td align="left">H3K79me2</td>
-</tr>
-<tr class="odd">
-<td align="left">67</td>
-<td align="left">SRS362801</td>
-<td align="left">Reference T14 H3K79me2</td>
-<td align="left">H3K79me2</td>
-<td align="left">NA</td>
-<td align="left">H3K79me2</td>
-</tr>
-<tr class="even">
-<td align="left">68</td>
-<td align="left">SRS362801</td>
-<td align="left">Reference T15 929</td>
-<td align="left">CD14</td>
-<td align="left">NA</td>
-<td align="left">CD14</td>
-</tr>
-<tr class="odd">
-<td align="left">69</td>
-<td align="left">SRS362801</td>
-<td align="left">Reference T16 4695</td>
-<td align="left">NDUFA2</td>
-<td align="left">NA</td>
-<td align="left">CD14</td>
-</tr>
-<tr class="even">
-<td align="left">78</td>
-<td align="left">SRS371783</td>
-<td align="left">Reference T5 10195</td>
-<td align="left">ALG3</td>
-<td align="left">NA</td>
-<td align="left">not</td>
-</tr>
-<tr class="odd">
-<td align="left">79</td>
-<td align="left">SRS376074</td>
-<td align="left">Reference T1 6886</td>
-<td align="left">TAL1</td>
-<td align="left">NA</td>
-<td align="left">TAL1</td>
-</tr>
-<tr class="even">
-<td align="left">80</td>
-<td align="left">SRS376074</td>
-<td align="left">Reference T2 6886</td>
-<td align="left">TAL1</td>
-<td align="left">NA</td>
-<td align="left">TAL1</td>
-</tr>
-<tr class="odd">
-<td align="left">82</td>
-<td align="left">SRS376074</td>
-<td align="left">Reference T4 3855</td>
-<td align="left">KRT7</td>
-<td align="left">NA</td>
-<td align="left">SCL</td>
-</tr>
-<tr class="even">
-<td align="left">83</td>
-<td align="left">SRS376074</td>
-<td align="left">Reference T5 6886</td>
-<td align="left">TAL1</td>
-<td align="left">NA</td>
-<td align="left">SCL</td>
-</tr>
-<tr class="odd">
-<td align="left">84</td>
-<td align="left">SRS376074</td>
-<td align="left">Reference T6 51540</td>
-<td align="left">SCLY</td>
-<td align="left">NA</td>
-<td align="left">SCL</td>
-</tr>
-<tr class="even">
-<td align="left">86</td>
 <td align="left">SRS410226</td>
 <td align="left">Reference T1 H3K27ac</td>
 <td align="left">H3K27ac</td>
 <td align="left">NA</td>
 <td align="left">H3K27ac</td>
 </tr>
-<tr class="odd">
-<td align="left">87</td>
+<tr class="even">
 <td align="left">SRS494656</td>
 <td align="left">Reference T1 H3K4me1</td>
 <td align="left">H3K4me1</td>
 <td align="left">NA</td>
 <td align="left">H3K4me1</td>
-</tr>
-<tr class="even">
-<td align="left">88</td>
-<td align="left">SRS598154</td>
-<td align="left">Reference T1 3021</td>
-<td align="left">H3F3B</td>
-<td align="left">NA</td>
-<td align="left">H3F3B</td>
-</tr>
-<tr class="odd">
-<td align="left">89</td>
-<td align="left">SRS636394</td>
-<td align="left">Reference T1 3169</td>
-<td align="left">FOXA1</td>
-<td align="left">NA</td>
-<td align="left">FOXA1</td>
 </tr>
 </tbody>
 </table>

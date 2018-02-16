@@ -50,18 +50,8 @@ setMethod("initialize", "CMdictionary", function(.Object) {
 
 
 
-# This method initializes the Conceptmapper Options
-# to the 31th parameter combination.
-# SearchStrategy: CONTIGUOUS_MATCH CaseMatch:
-# CASE_INSENSITIVE Stemmer: PORTER Stopwords: NONE
-# OrderIndependentLookup: OFF FindAllMatches: NO
-# SynonymType: EXACT_ONLY
-
+# This method initializes an empty CMoptions object
 setMethod("initialize", "CMoptions", function(.Object) {
-    options_combinations <- readRDS(system.file("extdata",
-        "Options_table.rds", package = "Onassis"))
-    .Object@arguments <- options_combinations[32, ,
-        drop = TRUE]
     .Object
 })
 

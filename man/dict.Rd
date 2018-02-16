@@ -34,7 +34,8 @@ This method shows the ontology.
 }
 \examples{
 onassis <- Onassis()
-dict(onassis) <- file.path(getwd(), 'obo.obo')
+obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+dict(onassis) <- obo
 
 o <- Onassis()
 dict(o)

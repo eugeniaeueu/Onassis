@@ -34,7 +34,7 @@ This method shows the entities matrix in Onassis.
 }
 \examples{
 onassis <- Onassis()
-entities(onassis) <- matrix()
+entities(onassis) <- data.frame()
 
 o <- Onassis()
 entities(o)

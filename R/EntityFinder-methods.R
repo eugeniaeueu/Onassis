@@ -55,7 +55,7 @@ setReplaceMethod("typeSystemRef", "EntityFinder", function(x,
 #' @return A data frame of annotations containing the sample name, the id of the OBO concept, the corresponding name, the part of the text containing the annotation
 #' @examples
 #' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-#' dict <- dictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
+#' dict <- CMdictionary(inputFileOrDb=obo, outputDir=getwd(), synonymType='ALL')
 #'
 #' opts <- CMoptions()
 #' ef <- EntityFinder()
@@ -83,9 +83,7 @@ setMethod(f = "findEntities", signature(object = "EntityFinder",
     if (!isS4(cmDict)) {
         if (!file.exists(cmDict))
             stop("Invalid dictionary file path")
-        cmDictobj <- CMdictionary()
-        cmDictobj@dictRef <- .jnew("java/io/File",
-            cmDict)
+        cmDictobj <- CMdictionary(inputFileOrDb=cmDict, dictType='CMDICT')
         cmDict <- cmDictobj
     }
     if (!isS4(configOpt)) {

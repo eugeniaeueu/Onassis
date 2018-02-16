@@ -1,62 +1,29 @@
 ############################################### Generics for class dictBuilder
 ############################################### ##################################
 
-#' Method dict_location
-#' @name dict_location
-#' @rdname CMdictionary-class
-#' @exportMethod dict_location
+#' @rdname dict_location
 setGeneric("dict_location", function(.Object) standardGeneric("dict_location"))
 
-
-#' Method dict_location<-
-#' @name dict_location<-
-#' @rdname CMdictionary-class
-#' @exportMethod dict_location<-
+#' @rdname dict_location
 setGeneric("dict_location<-", function(.Object, value) standardGeneric("dict_location<-"))
 
 
-#' Method dictInfo
-#' @name dictInfo
-#' @rdname CMdictionary-class
-#' @exportMethod dictInfo
+#' Get and Set the dicInfo slot for the \code{\link{CMdictionary}} class
 setGeneric("dictInfo", function(.Object) standardGeneric("dictInfo"))
 
 
-#' Method dictInfo<-
-#' @name dictInfo<-
-#' @rdname CMdictionary-class
-#' @exportMethod dictInfo<-
+#' @rdname dictInfo
 setGeneric("dictInfo<-", function(.Object, value) standardGeneric("dictInfo<-"))
 
-#' Method dictRef
-#' @name dictRef
-#' @rdname CMdictionary-class
-#' @exportMethod dictRef
+
+
+#' @rdname dictRef
 setGeneric("dictRef", function(.Object) standardGeneric("dictRef"))
 
 
-#' Method dictRef<-
-#' @name dictRef<-
-#' @rdname CMdictionary-class
-#' @exportMethod dictRef<-
+#' @rdname dictRef
 setGeneric("dictRef<-", function(.Object, value) standardGeneric("dictRef<-"))
 
-
-#' Method dictTypes
-#' @name dictTypes
-#' @rdname CMdictionary-class
-#' @exportMethod dictTypes
-setGeneric("dictTypes", function(.Object) standardGeneric("dictTypes"))
-
-
-
-#' Method buildDictionary
-#' @name buildDictionary
-#' @rdname CMdictionary-class
-#' @exportMethod buildDictionary
-setGeneric("buildDictionary", function(.Object, outputDir = tempdir(),
-    dictType = "OBO", synonymType = "EXACT", inputFileOrDb = NULL,
-    taxID = 0) standardGeneric("buildDictionary"))
 
 
 # ##############################################
@@ -64,38 +31,76 @@ setGeneric("buildDictionary", function(.Object, outputDir = tempdir(),
 # ###################################
 
 
-#' Method arguments
-#' @name arguments
-#' @rdname CMoptions-class
-#' @exportMethod arguments
-setGeneric("arguments", function(x) standardGeneric("arguments"))
-
-
-#' Method arguments<-
-#' @name arguments<-
-#' @rdname CMoptions-class
-#' @exportMethod arguments<-
-setGeneric("arguments<-", function(x, value) standardGeneric("arguments<-"))
-
-#' Method listCombinations
-#' @name listCombinations
-#' @rdname CMoptions-class
-#' @exportMethod listCombinations
-setGeneric("listCombinations", function(x) stanardGeneric("listCombinations"))
-
-
 #' Method paramValueIndex
-#' @name paramValueIndex
-#' @rdname CMoptions-class
-#' @exportMethod paramValueIndex
 setGeneric("paramValueIndex", function(x) standardGeneric("paramValueIndex"))
 
 
 #' Method paramValueIndex<-
-#' @name paramValueIndex<-
-#' @rdname CMoptions-class
-#' @exportMethod paramValueIndex<-
+#' @rdname paramValueIndex
 setGeneric("paramValueIndex<-", function(x, value) standardGeneric("paramValueIndex<-"))
+
+
+#' Method SearchStrategy
+setGeneric("SearchStrategy", function(x) standardGeneric("SearchStrategy"))
+
+
+#' Method SearchStrategy<-
+#' @rdname SearchStrategy
+setGeneric("SearchStrategy<-", function(x, value) standardGeneric("SearchStrategy<-"))
+
+
+setGeneric("CaseMatch", function(x) standardGeneric("CaseMatch"))
+
+
+#' @rdname CaseMatch
+setGeneric("CaseMatch<-", function(x, value) standardGeneric("CaseMatch<-"))
+
+#' Method StopWords
+setGeneric("StopWords", function(x) standardGeneric("StopWords"))
+
+
+#' Method StopWords<-
+#' @rdname StopWords
+setGeneric("StopWords<-", function(x, value) standardGeneric("StopWords<-"))
+
+
+#' Method OrderIndependentLookup
+setGeneric("OrderIndependentLookup", function(x) standardGeneric("OrderIndependentLookup"))
+
+
+#' Method OrderIndependentLookup<-
+#' @rdname OrderIndependentLookup
+setGeneric("OrderIndependentLookup<-", function(x, value) standardGeneric("OrderIndependentLookup<-"))
+
+
+
+#' Method FindAllMatches
+setGeneric("FindAllMatches", function(x) standardGeneric("FindAllMatches"))
+
+
+#' Method FindAllMatches<-
+#' @rdname FindAllMatches
+setGeneric("FindAllMatches<-", function(x, value) standardGeneric("FindAllMatches<-"))
+
+
+#' Method SynonymType
+setGeneric("SynonymType", function(x) standardGeneric("SynonymType"))
+
+
+#' Method SynonymType<-
+#' @rdname SynonymType
+setGeneric("SynonymType<-", function(x, value) standardGeneric("SynonymType<-"))
+
+
+#' Method Stemmer
+setGeneric("Stemmer", function(x) standardGeneric("Stemmer"))
+
+
+#' Method Stemmer<-
+#' @rdname Stemmer
+setGeneric("Stemmer<-", function(x, value) standardGeneric("Stemmer<-"))
+
+
 
 
 

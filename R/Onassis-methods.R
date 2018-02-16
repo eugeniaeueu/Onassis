@@ -7,7 +7,8 @@
 #' @description This method sets the dictionary of Onassis
 #' @examples
 #' onassis <- Onassis()
-#' dict(onassis) <- file.path(getwd(), 'obo.obo')
+#' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+#' dict(onassis) <- obo
 #'
 #' @export
 setReplaceMethod(f = "dict", signature = "Onassis",
@@ -77,7 +78,7 @@ setMethod(f = "simil", signature = "Onassis",
 #' @description This method sets the entities of Onassis
 #' @examples
 #' onassis <- Onassis()
-#' entities(onassis) <- matrix()
+#' entities(onassis) <- data.frame()
 #'
 #' @export
 setReplaceMethod(f = "entities", signature = "Onassis",
@@ -138,8 +139,24 @@ setMethod(f = "scores", signature = "Onassis",
 #' \code{annot}
 #'
 #' @description This method returns and sets the location of the dictionary.
+#' @param input A data frame where the first column is the ID of the sample or document to annotate
+#' @param dictType the type of input dictionary
+#'\describe{
+#'\item{OBO}{A dictionary that has been created by An OBO file}
+#'\item{ENTREZ}{Entrez genes dictionary}
+#'\item{TARGET}{Entrez genes dictionary, Histone marks and Histone modifications}
+#'\item{CMDICT}{A previously created dictionary file in the Conceptmapper XML format}
+#'}
+#' @param dictionary The local OBO/OWL ontology to be converted into an XML Conceptmapper dictionary or the URL to download the file. If NA is passed and the \code{dicType} parameter is not the generic OBO then the method tries to download the corresponding dictionary from the available repositories. For ENTREZ and TARGET dictionary types a file named gene_info.gz is automatically downloaded from \url{ftp://ncbi.nlm.nih.gov/gene/data/gene_info.gz} if not provided by the user. Alternatively an annotation package of the type Org.xx.eg.db from Bioconductor can be used. In this case the gene ids and their alternative identifiers will be retrieved from the annotation database without the need of downloading a gene_info file.
+#' @param dictoutdir  Optional parameter to specify the location where the Conceptmapper dictionary file will be stored. Defaults to current working directory.
+#' @param d_synonymtype The type of synonyms to consider when building the dictionary for Conceptmapper. For further detail \url{http://owlcollab.github.io/oboformat/doc/obo-syntax.html}. Default: EXACT
+#'\describe{
+#'\item{EXACT}{}
+#'\item{ALL}{}
+#'}
+#' @param taxID the taxonomy identifier of the organism when the dictionary type is ENTREZ or TARGET. If 0 all the taxonomies will be included in the new dictionary.
+#' @param disease A logical value set to TRUE if the annotation requires the 'Healthy' condition to be found.
 #' @examples
-#'
 #' geo_chip <- readRDS(system.file('extdata', 'vignette_data',
 #' 'GEO_human_chip.rds', package='Onassis'))
 #'
@@ -149,13 +166,13 @@ setMethod(f = "scores", signature = "Onassis",
 #' entities <- entities[sample(nrow(entities), 30),]
 #' @rdname annot
 #' @aliases annot
-#' @importFrom data.table setDT
+#' @import data.table
 #' @export
-setMethod('annot', c("data.frame", "character", "character"), function(input, dictType="OBO", dictionary=NA, dictoutdir=getwd(), d_synonymtype='EXACT', taxID=0, annot_out=getwd(), paramValueIndex=0, searchstrategy='CONTIGUOUS_MATCH', casematch='CASE_INSENSITIVE', stemmer='PORTER', stopwords='NONE', orderindependentlookup='OFF', findallmatches='NO', e_synonymtype='EXACT_ONLY', multipledocs=FALSE){
+setMethod('annot', c("data.frame", "character", "character"), function(input, dictType="OBO", dictionary=NA, dictoutdir=getwd(), d_synonymtype='EXACT', taxID=0, annot_out=getwd(), paramValueIndex=0, searchstrategy='CONTIGUOUS_MATCH', casematch='CASE_INSENSITIVE', stemmer='PORTER', stopwords='NONE', orderindependentlookup='OFF', findallmatches='NO', e_synonymtype='EXACT_ONLY', multipledocs=FALSE, disease=FALSE){
 
   #Building the dictionary
 
-  dict <- dictionary(dictionary, dictType, dictoutdir, d_synonymtype, taxID)
+  dict <- CMdictionary(dictionary, dictType, dictoutdir, d_synonymtype, taxID)
   # Setting the annotator options for the entity finder to the default
   myopts <- CMoptions()
   #If user specified other arguments then use those
@@ -171,6 +188,24 @@ setMethod('annot', c("data.frame", "character", "character"), function(input, di
   #Annotating the entitites
   annotated_df <- annotate(inputFileorDf=input, dictionary=dict, options = myopts,
                            outDir = annot_out, multipleDocs = FALSE)
+
+  #Checking for 'Healthy' conditions
+  if(disease){
+    healthy_samples <- findHealthy(input)
+    annotated_df <- data.frame(annotated_df)
+    annotated_df$term_name <- as.character(as.vector(annotated_df$term_name))
+    annotated_df$term_id <- as.character(as.vector(annotated_df$term_id))
+    annotated_df$term_url <- as.character(as.vector(annotated_df$term_url))
+
+    annotated_df$term_name[which(annotated_df$sample_id %in% healthy_samples)] <- 'Healthy'
+    annotated_df$term_id[which(annotated_df$sample_id %in% healthy_samples)] <- 'Healthy'
+    annotated_df$term_url[which(annotated_df$sample_id %in% healthy_samples)] <- 'Healthy'
+    healthy_samples <- healthy_samples[which(!healthy_samples %in% annotated_df$sample_id)]
+    if(length(healthy_samples)>0)
+      new_lines <- data.frame(cbind(healthy_samples, rep('Healthy', length(healthy_samples)), rep('Healthy', length(healthy_samples)), rep('Healthy',length(healthy_samples))), rep('Healthy', length(healthy_samples)))
+    colnames(new_lines) <- colnames(annotated_df)
+    annotated_df <- rbind(annotated_df, new_lines)
+  }
   #(Collapsing the entities)
   if(nrow(annotated_df)>0){
     annotated_df <- annotated_df[!duplicated(annotated_df[, c('sample_id', 'term_id', 'term_url', 'term_name')]),]
@@ -229,6 +264,12 @@ setMethod('sim', signature=c("Onassis"), def= function(onassis, iconf='sanchez',
 
     trim <- function (x) gsub("^\\s+|\\s+$", "", x)
     k = nrow(unique_sets) - 1
+    sim_instance <- .jnew("iit/comp/epigen/nlp/similarity/Similarity")
+    ontology_obo <- dict(onassis)
+    graph <- sim_instance$loadOntology(ontology_obo)
+    config_p <- sim_instance$setPairwiseConfig(pairconf, iconf)
+    config_g <- sim_instance$setGroupwiseConfig(groupconf)
+    sm_engine <- .jnew("slib/sml/sm/core/engine/SM_Engine", .jcast(graph, 'slib/graph/model/graph/G'))
     for(i in 1:k){
       gc()
       #Reinitialization of the JVM to avoid Out of memory esceptions
@@ -236,19 +277,37 @@ setMethod('sim', signature=c("Onassis"), def= function(onassis, iconf='sanchez',
       similarity <- 0
       term_list1 <- strsplit(rownames(semantic_net_matrix)[i], ",")[[1]]
       term_list1 <- trim(term_list1)
+      URIs1 <- sim_instance$createURIs(.jarray(term_list1))
+
       massimo = nrow(semantic_net_matrix)
       minimo = i + 1
       for(j in minimo:massimo){
         term_list2 <- strsplit(rownames(semantic_net_matrix)[j], ",")[[1]]
         term_list2 <- trim(term_list2)
+        URIs2 <- sim_instance$createURIs(.jarray(term_list2))
         if(length(term_list1)>0 & length(term_list2)>0){
-          sim <- Similarity()
-          Onassis::ontology(sim) <- dict(onassis)
-          icConfig(sim) <- iconf
-          pairwiseConfig(sim) <- pairconf
-          groupConfig(sim) <- groupconf
-          similarity <- groupsim(sim, as.character(as.vector(term_list1)), as.character(as.vector(term_list2)))
+        print('termini1')
+                    print(term_list1)
+                    print(length(term_list1))
+                    print(class(term_list2))
+          print('termini2')
+                    print(term_list2)
+                    print(length(term_list2))
+                    print(class(term_list2))
+          if((length(term_list1)==1 & term_list1[1]=='Healthy') | (length(term_list2)==1 & term_list2[1]=='Healthy'))
+            semantic_net_matrix[i, j] <- semantic_net_matrix[j, i] <- 0
+          else {
+
+            similarity <- sm_engine$compare(config_g, config_p, URIs1, URIs2)
+
+    #      sim <- Similarity()
+    #      Onassis::ontology(sim) <-
+    #      icConfig(sim) <- iconf
+    #      pairwiseConfig(sim) <- pairconf
+    #      groupConfig(sim) <- groupconf
+    #      similarity <- groupsim(sim, as.character(as.vector(term_list1)), as.character(as.vector(term_list2)))
           semantic_net_matrix[i, j] <- semantic_net_matrix[j, i] <- similarity
+          } # end if healthy
         } # end if
       } # end inner for
     } # end outer for for the computation of the semantic similairty
@@ -359,7 +418,6 @@ setMethod('collapse', signature=c("Onassis"), def= function(onassis, simil_thres
 
 #' \code{mergeonassis}
 #' @name mergeonassis
-#' @rdname mergeonassis
 #' @description This method unifies the entities of two Onassis objects
 #' @examples
 #'geo_chip <- readRDS(system.file('extdata', 'vignette_data',
@@ -415,8 +473,8 @@ setMethod('mergeonassis', signature=c("Onassis", "Onassis"), def= function(onass
 #' scores(onassis_results1) <- score_matrix
 #' comparisons3 <- compare(onassis_results1)
 #' comparisons4 <- compare(onassis_results1, by='col', fun_name='kruskal.test')
-#' @rdname mergeonassis
-#' @aliases mergeonassis
+#' @rdname compare
+#' @aliases compare
 #' @export
 setMethod('compare', signature=c("Onassis"), def= function(onassis, score_matrix=NA, by='row', fun_name='wilcox.test'  ){
   if(!is.na(score_matrix)){
@@ -433,11 +491,11 @@ setMethod('compare', signature=c("Onassis"), def= function(onassis, score_matrix
   entities <- entities(onassis)
   comparison_result <- NA
   if(any(grepl('2', colnames(entities(onassis))))==FALSE){
-    conditions <- unique(entities$term_url)
+    conditions <- unique(entities$term_url[which(!is.na(entities$term_url))])
     if('short_names' %in% colnames(entities))
-      condition_names <- unique(entities$short_name)
+      condition_names <- unique(entities$short_name[which(!is.na(entities$term_url))])
     else
-      condition_names <- unique(entities$term_name)
+      condition_names <- unique(entities$term_name[which(!is.na(entities$term_url))])
     comparison_result <- matrix(list(), nrow=length(condition_names), ncol=length(condition_names))
     rownames(comparison_result) <- colnames(comparison_result) <- condition_names
     for(i in 1:(length(conditions)-1)){
@@ -470,11 +528,11 @@ setMethod('compare', signature=c("Onassis"), def= function(onassis, score_matrix
   else{
     print('Multiple ontologies')
     #Conditions in the level 1
-    level1_conditions <- unique(entities$term_url)
+    level1_conditions <- unique(entities$term_url[which(!is.na(entities$term_url))])
     if('short_names' %in% colnames(entities))
-      level1_condition_names <- unique(entities$short_name)
+      level1_condition_names <- unique(entities$short_name[which(!is.na(entities$term_url))])
     else
-      level1_condition_names <- unique(entities$term_name)
+      level1_condition_names <- unique(entities$term_name[which(!is.na(entities$term_url))])
     # For each condition in the level 1
     global_result_list <- list()
     outer_counter <- 1
@@ -482,10 +540,16 @@ setMethod('compare', signature=c("Onassis"), def= function(onassis, score_matrix
       level1_cond <- level1_conditions[i]
       #Consider the subconditions in the level 2
       level2_conds <- unique(entities$term_url_2[which(entities$term_url==level1_cond)])
-      if('short_names_2' %in% colnames(entities))
+      level2_conds <- level2_conds[which(!is.na(level2_conds))]
+      if('short_names_2' %in% colnames(entities)){
         level2_cond_names <- unique(entities$short_name_2[which(entities$term_url==level1_cond)])
-      else
+        level2_cond_names <- level2_cond_names[which(!is.na(level2_cond_names))]
+      }
+
+      else{
         level2_cond_names <- unique(entities$term_name_2[which(entities$term_url==level1_cond)])
+        level2_cond_names <- level2_cond_names[which(!is.na(level2_cond_names))]
+      }
       #if there are at least two sub conditions
       comparison_result <- NA
       if(length(level2_conds)>1){
@@ -535,12 +599,15 @@ setMethod('compare', signature=c("Onassis"), def= function(onassis, score_matrix
 #' @name filterconcepts
 #' @rdname filterconcepts
 #' @description This method filter unwanted concepts from the entities of an onassis object
+#' @param onassis An object of class Onassis with already annotated entities
+#' @param concepts_to_filter A vector with unwanted concepts
 #' @examples
 #'geo_chip <- readRDS(system.file('extdata', 'vignette_data',
 #' 'GEO_human_chip.rds', package='Onassis'))
 #' geo_chip <- geo_chip[sample(nrow(geo_chip), 15) ,]
 #' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
 #' onassis_results <- annot(geo_chip, "OBO", dictionary=obo)
+#' filtered_onassis <- filterconcepts(onassi_results, c('cell'))
 #'
 #' @rdname filterconcepts
 #' @aliases filterconcepts

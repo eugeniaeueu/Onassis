@@ -28,11 +28,12 @@ In particular the software includes modules to assist on:
 <li> the <b>retrieval</b> of samples’ metadata from repositories of large scale biologial data </li>
 <li> the <b>annotation</b> of these data with concepts belonging to OBO   biomedical ontologies </li> 
 <li> the organization of available samples in comparable and coherent groups based on <b>semantic similarity</b> measures </li>
+<li> the comparison of semantic sets based on given matrix of scores related to the annotated entities </li>
 </ul>
 Onassis uses Conceptmapper, an Apache UIMA (Unstructured Information Management Architecture) dictionary lookup tool to retrieve dictionary terms in a given text. https://uima.apache.org/downloads/sandbox/ConceptMapperAnnotatorUserGuide/ConceptMapperAnnotatorUserGuide.html  
 In particular, the ccp-nlp Conceptmapper wrapper, specific for the biomedical domain, implements a pipeline through which it is possible to retrieve concepts from OBO ontologies in any given text with different adjustable options [@Verspoor:2009b].
 
-Onassis can handle any type of text as input, but is particularly well suited for the analysis of the metadata from Gene Expression Omnibus (GEO) or Sequence Read Archive (SRA). This represents a fundamental first step in the integrative analysis of the data from those repositories [@galeota2016ontology]. Indeed it provides the possibility to associate concepts from any OBO ontology to GEO or SRA metadata retrieved using `r BiocStyle::Biocpkg("GEOmetadb")` or `r BiocStyle::Biocpkg("SRAdb")`. In addition to the ontological concepts, the recognition of gene/protein symbols or epigenetic modifications can be highly relevant, especially for experiments directed to those specific factor or mark (such as ChIP-seq experiments).
+Onassis can handle any type of text as input, but is particularly well suited for the analysis of the metadata from Gene Expression Omnibus (GEO). This represents a fundamental first step in the integrative analysis of the data from those repositories [@galeota2016ontology]. Indeed it provides the possibility to associate concepts from any OBO ontology to GEO, but also SRA metadata retrieved using `r BiocStyle::Biocpkg("GEOmetadb")`. In addition to the ontological concepts, the recognition of gene/protein symbols or epigenetic modifications can be highly relevant, especially for experiments directed to those specific factors or marks (such as ChIP-seq experiments).
 
 The semantic similarity module uses different semantic similarity measures to determine the semantic similarity of concepts in a given ontology. This
 module has been developed on the basis of the Java slib http://www.semantic-measures-library.org/sml.
@@ -40,7 +41,7 @@ To run Onassis Java (>= 1.8) is needed.
 
 # Retrieving public repositories metadata
 
-One of the most straightforward ways to retrieve GEO metadata is through `r BiocStyle::Biocpkg("GEOmetadb")` or `r BiocStyle::Biocpkg("SRAdb")` packages. In order to use them through Onassis the user should download the corresponding SQLite databases following the instructions provided in those packages vignettes. While the SQLite packages are required, Onassis allows to access to those data without any knowledge on SQL programming, thus providing functions to help the metadat retrieval without the need of explicitly making queries to the database.
+One of the most straightforward ways to retrieve GEO metadata is through `r BiocStyle::Biocpkg("GEOmetadb")` package. In order to use them through Onassis the user should download the corresponding SQLite database following the instructions provided in the packages vignette. While the SQLite source databases are required, Onassis allows to access to those data without any knowledge on SQL programming, thus providing functions to help the metadata retrieval without the need of explicitly making queries to the database.
 
 ## Handling GEO (Gene Expression Omnibus) Metadata
 
@@ -127,23 +128,58 @@ knitr::kable(methylation_tmp[1:10,], rownames=FALSE,
 
 ## Handling SRA (Sequence Read Archive) Metadata
 
-As for GEO, the `getSRAMetadata` function allows the retrieval of metadata of high througput sequencing data stored in SRA through the `BiocStyle::Biocpkg("SRAdb")` package. To facilitate the retrieval of experiment types in SRA, the Onassis function `library_strategies` can be used. Filters for the sample's material (*GENOMIC*, *TRANSCRIPTOMIC*, *METAGENOMIC*...), the species and the center hosting the data are allowed.
+In this section we provide an example showing how it is possible to retrieve data from other databases such as SRA. In this case we only show hot to query the database and store the metadata in a data frame to be used in Onassis. The following code requires the file SRAdb.sqlite, containing SRA metadata.
+
+
+we As for GEO, the `getSRAMetadata` function allows the retrieval of metadata of high througput sequencing data stored in SRA through . To facilitate the retrieval of experiment types in SRA, the Onassis function `library_strategies` can be used. Filters for the sample's material (*GENOMIC*, *TRANSCRIPTOMIC*, *METAGENOMIC*...), the species and the center hosting the data are allowed.
 For example, to obtain SRA metadata of ChIP-Seq human samples and Bisulfite sequencing samples the following code can be used. 
 
 ```{r connectSRA, echo=TRUE,eval=FALSE}
 # Connection to the SRAmetadb and potential download of the sqlite file
-sra_con <- connectToSRADB()
+sqliteFileName <- './data/SRAdb.sqlite'
+sra_con <- dbConnect(SQLite(), sqliteFileName)()
 
 # Query for the ChIP-Seq experiments contained in GEO for human samples 
-sra_chip_seq <- getSRAMetadata(sra_con, library_strategy='ChIP-Seq', library_source='GENOMIC', taxon_id=9606, center_name='GEO')
+library_strategy <- 'ChIP-Seq'
+library_source='GENOMIC'
+taxon_id=9606
+center_name='GEO'
+ 
+samples_query <- paste0("select sample_accession, description, sample_attribute, sample_url_link from sample where taxon_id='", taxon_id, "' and sample_accession IS NOT NULL", " and center_name='", center_name, "'",  )
 
-# The following example allows to retrieve Bisulfite sequencing samples' metadata.
-bisulfite_seq <- getSRAMetadata(sra_con, library_strategy='Bisulfite-Seq', library_source='GENOMIC', taxon_id=9606, center_name='GEO' )
+samples_df <- dbGetQuery(sra_con, samples_query)
+samples <- unique(as.character(as.vector(samples_df[, 1])))
 
+
+
+experiment_query <- paste0("select experiment_accession, center_name, title, sample_accession, sample_name, experiment_alias, library_strategy, library_layout, experiment_url_link, experiment_attribute from experiment where library_strategy='", 
+                           library_strategy, "'" , " and library_source ='", library_source, 
+                           "' " )
+
+experiment_df <- dbGetQuery(sra_con, experiment_query)
+
+experiment_df <- merge(experiment_df, samples_df, by = "sample_accession")
+experiment_df$experiment_attribute <- sapply(experiment_df$experiment_attribute, 
+                                             function(value) {
+                                               gsub("||", "  ", value)
+                                             })
+experiment_df$sample_attribute <- sapply(experiment_df$sample_attribute, 
+                                         function(value) {
+                                           gsub("||", "  ", value)
+                                         })
+experiment_df$sample_name <- sapply(experiment_df$sample_name, 
+                                    function(value) {
+                                      gsub("_", " ", value)
+                                    })
+experiment_df$experiment_alias <- sapply(experiment_df$experiment_alias, 
+                                         function(value) {
+                                           gsub("_", " ", value)
+                                         })
+sra_chip_seq <- experiment_df
 
 ```
 
-To avoid installing GEOmetadb sra_chip_seq was previously saved and can be loaded from Onassis: 
+To avoid installing SRAmetadb sra_chip_seq was previously saved and can be loaded from Onassis: 
 
 ```{r readCHIP, echo=TRUE, eval=TRUE}
 sra_chip_seq <- readRDS(system.file('extdata', 'vignette_data', 'GEO_human_chip.rds',  package='Onassis'))
@@ -204,38 +240,41 @@ Conceptmapper dictionaries are XML files with a set of entries specified by the 
       </token>
   </synonym>
 ```
-The function dict `dictionary` creates an instance of the class `CMdictionary` (by internally calling the method `buildDictionary`). 
+The constructor `CMdictionary` creates an instance of the class `CMdictionary`. 
 
   * If an XML file containing the Conceptmapper dictionary is already available,  it can be uploaded into Onassis indicating its path and setting the `dictType` option to "CMDICT".
-  * If the dictionary has to be built from an OBO ontology (as a file in the OBO or OWL format), its path has to be provided and dictType has to be set to "OBO". The synonymType argument can be set to EXACT_ONLY or ALL to consider only canonical concept names or also to include any synonym. The resulting XML file is written in the indicated outputdir.
+  * If the dictionary has to be built from an OBO ontology (as a file in the OBO or OWL format), its path has to be provided and dictType has to be set to "OBO". The synonymType argument can be set to EXACT_ONLY or ALL to consider only canonical concept names or also to include any synonym. The resulting XML file is written in the indicated outputdir. Alternatively, to automatically download the ontology the URL to the OBO. 
   * To build a dictionary containing only gene/protein names, dictType has to be set to either TARGET or ENTREZ, to include histone types and marks or not, respetively. If a specific Org.xx.eg.db Bioconductor library is indicated in the inputFileOrDb parameter as a character string, gene names will be derived from it. Alterantively, if a specific species is indicated in the taxID parameter, the gene_info.gz file hosted at NCBI is used. If available, this file can be located with the inputFile parameter. Otherwise, it will be automatically downloaded (300MB).
 
 ```{r createSampleAndTargetDict, echo=TRUE,eval=TRUE, message=FALSE}
 # If a Conceptmapper dictionary is already available the dictType CMDICT can be specified and the corresponding file loaded
-sample_dict <- dictionary(inputFileOrDb=system.file('extdata', 'cmDict-sample.cs.xml', package = 'Onassis'), dictType = 'CMDICT')
+sample_dict <- CMdictionary(inputFileOrDb=system.file('extdata', 'cmDict-sample.cs.xml', package = 'Onassis'), dictType = 'CMDICT')
 
 #Creation of a dictionary from the file sample.cs.obo available in OnassisJavaLibs
 obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
 
-sample_dict <- dictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
+sample_dict <- CMdictionary(inputFileOrDb=obo, outputDir=getwd(), synonymType='ALL')
 
 # Creation of a dictionary for human genes/proteins
 require(org.Hs.eg.db)
-targets <- dictionary(dictType='TARGET', inputFileOrDb = 'org.Hs.eg.db')
+targets <- CMdictionary(dictType='TARGET', inputFileOrDb = 'org.Hs.eg.db')
 ```
 
 
 ## Setting the options for the annotator
-Conceptmapper includes 7 different options controlling the annotation step. These are documented in detail in the documentation of the CMoptions function. They can be listed through the `listCombinations` method after creating a 'CMoptions' object, and they can be set through the `CMoptions` function. The set options are thus stored in an object of class CMoptions that will be required for the subsequent step of annotation.  
+Conceptmapper includes 7 different options controlling the annotation step. These are documented in detail in the documentation of the CMoptions function. They can be listed through the `listCMOptions` function. The `CMoptions` constructor instantiates an object of class CMoptions with the different parameters that will be required for the subsequent step of annotation. We also provided getter and setter methods for each of the 7 combinations  
 
 ```{r settingOptions, echo=TRUE,eval=TRUE}
 
 #Showing configuration permutations 
 opts <- CMoptions()  
-combinations <- listCombinations(opts)
-#Setting the combination of parameters through the paramValueIndex value
-myopts <- CMoptions(c("CONTIGUOUS_MATCH", "CASE_INSENSITIVE", 'BIOLEMMATIZER', 'PUBMED', 'ON', 'YES', 'ALL'))
-
+show(opts)
+combinations <- listCMOptions()
+myopts <- CMoptions(SynonymType = 'EXACT_ONLY')
+myopts
+#Changing the SearchStrategy parameter
+SearchStrategy(myopts) <- 'SKIP_ANY_MATCH_ALLOW_OVERLAP'
+myopts
 ```
 
 

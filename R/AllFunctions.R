@@ -1,28 +1,3 @@
-#' \code{dictionary}
-#'
-#' @description This function builds a dictionary for Conceptmapper.
-#' @param outputdir the directory where the XML conceptmapper dictionary will be stored. Defaults to the tmp system's directory
-#' @return An object of type CMdictionary that can be used to annotate text with the \code{EntityFinder}.
-#' @examples
-#'
-#' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-#' sample_dict <- dictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
-#'
-#' @name dictionary
-#' @rdname CMdictionary-class
-#' @export
-#' @importFrom methods new validObject
-#' @importFrom AnnotationDbi toTable
-
-dictionary <- function(inputFileOrDb = NULL, dictType = "OBO",
-    outputdir = getwd(), synonymType = "ALL", taxID = 0) {
-    dictionary <- CMdictionary()
-    cmdictionary <- buildDictionary(dictionary, inputFileOrDb = inputFileOrDb,
-        outputDir = outputdir, dictType = dictType,
-        synonymType = synonymType, taxID = taxID)
-    return(cmdictionary)
-}
-
 
 
 #' \code{annotate}
@@ -37,6 +12,7 @@ dictionary <- function(inputFileOrDb = NULL, dictType = "OBO",
 #' @param multipleDocs TRUE if the input file is one but contains multiple documents
 #' @importFrom rJava is.jnull
 #' @importFrom tools file_ext
+#' @importFrom methods is
 #' @examples
 #' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
 #' sample_dict <- dictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
@@ -139,7 +115,7 @@ similarity <- function(ontologyFile, termlist1, termlist2,
     if (!is.data.frame(annotatedtab)) {
         if (length(termlist1) == 1 & length(termlist2) ==
             1) {
-            similarity_value <- sim(sim, as.character(termlist1),
+            similarity_value <- pairsim(sim, as.character(termlist1),
                 as.character(termlist2))
         } else {
             if (length(termlist1) > 1 | length(termlist2) >
@@ -192,7 +168,9 @@ showSimilarities <- function() {
 findHealthy <- function(metadata_df){
   markers <-"disease state: normal|tissuetype: normal|no ad present|healthy|disease: healthy|disease: normal|disease: presumed normal|disease: none|disease: null|disease: na|disease status: normal|tumor: none"
   gsm_list <- c()
+  metadata_df[,1] <- as.character(as.vector(metadata_df[,1]))
   for(i in 2:ncol(metadata_df)){
+  #  metadata_df[,i] <-   as.character(as.vector(gsub('ξ', '', metadata_df[,i])))
     gsms <- metadata_df[,1][grep(markers, tolower(metadata_df[,i]))]
     if(length(gsms)>0)
       gsm_list <- c(gsm_list, gsms)

@@ -99,7 +99,6 @@ This method finds concepts of a Conceptmapper Dictionary of type CMdictionary of
 The following methods can be applied to EntityFinder
 
 \code{\link{findEntities}} \cr
-\code{\link{buildDictionary}} \cr
 }
 \section{Slots}{
 
@@ -127,7 +126,7 @@ type_system_description <-
 J('org/uimafit/factory/TypeSystemDescriptionFactory')$createTypeSystemDescription(vector_of_ts)
 typeSystemRef(ef) <- type_system_description
 obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-dict <- dictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
+dict <- CMdictionary(inputFileOrDb=obo, outputDir=getwd(), synonymType='ALL')
 
 opts <- CMoptions()
 ef <- EntityFinder()

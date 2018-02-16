@@ -54,6 +54,7 @@ create_score_matrix <- function(ref_granges, granges_list) {
 #'      height_threshold <- 0.4
 #'      result_list <- annotateTissueDisease(geo_metadb_path, gsm_list, tissue_obo, disease_obo, outdir, height_threshold, score_matrix)
 #'      }
+#' @importFrom stats as.dist hclust quantile cutree aggregate
 #' @export
 
 annotateTissueDisease <- function(geo_metadb_path, gsm_list, tissue_obo, disease_obo,

@@ -4,7 +4,6 @@
 \name{compare}
 \alias{compare}
 \alias{compare}
-\alias{mergeonassis}
 \title{\code{compare}}
 \usage{
 compare(onassis, ...)
