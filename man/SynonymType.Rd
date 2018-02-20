@@ -4,6 +4,7 @@
 \name{SynonymType}
 \alias{SynonymType}
 \alias{SynonymType<-}
+\alias{SynonymType,CMoptions-method}
 \alias{SynonymType<-,CMoptions-method}
 \title{Method SynonymType}
 \usage{
@@ -11,22 +12,34 @@ SynonymType(x)
 
 SynonymType(x) <- value
 
+\S4method{SynonymType}{CMoptions}(x)
+
 \S4method{SynonymType}{CMoptions}(x) <- value
 }
 \arguments{
+\item{x}{instance of class \code{\link{CMoptions}}}
+
 \item{value}{\itemize{
 \item EXACT_ONLY {Only exact synonyms are considered }
 \item ALL {All synonym types are included}
 }}
+}
+\value{
+The SynonymType corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
 }
 \description{
 Method SynonymType
 
 Method SynonymType<-
 
+Method to get and set the SynonymType parameter
+
 \code{SynonymType<-}
 }
 \examples{
+opts <- CMoptions()
+SynonymType(opts)
+
 opts <- CMoptions()
 SynonymType(opts) <- 'ALL'
 }

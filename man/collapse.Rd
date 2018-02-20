@@ -4,12 +4,19 @@
 \name{collapse}
 \alias{collapse}
 \alias{collapse,Onassis-method}
-\alias{collapse}
 \title{\code{collapse}}
 \usage{
 collapse(onassis = NA, simil_thresh)
 
 \S4method{collapse}{Onassis}(onassis = NA, simil_thresh)
+}
+\arguments{
+\item{onassis}{instance of class \code{\link{Onassis-class}}}
+
+\item{simil_thresh}{the semantic similarity threshold to use to merge similar semantic sets}
+}
+\value{
+a new object of class \code{\link{Onassis-class}} with collapsed annotations for the entities and a new similarity matrix of similarities between newly created semantic sets
 }
 \description{
 This method collapses semantic states in an Onassis object.
@@ -18,7 +25,7 @@ This method collapses semantic states in an Onassis object.
 geo_chip <- readRDS(system.file('extdata', 'vignette_data',
 'GEO_human_chip.rds', package='Onassis'))
 obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-onassis_results <- annot(geo_chip, "OBO", dictionary=obo)
+onassis_results <- annotate(geo_chip, "OBO", dictionary=obo)
 entities <- entities(onassis_results)
 entities(onassis_results) <- entities[sample(nrow(entities), 15),]
 onassis_results <- sim(onassis_results)

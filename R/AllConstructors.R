@@ -14,7 +14,7 @@
 #' @param dictionary The path of the dictionary file
 #' @param entities a data frame to store entities
 #' @param similarity A matrix of the similarities between entities
-#' @param score The result of comparisons of the elements in the entities
+#' @param scores The result of comparisons of the elements in the entities
 #' @export
 #' @importFrom methods new validObject
 
@@ -23,7 +23,7 @@ Onassis <- function(dictionary = NA_character_,
                     scores=matrix()) {
   o <- new("Onassis")
   if(!is.na(dictionary))
-    dict(o) <- dictionary
+    dictionary(o) <- dictionary
   if(is.data.frame(entities) & nrow(entities)>0)
     entities(o) <- entities
   if(is.matrix(similarity) )
@@ -35,7 +35,7 @@ Onassis <- function(dictionary = NA_character_,
 
 
 #' \code{CMdictionary}
-#' @description Constructor method for creating instances of class \code{\link{CMdictionary}}. The created Conceptmapper dictionary will be stored as an XML file in the file system.
+#' @description Constructor method for creating instances of class \code{\link{CMdictionary-class}}. The created Conceptmapper dictionary will be stored as an XML file in the file system.
 #' @param outputDir the directory where the XML conceptmapper dictionary will be stored. Defaults to the tmp system's directory
 #' @param dictType the type of input dictionary
 #'\describe{
@@ -52,7 +52,7 @@ Onassis <- function(dictionary = NA_character_,
 #' @param inputFileOrDb The local OBO/OWL ontology to be converted into an XML Conceptmapper dictionary or the URL of a OBO/OWL file. If inputFileOrdb is NA and the \code{dicType} parameter is not the generic OBO then the method tries to download the corresponding dictionary from the available repositories. For ENTREZ and TARGET dictionary types a file named gene_info.gz will be automatically downloaded from \url{ftp://ncbi.nlm.nih.gov/gene/data/gene_info.gz} if a valid path is not provided by the user. Alternatively  the name of an annotation package of the type Org.xx.eg.db from Bioconductor can be used. In this case the gene unique identifiers and their alternative identifiers will be retrieved from the annotation database without the need of downloading a gene_info file.
 #' @param taxID the taxonomy identifier of the organism when the dictionary type is ENTREZ or TARGET. If 0 all the taxonomies will be included in the new dictionary.
 #' @param outputDirOp set to TRUE to clean the directory before creating the dictionary
-#' @return An object of type \code{\link{CMdictionary}} that can be used to annotate text with the \code{EntityFinder}.
+#' @return An object of type \code{\link{CMdictionary-class}} that can be used to annotate text with the \code{\link{EntityFinder}}.
 #' @examples
 #' \dontrun{
 #'#' ##This might take some time to download the dictionary
@@ -73,9 +73,11 @@ CMdictionary <- function(inputFileOrDb = NULL, dictType = "OBO", outputDir = tem
     dict_location(x) <- outputDir
     validObject(x)
     if (outputDirOp == TRUE)
-      cleandir <- J("edu.ucdenver.ccp.common.file.FileUtil")$CleanDirectory$YES else cleandir <- J("edu.ucdenver.ccp.common.file.FileUtil")$CleanDirectory$NO
+      cleandir <- J("edu.ucdenver.ccp.common.file.FileUtil")$CleanDirectory$YES
+    else
+      cleandir <- J("edu.ucdenver.ccp.common.file.FileUtil")$CleanDirectory$NO
 
-    outputdir <- .jnew("java/io/File", dict_location(x))
+  outputdir <- .jnew("java/io/File", dict_location(x))
 
 
     switch(synonymType, EXACT = {
@@ -429,7 +431,9 @@ CMoptions <- function(SearchStrategy='CONTIGUOUS_MATCH',
                       StopWords = 'NONE',
                       OrderIndependentLookup = 'ON',
                       FindAllMatches = 'YES',
-                      SynonymType = 'ALL'){
+                      SynonymType = 'ALL',
+                      paramValueIndex = NA
+                      ){
   opts <- new('CMoptions')
   opts@SearchStrategy = SearchStrategy
   opts@CaseMatch = CaseMatch
@@ -440,6 +444,7 @@ CMoptions <- function(SearchStrategy='CONTIGUOUS_MATCH',
   opts@SynonymType = SynonymType
   options_combinations <- readRDS(system.file("extdata",
                                               "Options_table.rds", package = "Onassis"))
+  if(is.na(paramValueIndex)){
   opts@paramValueIndex <- as.character(as.vector(unique(options_combinations$paramValueIndex[
     which(options_combinations$SearchStrategy==SearchStrategy &
             options_combinations$CaseMatch==CaseMatch &
@@ -449,48 +454,136 @@ CMoptions <- function(SearchStrategy='CONTIGUOUS_MATCH',
             options_combinations$FindAllMatches==FindAllMatches &
             options_combinations$SynonymType==SynonymType
             )])))
+  } else
+  {
+    opts@paramValueIndex <- as.character(as.vector(paramValueIndex))
+    opts@SearchStrategy = as.character(as.vector(unique(options_combinations$SearchStrategy[which(options_combinations$paramValueIndex==paramValueIndex)])))
+    opts@CaseMatch = as.character(as.vector(unique(options_combinations$CaseMatch[which(options_combinations$paramValueIndex==paramValueIndex)])))
+    opts@Stemmer = as.character(as.vector(unique(options_combinations$Stemmer[which(options_combinations$paramValueIndex==paramValueIndex)])))
+    opts@StopWords = as.character(as.vector(unique(options_combinations$Stopwords[which(options_combinations$paramValueIndex==paramValueIndex)])))
+    opts@OrderIndependentLookup = as.character(as.vector(unique(options_combinations$OrderIndependentLookup[which(options_combinations$paramValueIndex==paramValueIndex)])))
+    opts@FindAllMatches = as.character(as.vector(unique(options_combinations$FindAllMatches[which(options_combinations$paramValueIndex==paramValueIndex)])))
+    opts@SynonymType = as.character(as.vector(unique(options_combinations$SynonymType[which(options_combinations$paramValueIndex==paramValueIndex)])))
+
+  }
   validObject(opts)
   return(opts)
 }
 
 
 #' \code{EntityFinder}
-#'
-#' @name EntityFinder
-#' @rdname EntityFinder-class
-#' @param typeSystemRef the reference to the ccp-nlp type system
-#' @return instance of the class CMoptions set to the default combination of values
-#' @description This function shows the list of possible combinations of options to run the entity finder
+#' @return dataframe of annotations
+#' @description this function creates instances of the class \code{\link{EntityFinder}}
+#' @param input the file, directory, or data frame with the text to annotate
+#' @param dictionary A dictionary of the type \code{\link{CMdictionary}} or the path to an already created Conceptmapper XML file
+#' @param options an object of class \code{\link{CMoptions}}. If NA, the default configuration will be set.
+#' @param outDir the directory where the annotated files will be stored
+#' @param multipleDocs TRUE when multiple documents are loaded from a single file with each row representing a document. The file should have two columns. The first for the unique document identifier and the second for the textual descriptions
+#' @importFrom rJava is.jnull
+#' @importFrom tools file_ext
+#' @importFrom methods is
 #' @examples
-#' op <- CMoptions()
+#' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+#' sample_dict <- CMdictionary(input=obo, outputDir=getwd(), synonymType='ALL')
+#' myopts <- CMoptions()
+#' paramValueIndex(myopts) <- 40
+#' entities <- EntityFinder(input=readRDS(system.file('extdata', 'vignette_data', 'GEO_human_chip.rds', package='Onassis')), dictionary=sample_dict, options=myopts)
 #' @export
+EntityFinder <- function(input, dictionary, options=NA, outDir = tempdir(), multipleDocs = FALSE){
+  #Creating an instance of EntityFinder
+  ef <- new('EntityFinder')
+  inputFileorDf <- input
+  ## Setting the options object
+  opts <- options
+  if (is(options, "CMoptions")) {
+    opts <- options
+  } else {
+    if (is.integer(options)) {
+      opts <- CMoptions()
+      paramValueIndex(opts) <- options
+    } else {
+      # setting to default values
+      message('Setting options to default values')
+      opts <- CMoptions()
+    }
+  }
+  ## end else options
+  results <- NA
+  # Creating the dictionary object
+  dict <- dictionary
+  if (is(dict, "CMdictionary")) {
+    if (is.jnull(dict@dictRef))
+      stop("Invalid dictionary. Please provide a valid CMdictionary or create it from OBO ontologies")
+  } else {
+    if (file.exists(dictionary)) {
+      if (file_ext(dictionary) != "xml") {
+        dict <- CMdictionary(inputFileOrDb = dictionary)
+      } else {
+        if (file_ext(dictionary) == "xml") {
+          dict <- CMdictionary(dictType = "CMDICT", inputFileOrDb = dictionary)
+        }
+      }
+    } else {
+      stop("Invalid dictionary. Please build a correct dictionary")
+    }  ##end else dictionary
+  }
+  if (is.data.frame(inputFileorDf))
+    results <- annotateDF(ef, inputFileorDf, opts,
+                          dict, outDir = outDir)
+  else
+    results <- findEntities(ef, inputDirOrFile = inputFileorDf, multipleDocs = FALSE, outDir = outDir, configOpt = opts, cmDict = dict)
 
-EntityFinder <- function(typeSystemRef = .jnull()) new("EntityFinder")
+  return(results)
+}
 
 
 
 #' \code{Similarity}
 #'
-#' @rdname Similarity-class
-#' @name Similarity-constructor
-#' @aliases Similarity-constructor
-#' @return instance of the class Similarity to compute semantic similarities based on the configured measures
-#' @param pairwiseConfig the pairwise configuration
-#' @param icConfig the information content configuration
-#' @param groupConfig the groupwise configuration
+#' @return Measure of the similarity bewtween the concepts passed as input
+#' @param ontology The ontology file to create the DAG to compute similarities
+#' @param termlist1 The single concept or vector of concepts in the first set or the name of a sample if annotatedtab contains an annotated table
+#' @param termlist2 The single concept or vector of concepts in the second set or the name of a sample if annotatedtab contains an annotated table
+#' @param annotatedtab The table of annotation of samples or entities
+#' @param pairConf the pairwise configuration
+#' @param icConf the information content configuration
+#' @param groupConf the groupwise configuration
 #' @description this constructr initializes the Similarity class to compute the similarity between couple of terms, couple of samples, or group of terms
 #' @examples
 #' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-#' sample_dict <- dictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
-#' myopts <- new('CMoptions')
-#' paramValueIndex(myopts) <- 40
+#' sample_dict <- CMdictionary(input=obo, outputDir=getwd(), synonymType='ALL')
+#' myopts <- CMoptions(paramValueIndex=40)
 #' term_list1 <- c('http://purl.obolibrary.org/obo/CL_0000000', 'http://purl.obolibrary.org/obo/CL_0000236')
 #' term_list2 <- c('http://purl.obolibrary.org/obo/CL_0000542')
-#' sim <- similarity(obo, term_list1, term_list2)
+#' sim <- Similarity(obo, term_list1, term_list2)
 #'
 #' @export
-Similarity <- function(pairwiseConfig = NA_character_,
-    icConfig = NA_character_, groupConfig = NA_character_) new("Similarity")
+Similarity <- function(ontology, termlist1, termlist2,
+annotatedtab = NA, icConf = "seco", pairConf = "resnik",
+groupConf = "ui") {
+  sim <- new('Similarity')
+  ontology(sim) <- ontology
+  pairConf <- c(pairConf, icConf)
+  pairwiseConfig(sim) <- pairConf
+  groupConfig(sim) <- groupConf
 
+  similarity_value <- 0
+  if (!is.data.frame(annotatedtab)) {
+    if (length(termlist1) == 1 & length(termlist2) ==
+        1) {
+      similarity_value <- pairsim(sim, as.character(termlist1),
+                                  as.character(termlist2))
+    } else {
+      if (length(termlist1) > 1 | length(termlist2) >
+          1) {
+        similarity_value <- groupsim(sim, as.character(as.vector(termlist1)),
+                                     as.character(as.vector(termlist2)))
+      }
+    }
+  } else {
+    similarity_value <- samplesim(sim, as.character(termlist1),
+                                  as.character(termlist2), annotatedtab)
+  }
+  return(similarity_value)
 
-
+}

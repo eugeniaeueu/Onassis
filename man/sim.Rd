@@ -4,7 +4,6 @@
 \name{sim}
 \alias{sim}
 \alias{sim,Onassis-method}
-\alias{sim}
 \title{\code{sim}}
 \usage{
 sim(onassis = NA, ...)
@@ -12,13 +11,24 @@ sim(onassis = NA, ...)
 \S4method{sim}{Onassis}(onassis, iconf = "sanchez", pairconf = "lin",
   groupconf = "bma")
 }
+\arguments{
+\item{onassis}{instance of class \code{\link{Onassis-class}}}
+
+\item{...}{Optional parameters}
+
+\item{iconf}{the information content measure see \code{pairwiseConfig} help for details}
+
+\item{pairconf}{the pairwse measure to compute semantic similarity between single concepts. See \code{pariwiseConfig} help for details}
+
+\item{groupconf}{the groupwise measure to compute semantic similarity between groups of concepts. See \code{groupConfig} help for details}
+}
 \description{
-This method computes the similarities of the entities in an Onassis object.
+This method computes the similarities of the entities annotated in a object fo class \code{\link{Onassis-class}}.
 }
 \examples{
 geo_chip <- readRDS(system.file('extdata', 'vignette_data', 'GEO_human_chip.rds', package='Onassis'))
 obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-onassis_results <- annot(geo_chip, "OBO", dictionary=obo)
+onassis_results <- annotate(geo_chip, "OBO", dictionary=obo)
 entities <- entities(onassis_results)
 entities(onassis_results) <- entities[sample(nrow(entities), 30),]
 onassis_results <- sim(onassis_results)

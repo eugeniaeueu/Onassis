@@ -32,10 +32,10 @@ CMdictionary(inputFileOrDb = NULL, dictType = "OBO",
 \item{outputDirOp}{set to TRUE to clean the directory before creating the dictionary}
 }
 \value{
-An object of type \code{\link{CMdictionary}} that can be used to annotate text with the \code{EntityFinder}.
+An object of type \code{\link{CMdictionary-class}} that can be used to annotate text with the \code{\link{EntityFinder}}.
 }
 \description{
-Constructor method for creating instances of class \code{\link{CMdictionary}}. The created Conceptmapper dictionary will be stored as an XML file in the file system.
+Constructor method for creating instances of class \code{\link{CMdictionary-class}}. The created Conceptmapper dictionary will be stored as an XML file in the file system.
 }
 \examples{
 \dontrun{

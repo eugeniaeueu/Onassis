@@ -4,6 +4,7 @@
 \name{StopWords}
 \alias{StopWords}
 \alias{StopWords<-}
+\alias{StopWords,CMoptions-method}
 \alias{StopWords<-,CMoptions-method}
 \title{Method StopWords}
 \usage{
@@ -11,22 +12,34 @@ StopWords(x)
 
 StopWords(x) <- value
 
+\S4method{StopWords}{CMoptions}(x)
+
 \S4method{StopWords}{CMoptions}(x) <- value
 }
 \arguments{
+\item{x}{instance of class \code{\link{CMoptions}}}
+
 \item{value}{\itemize{
 \item PUBMED {A list of stop words obtained analyzing Pubmed papers}
 \item NONE {No stop words }
 }}
+}
+\value{
+The StopWords corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
 }
 \description{
 Method StopWords
 
 Method StopWords<-
 
+Method to get and set the StopWords parameter
+
 \code{StopWords<-}
 }
 \examples{
+opts <- CMoptions()
+StopWords(opts)
+
 opts <- CMoptions()
 StopWords(opts) <- 'NONE'
 }

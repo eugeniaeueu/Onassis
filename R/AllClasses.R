@@ -25,16 +25,14 @@ NULL
 
 #' Onassis-class
 #'
-#' @name Onassis-class
-#' @rdname Onassis-class
 #' @description Onassis is a container class for annotating samples metadata with concepts from dictionaries/ontologies, creating semantic sets of unique annotations, computing the distances between different semantic sets and eventually comparing the different identified conditions.
 #' @slot dictionary One or more input dictionaries to annotate samples metadata
 #' @slot entities a data frame containing the result of the annotation of the input with ontology terms
 #' @slot similarity A matrix of the similarities between the entries in the entities slot
-#' @slot score An optional score matrix containing genomic units on the rows (genes, regions) and on the columns the elements on the rows of the entities slot
+#' @slot scores An optional score matrix containing genomic units on the rows (genes, regions) and on the columns the elements on the rows of the entities slot
 #' @details The following methods can be applied to Onassis
 #'
-#'\code{\link{annot}} \cr
+#'\code{\link{annotate}} \cr
 #'\code{\link{collapse}} \cr
 #'\code{\link{compare}} \cr
 #' @exportClass Onassis
@@ -80,7 +78,7 @@ setClass(Class = "Onassis", representation(dictionary = "character",
 #'
 #'\item{taxID The NCBI taxon identifier for species to create the Entrez gene dictionary (e.g 9606 for Mus musculus)}
 #'}
-#' @details The following methods can be applied to CMdictionary
+#' @details The following methods can be applied to CMdictionary instances
 #'
 #' \code{\link{dict_location}} \cr
 #' \code{\link{dict_location<-}} \cr
@@ -88,6 +86,9 @@ setClass(Class = "Onassis", representation(dictionary = "character",
 #' \code{\link{dictInfo<-}} \cr
 #' \code{\link{dictRef}} \cr
 #' \code{\link{dictRef<-}} \cr
+#'
+#' To show the available dictionary types use the function
+#' \code{\link{dictTypes}} \cr
 #' @examples
 #'dict <- new('CMdictionary')
 setClass(Class = "CMdictionary", representation(dict_location = "character",
@@ -148,19 +149,19 @@ setClass(Class = "CMdictionary", representation(dict_location = "character",
 #'}
 #' @details The following methods can be applied to CMoptions
 #'
-#'\code{\link{show}}  \cr
-#'\code{\link{paramValueIndex}} \cr
-#'\code{\link{paramValueIndex<-}} \cr
+#' \code{\link{show}}  \cr
+#' \code{\link{paramValueIndex}} \cr
+#' \code{\link{paramValueIndex<-}} \cr
 #' \code{\link{SearchStrategy}} \cr
 #' \code{\link{SearchStrategy<-}} \cr
 #' \code{\link{CaseMatch}} \cr
 #' \code{\link{CaseMatch<-}} \cr
 #' \code{\link{Stemmer}} \cr
 #' \code{\link{Stemmer<-}} \cr
-#'\code{\link{StopWords}} \cr
-#'\code{\link{StopWords<-}} \cr
+#' \code{\link{StopWords}} \cr
+#' \code{\link{StopWords<-}} \cr
 #' \code{\link{OrderIndependentLookup}} \cr
-#' \code{\link{OrderIndependentLookup<-}} \cr
+#' \code{\link{OrderIndependentLookup}} \cr
 #' \code{\link{FindAllMatches}} \cr
 #' \code{\link{FindAllMatches<-}} \cr
 #' \code{\link{SynonymType}} \cr
@@ -206,28 +207,21 @@ setClass(Class = "CMoptions", representation = representation(paramValueIndex = 
 
 
 #' EntityFinder class to create a Conceptmapper instance
-#
-#' @name EntityFinder-class
-#' @rdname EntityFinder-class
 #' @description EntityFinder is a class that wraps a Conceptmapper pipeline using the CCP UIMA Type System \url{https://github.com/UCDenver-ccp/ccp-nlp}. The pipeline includes a sentence detector, offset tokenizer and retrieves concepts from dictionaries built from  OBO/OWL formatted ontology files.
 #' @slot typeSystemRef The reference to the Java object representing the type system
 #' @details The following methods can be applied to EntityFinder
 #'
 #'\code{\link{findEntities}} \cr
+#'\code{\link{annotateDF}} \cr
+#' The methods can be automatically called using the function
+#' \code{\link{EntityFinder}} \cr
 #' @examples
 #' finder <- new('EntityFinder')
-#' @exportClass EntityFinder
-#' @export
 setClass(Class = "EntityFinder", representation = representation(typeSystemRef = "jobjRef"))
-
-
-
 
 
 #' Similarity class to compute similarities between concepts in ontologies and samples annotated with different concepts
 #'\code{Similarity-class}
-#' @name Similarity-class
-#' @rdname Similarity-class
 #' @description Similarity is a class that wraps some methods of the Java library slib \url{http://www.semantic-measures-library.org/sml/}. Starting from OBO ontologies it is possible to build semantic graphs that allow the computation of different similarity measures between concepts belonging to the same ontology, group of concepts, samples annotated with different ontology concepts. Further details about the graph based semantic similarity measures are available at \url{http://www.semantic-measures-library.org/sml/index.php?q=doc_graph_based_advanced}
 #' @slot similarityInstance The Java reference to the Java Similarity class.
 #' @slot pairwiseConfig The list of measures used to compute the semantic similarity between two concpets in the same ontology.
@@ -242,10 +236,10 @@ setClass(Class = "EntityFinder", representation = representation(typeSystemRef =
 #'\code{\link{ontology<-}} \cr
 #'\code{\link{pairwiseConfig}} \cr
 #'\code{\link{groupConfig}} \cr
-#'\code{\link{showOpts}} \cr
 #'\code{\link{sim}} \cr
 #'\code{\link{groupsim}} \cr
 #'\code{\link{samplesim}} \cr
+#' To see the available similarity measures run the function \code{\link{listSimilarities}}
 #' @examples
 #' sim <- new('Similarity')
 #'

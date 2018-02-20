@@ -5,10 +5,8 @@
 \alias{scores}
 \alias{scores<-}
 \alias{scores<-,Onassis-method}
-\alias{scores<-}
 \alias{scores,Onassis-method}
-\alias{scores}
-\title{Method scores}
+\title{\code{scores<-}}
 \usage{
 scores(object)
 
@@ -18,19 +16,15 @@ scores(object) <- value
 
 \S4method{scores}{Onassis}(object)
 }
-\value{
-The Onassis object
+\arguments{
+\item{object}{instance of class \code{\link{Onassis-class}}}
 
-Ontology object
+\item{value}{a matrix of scores}
 }
 \description{
-Method scores
+This method gets and sets the \code{scores} slot of a class \code{\link{Onassis-class}}
 
-Method scores<-
-
-This method sets the score of Onassis
-
-This method shows the score matrix in Onassis.
+\code{scores}
 }
 \examples{
 onassis <- Onassis()

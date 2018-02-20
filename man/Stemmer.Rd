@@ -4,6 +4,7 @@
 \name{Stemmer}
 \alias{Stemmer}
 \alias{Stemmer<-}
+\alias{Stemmer,CMoptions-method}
 \alias{Stemmer<-,CMoptions-method}
 \title{Method Stemmer}
 \usage{
@@ -11,23 +12,35 @@ Stemmer(x)
 
 Stemmer(x) <- value
 
+\S4method{Stemmer}{CMoptions}(x)
+
 \S4method{Stemmer}{CMoptions}(x) <- value
 }
 \arguments{
+\item{x}{instance of class \code{\link{CMoptions}}}
+
 \item{value}{\itemize{
 \item BIOLEMMATIZER {A stemmer specific for biomedical literature}
 \item PORTER {A stemmer that removes the commoner morphological and inflexional endings from words in English}
 \item NONE {No word stemming}
 }}
 }
+\value{
+The Stemmer corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
+}
 \description{
 Method Stemmer
 
 Method Stemmer<-
 
+Method to get and set the Stemmer parameter
+
 \code{Stemmer<-}
 }
 \examples{
+opts <- CMoptions()
+Stemmer(opts)
+
 opts <- CMoptions()
 Stemmer(opts) <- 'PORTER'
 }

@@ -3,7 +3,7 @@
 \docType{methods}
 \name{filterconcepts}
 \alias{filterconcepts}
-\alias{filterconcepts}
+\alias{filterconcepts,Onassis-method}
 \title{\code{filterconcepts}}
 \usage{
 filterconcepts(onassis, concepts_to_filter)
@@ -11,19 +11,19 @@ filterconcepts(onassis, concepts_to_filter)
 \S4method{filterconcepts}{Onassis}(onassis, concepts_to_filter = c())
 }
 \arguments{
-\item{onassis}{An object of class Onassis with already annotated entities}
+\item{onassis}{An object of class \code{\link{Onassis-class}} with already annotated entities}
 
 \item{concepts_to_filter}{A vector with unwanted concepts}
 }
 \description{
-This method filter unwanted concepts from the entities of an onassis object
+This method filters unwanted concepts from the entities of an \code{\link{Onassis-class}} object
 }
 \examples{
 geo_chip <- readRDS(system.file('extdata', 'vignette_data',
 'GEO_human_chip.rds', package='Onassis'))
 geo_chip <- geo_chip[sample(nrow(geo_chip), 15) ,]
 obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-onassis_results <- annot(geo_chip, "OBO", dictionary=obo)
-filtered_onassis <- filterconcepts(onassi_results, c('cell'))
+onassis_results <- annotate(geo_chip, "OBO", dictionary=obo)
+filtered_onassis <- filterconcepts(onassis_results, c('cell'))
 
 }

@@ -17,7 +17,7 @@ Imports:
 SystemRequirements: Java (>= 1.8)
 RoxygenNote: 6.0.1
 VignetteBuilder: rmarkdown, knitr
-Suggests: BiocStyle, rmarkdown, knitr,  htmltools, DT, org.Hs.eg.db, gplots, GenomicRanges, tools
+Suggests: BiocStyle, rmarkdown, knitr,  htmltools, DT, org.Hs.eg.db, gplots, GenomicRanges 
 Encoding: UTF-8
 LazyData: yes
 biocViews: Annotation, DataImport, Clustering, Network, Software, GeneTarget

@@ -280,11 +280,12 @@ myopts
 
 ## Running the entity finder
 
-The class `EntityFinder` has methods to find concepts of any OBO ontology in a given text. The `findEntities` and `annotateDF` methods accept text within files or data.frame, respetively, as described in Section 3.1. Alternatively, the function `annotate` automatically adapts to the provided input type. 
+The class `EntityFinder` is used to define a type system and run the Conceptmapper pipeline. It can find concepts of any OBO ontology in a given text. The `findEntities` and `annotateDF` methods accept text within files or data.frame, respetively, as described in Section 3.1.
+The function `EntityFinder` automatically adapts to the provided input type, creates an instance of the `EntityFinder` class to initialize the type system and runs the pipeline with the provided options and dictionary. 
 For example, to annotate the metadata derived from ChIP-seq experiments obtained from SRA with tissue and cell type concepts belonging to BRENDA ontology the following code can be used:
 
-```{r annotateDF, echo=TRUE, eval=TRUE}
-chipseq_dict_annot <- annotate(sra_chip_seq[1:20,c('sample_accession', 'title', 'experiment_attribute', 'sample_attribute', 'description')], dictionary=sample_dict, options=myopts)
+```{r EntityFinder, echo=TRUE, eval=TRUE}
+chipseq_dict_annot <- EntityFinder(sra_chip_seq[1:20,c('sample_accession', 'title', 'experiment_attribute', 'sample_attribute', 'description')], dictionary=sample_dict, options=myopts)
 
 ```
 
@@ -316,12 +317,12 @@ knitr::kable(head(chipseq_dict_annot, 20), rownames=FALSE,
 
 \r
 \r
-The function `annotate` can also be used to identify the targeted entity of each ChIP-seq experiment, by retrieving gene names and histone types or modifications in the ChIP-seq metadata.   
+The function `EntityFinder` can also be used to identify the targeted entity of each ChIP-seq experiment, by retrieving gene names and histone types or modifications in the ChIP-seq metadata.   
 
 ```{r annotateGenes, echo=TRUE, eval=TRUE, message=FALSE}
 
 #Finding the TARGET entities
-target_entities <- annotate(inputFileorDf=sra_chip_seq[1:20,c('sample_accession', 'title', 'experiment_attribute', 'sample_attribute', 'description')], options = myopts, dictionary=targets) 
+target_entities <- EntityFinder(input=sra_chip_seq[1:20,c('sample_accession', 'title', 'experiment_attribute', 'sample_attribute', 'description')], options = myopts, dictionary=targets) 
 ```
 
 ```{r printKable, echo=FALSE, eval=TRUE}
@@ -351,11 +352,11 @@ With Onassis it is possible to quantify the semantic similarity between the conc
 The following methods are available and are automatically chosen depending on the settings of the `Similarity` function. The `sim` and `groupsim` methods allow the computation of semantic similarity between single terms (pairwise measures) and between group of terms (groupwise measures), respectively. Pairwise measures can be edge based, if they rely only on the structure of the ontology, or information-content based if they also consider the information that each term in the ontology carries. Rather, groupwise measures can be indirect, if they compute the pairwise similarity between each couple of terms, or direct if they consider each set of concepts as a whole.
 The `samplesim` method allows to determine the semantic similarity between two documents, each possibly associated to multiple concepts, using groupwise measures. Finally, the `multisim` method allows to determine the semantic similarity between documents annotated with two or more ontologies: first `samplesim` is run for each ontology, then a user defined function can be used to aggregate the resulting semantic similarities for each pair of documents.  
 
-The function `showSimilarities` shows all the measures supported by Onassis. For details about the measures run `{?Similarity}`.
+The function `listSimilarities` shows all the measures supported by Onassis. For details about the measures run `{?Similarity}`.
 
 ```{r similarity, echo=TRUE, eval=TRUE, message=FALSE}
 #Instantiating the Similarity
-similarities <- showSimilarities()
+similarities <- listSimilarities()
 ```
 
 The following example shows the pairwise similarities between sample cell concepts obtained annotating the ChIP-seq metadata. The <b>resnik</b> similarity measure is used by default, which is based on the information content of the most informative common ancestor of the considered concepts. In particular, the <b> seco </b> information content is used by default, which determines the specificity of each concept based on the number of concepts it subsumes. 
@@ -372,7 +373,7 @@ for(i in 1:(n-1)){
   j = i + 1 
   for(k in j:n){
     term2 <- as.character(found_terms[k])
-    two_term_similarity <- similarity(ontologyfile,  term1, term2 )
+    two_term_similarity <- Similarity(ontologyfile,  term1, term2 )
     new_row <- cbind(term1, term2, two_term_similarity)
     pairwise_results <- rbind(pairwise_results, new_row )
   }
@@ -413,7 +414,7 @@ In the following code the semantic similarity between two groups of terms is com
 
 ```{r groupwise_measures, echo=TRUE, eval=TRUE, message=FALSE}
 
-similarity(obo, found_terms[1:2], found_terms[3])
+Similarity(obo, found_terms[1:2], found_terms[3])
 
 ```
 
@@ -433,7 +434,7 @@ for(i in 1:(n-1)){
   j = i + 1 
   for(k in j:n){
     sample2 <- as.character(annotated_samples[k])
-    two_samples_similarity <- similarity(ontologyfile, sample1, sample2, chipseq_dict_annot)
+    two_samples_similarity <- Similarity(ontologyfile, sample1, sample2, chipseq_dict_annot)
     samples_results[i, k] <- samples_results[k, i] <- two_samples_similarity
   }
 }

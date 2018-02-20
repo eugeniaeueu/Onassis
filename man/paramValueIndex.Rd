@@ -4,6 +4,7 @@
 \name{paramValueIndex}
 \alias{paramValueIndex}
 \alias{paramValueIndex<-}
+\alias{paramValueIndex,CMoptions-method}
 \alias{paramValueIndex<-,CMoptions-method}
 \title{Method paramValueIndex}
 \usage{
@@ -11,19 +12,31 @@ paramValueIndex(x)
 
 paramValueIndex(x) <- value
 
+\S4method{paramValueIndex}{CMoptions}(x)
+
 \S4method{paramValueIndex}{CMoptions}(x) <- value
 }
 \arguments{
+\item{x}{instance of class \code{\link{CMoptions}}}
+
 \item{value}{Index corresponding to a given parameter combination}
+}
+\value{
+The paramValueIndex corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
 }
 \description{
 Method paramValueIndex
 
 Method paramValueIndex<-
 
+Method to get and set the parameter combination index corresponding to a given parameter combination. The value of the paramValueIndex lays in the range [0:575]
+
 \code{paramValueIndex<-}
 }
 \examples{
+opts <- CMoptions()
+paramValueIndex(opts)
+
 opts <- CMoptions()
 paramValueIndex(opts) <- 2
 }

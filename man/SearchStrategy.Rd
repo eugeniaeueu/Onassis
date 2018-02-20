@@ -4,6 +4,7 @@
 \name{SearchStrategy}
 \alias{SearchStrategy}
 \alias{SearchStrategy<-}
+\alias{SearchStrategy,CMoptions-method}
 \alias{SearchStrategy<-,CMoptions-method}
 \title{Method SearchStrategy}
 \usage{
@@ -11,9 +12,13 @@ SearchStrategy(x)
 
 SearchStrategy(x) <- value
 
+\S4method{SearchStrategy}{CMoptions}(x)
+
 \S4method{SearchStrategy}{CMoptions}(x) <- value
 }
 \arguments{
+\item{x}{instance of class \code{\link{CMoptions}}}
+
 \item{value}{The matching strategy for finding concepts in the input text
 \itemize{
 \item{CONTIGUOUS_MATCH}{Longets match of contiguous tokens within enclosing span}
@@ -21,14 +26,22 @@ SearchStrategy(x) <- value
 \item{SKIP_ANY_MATCH_ALLOW_OVERLAP}{Longest match of not-necessarily contiguous tokens, overlapping matches are allowed}
 }}
 }
+\value{
+The SearchStrategy corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
+}
 \description{
 Method SearchStrategy
 
 Method SearchStrategy<-
 
+Method to get and set the SearchStrategy parameter
+
 \code{SearchStrategy<-}
 }
 \examples{
+opts <- CMoptions()
+SearchStrategy(opts)
+
 opts <- CMoptions()
 SearchStrategy(opts) <- 'SKIP_ANY_MATCH_ALLOW_OVERLAP'
 }

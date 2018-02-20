@@ -4,29 +4,38 @@
 \name{OrderIndependentLookup}
 \alias{OrderIndependentLookup}
 \alias{OrderIndependentLookup<-}
+\alias{OrderIndependentLookup,CMoptions-method}
 \alias{OrderIndependentLookup<-,CMoptions-method}
-\title{Method OrderIndependentLookup}
+\title{\code{OrderIndependentLookup}}
 \usage{
 OrderIndependentLookup(x)
 
 OrderIndependentLookup(x) <- value
 
+\S4method{OrderIndependentLookup}{CMoptions}(x)
+
 \S4method{OrderIndependentLookup}{CMoptions}(x) <- value
 }
 \arguments{
+\item{x}{instance of class \code{\link{CMoptions}}}
+
 \item{value}{\itemize{
 \item ON {Ordering within span is ignored (i.e. 'Breast cancer' would equal 'Cancer breast') }
 \item OFF {Ordering is taken into consideration}
 }}
 }
+\value{
+The OrderIndependentLookup corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
+}
 \description{
-Method OrderIndependentLookup
-
-Method OrderIndependentLookup<-
+Method to get and set the OrderIndependentLookup parameter
 
 \code{OrderIndependentLookup<-}
 }
 \examples{
 opts <- CMoptions()
-OrderIndependentLookup(opts) <- 'YES'
+OrderIndependentLookup(opts)
+
+opts <- CMoptions()
+OrderIndependentLookup(opts) <- 'ON'
 }

@@ -5,10 +5,8 @@
 \alias{simil}
 \alias{simil<-}
 \alias{simil<-,Onassis-method}
-\alias{simil<-}
 \alias{simil,Onassis-method}
-\alias{simil}
-\title{Method simil}
+\title{\code{simil<-}}
 \usage{
 simil(object)
 
@@ -18,19 +16,15 @@ simil(object) <- value
 
 \S4method{simil}{Onassis}(object)
 }
-\value{
-The Onassis object
+\arguments{
+\item{object}{instance of class \code{\link{Onassis-class}}}
 
-Ontology object
+\item{value}{a matrix of similarities between the entities of an object of class \code{\link{Onassis-class}}}
 }
 \description{
-Method simil
+Method to get and set the \code{similarity} slot of the class \code{\link{Onassis-class}}
 
-Method simil<-
-
-This method sets the similarity of Onassis
-
-This method shows the similarity matrix in Onassis.
+\code{simil}
 }
 \examples{
 onassis <- Onassis()

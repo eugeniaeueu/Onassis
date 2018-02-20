@@ -34,9 +34,9 @@ Method to get and set a list of info about the dictionary
 \code{dictInfo<-}
 }
 \examples{
-dictionary <- CMdictionary()
+dictionary <- new('CMdictionary')
 dictInfo(dictionary)
-dictionary <- CMdictionary()
+dictionary <- new('CMdictionary')
 dictInfo(dictionary) <-
 list(Dictionary_type =  'ENTREZ from OrgDb', Dictionary_source ='OrgDb')
 }

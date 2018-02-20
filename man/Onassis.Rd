@@ -18,7 +18,7 @@ Onassis(dictionary = NA_character_, entities = data.frame(),
 
 \item{similarity}{A matrix of the similarities between entities}
 
-\item{score}{The result of comparisons of the elements in the entities}
+\item{scores}{The result of comparisons of the elements in the entities}
 }
 \value{
 An object of type Onassis that can be used to analyze metadata

@@ -8,7 +8,7 @@
 CMdictionary is a class that wraps a Conceptmapper ccp-nlp Java dictionary. Its methods allow the creation of a dictionary from OBO ontologies in OBO or OWL format. Different options to build the dictionary are available.
 }
 \details{
-The following methods can be applied to CMdictionary
+The following methods can be applied to CMdictionary instances
 
 \code{\link{dict_location}} \cr
 \code{\link{dict_location<-}} \cr
@@ -16,6 +16,9 @@ The following methods can be applied to CMdictionary
 \code{\link{dictInfo<-}} \cr
 \code{\link{dictRef}} \cr
 \code{\link{dictRef<-}} \cr
+
+To show the available dictionary types use the function
+\code{\link{dictTypes}} \cr
 }
 \section{Slots}{
 

@@ -4,7 +4,7 @@
 \alias{listCMOptions}
 \title{\code{listCMOptions}}
 \usage{
-listCMOptions(x)
+listCMOptions()
 }
 \value{
 The data frame with all the possible parameter combinations

@@ -1,17 +1,15 @@
 #This file contains all the methods of the class Onassis
 
-#' \code{dict<-}
-#' @rdname dict
-#' @aliases dict<-
-#' @return The Onassis object
-#' @description This method sets the dictionary of Onassis
+#' \code{dictionary<-}
+#' @rdname dictionary
+#' @param value the path of an OBO file
+#' @description Method to get and set the \code{dictionary} slot of the class \code{\link{Onassis-class}}
 #' @examples
 #' onassis <- Onassis()
 #' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-#' dict(onassis) <- obo
-#'
+#' dictionary(onassis) <- obo
 #' @export
-setReplaceMethod(f = "dict", signature = "Onassis",
+setReplaceMethod(f = "dictionary", signature = "Onassis",
                  definition = function(object, value) {
                    if (!file.exists(value))
                      stop("Invalid input ontology path")
@@ -19,30 +17,27 @@ setReplaceMethod(f = "dict", signature = "Onassis",
                    return(object)
                  })
 
-#' \code{dict}
-#' @aliases dict
-#' @return Ontology object
-#' @rdname dict
-#' @description This method shows the ontology.
+#' \code{dictionary}
+#' @return The path of the dictionary in case of get, the instance of Onassis with new dictionary in case of set
+#' @param object instance of class \code{\link{Onassis-class}}
+#' @rdname dictionary
 #' @examples
 #' o <- Onassis()
-#' dict(o)
+#' dictionary(o)
 #'
 #' @export
-setMethod(f = "dict", signature = "Onassis",
+setMethod(f = "dictionary", signature = "Onassis",
           definition = function(object) {
 
             return(object@dictionary)
           })
 
 
-#This file contains all the methods of the class Onassis
 
 #' \code{simil<-}
 #' @rdname simil
-#' @aliases simil<-
-#' @return The Onassis object
-#' @description This method sets the similarity of Onassis
+#' @description Method to get and set the \code{similarity} slot of the class \code{\link{Onassis-class}}
+#' @param value a matrix of similarities between the entities of an object of class \code{\link{Onassis-class}}
 #' @examples
 #' onassis <- Onassis()
 #' simil(onassis) <- matrix()
@@ -55,10 +50,8 @@ setReplaceMethod(f = "simil", signature = "Onassis",
                  })
 
 #' \code{simil}
-#' @aliases simil
-#' @return Ontology object
 #' @rdname simil
-#' @description This method shows the similarity matrix in Onassis.
+#' @param object instance of class \code{\link{Onassis-class}}
 #' @examples
 #' o <- Onassis()
 #' simil(o)
@@ -73,9 +66,8 @@ setMethod(f = "simil", signature = "Onassis",
 
 #' \code{entities<-}
 #' @rdname entities
-#' @aliases entities<-
-#' @return The Onassis object
-#' @description This method sets the entities of Onassis
+#' @description Method to get and set the \code{entities} slot of the class \code{\link{Onassis-class}}
+#' @param value a data frame with annotated entities
 #' @examples
 #' onassis <- Onassis()
 #' entities(onassis) <- data.frame()
@@ -88,10 +80,8 @@ setReplaceMethod(f = "entities", signature = "Onassis",
                  })
 
 #' \code{entities}
-#' @aliases entities
-#' @return Ontology object
+#' @param object instance of class \code{\link{Onassis-class}}
 #' @rdname entities
-#' @description This method shows the entities matrix in Onassis.
 #' @examples
 #' o <- Onassis()
 #' entities(o)
@@ -105,9 +95,8 @@ setMethod(f = "entities", signature = "Onassis",
 
 #' \code{scores<-}
 #' @rdname scores
-#' @aliases scores<-
-#' @return The Onassis object
-#' @description This method sets the score of Onassis
+#' @param value a matrix of scores
+#' @description This method gets and sets the \code{scores} slot of a class \code{\link{Onassis-class}}
 #' @examples
 #' onassis <- Onassis()
 #' scores(onassis) <- matrix()
@@ -120,10 +109,8 @@ setReplaceMethod(f = "scores", signature = "Onassis",
                  })
 
 #' \code{scores}
-#' @aliases scores
-#' @return Ontology object
 #' @rdname scores
-#' @description This method shows the score matrix in Onassis.
+#' @param object instance of class \code{\link{Onassis-class}}
 #' @examples
 #' o <- Onassis()
 #' scores(o)
@@ -136,9 +123,9 @@ setMethod(f = "scores", signature = "Onassis",
           })
 
 
-#' \code{annot}
+#' \code{annotate}
 #'
-#' @description This method returns and sets the location of the dictionary.
+#' @description This method annotates the entities contained in a data frame with the concepts from a specific dictionary.
 #' @param input A data frame where the first column is the ID of the sample or document to annotate
 #' @param dictType the type of input dictionary
 #'\describe{
@@ -147,47 +134,88 @@ setMethod(f = "scores", signature = "Onassis",
 #'\item{TARGET}{Entrez genes dictionary, Histone marks and Histone modifications}
 #'\item{CMDICT}{A previously created dictionary file in the Conceptmapper XML format}
 #'}
-#' @param dictionary The local OBO/OWL ontology to be converted into an XML Conceptmapper dictionary or the URL to download the file. If NA is passed and the \code{dicType} parameter is not the generic OBO then the method tries to download the corresponding dictionary from the available repositories. For ENTREZ and TARGET dictionary types a file named gene_info.gz is automatically downloaded from \url{ftp://ncbi.nlm.nih.gov/gene/data/gene_info.gz} if not provided by the user. Alternatively an annotation package of the type Org.xx.eg.db from Bioconductor can be used. In this case the gene ids and their alternative identifiers will be retrieved from the annotation database without the need of downloading a gene_info file.
+#' @param dictionary The local OBO/OWL ontology to be converted into an XML Conceptmapper dictionary or the URL to download the file. If NA is passed and the \code{dicType} parameter is not the default OBO then the method tries to download the corresponding dictionary from the available repositories. For ENTREZ and TARGET dictionary types a file named gene_info.gz can be automatically downloaded from \url{ftp://ncbi.nlm.nih.gov/gene/data/gene_info.gz} if its path is not provided by the user in this parameter. Alternatively an annotation package of the type \code{Org.xx.eg.db} from Bioconductor can be used. In this case the gene identifiers and their alternative names will be retrieved from the annotation database without the need of downloading a gene_info file.
 #' @param dictoutdir  Optional parameter to specify the location where the Conceptmapper dictionary file will be stored. Defaults to current working directory.
-#' @param d_synonymtype The type of synonyms to consider when building the dictionary for Conceptmapper. For further detail \url{http://owlcollab.github.io/oboformat/doc/obo-syntax.html}. Default: EXACT
+#' @param d_synonymtype Optional parameter to specify the type of synonyms to consider when building the dictionary for Conceptmapper. For further detail \url{http://owlcollab.github.io/oboformat/doc/obo-syntax.html}. Default: EXACT
 #'\describe{
 #'\item{EXACT}{}
 #'\item{ALL}{}
 #'}
-#' @param taxID the taxonomy identifier of the organism when the dictionary type is ENTREZ or TARGET. If 0 all the taxonomies will be included in the new dictionary.
+#' @param taxID the taxonomy identifier of the organism when the \code{dictType} = 'ENTREZ' or 'TARGET' and the \code{dictionary} parameter refers to a gene_info.gz file. If 0 all the taxonomies will be included in the new dictionary.
 #' @param disease A logical value set to TRUE if the annotation requires the 'Healthy' condition to be found.
+#' @param annot_out The path of the output directory where Conceptmapper annotation files will be stored
+#' @param paramValueIndex An integer value to index the 576 parameter combinations
+#' @param SearchStrategy The matching strategy for finding concepts in the input text
+#'\itemize{
+#'\item{CONTIGUOUS_MATCH}{Longets match of contiguous tokens within enclosing span}
+#'\item{SKIP_ANY_MATCH}{Longest match of not-necessarily contiguous tokens}
+#'\item{SKIP_ANY_MATCH_ALLOW_OVERLAP}{Longest match of not-necessarily contiguous tokens, overlapping matches are allowed}
+#'}
+#' @param CaseMatch
+#'\itemize{
+#'\item{CASE_IGNORE}{Fold everything to lowercase for matching}
+#'\item{CASE_INSENSITIVE}{Fold only tokens with initial caps to lowercase}
+#'\item{CASE_FOLD_DIGITS}{Fold all (and only) tokens with a digit}
+#'\item{CASE_SENSITIVE}{Perform no case folding}
+#'}
+#' @param Stemmer
+#'\itemize{
+#'\item BIOLEMMATIZER {A stemmer specific for biomedical literature}
+#'\item PORTER {A stemmer that removes the commoner morphological and inflexional endings from words in English}
+#'\item NONE {No word stemming}
+#'}
+#' @param StopWords
+#'\itemize{
+#'\item PUBMED {A list of stop words obtained analyzing Pubmed papers}
+#'\item NONE {No stop words }
+#'}
+#'@param OrderIndependentLookup
+#'\itemize{
+#'\item ON {Ordering within span is ignored (i.e. 'Breast cancer' would equal 'Cancer breast') }
+#'\item OFF {Ordering is taken into consideration}
+#'}
+#' @param FindAllMatches
+#'\itemize{
+#'\item YES {All the matches within the span are found }
+#'\item NO {Only the longest match within the span will be returned}
+#'}
+#' @param e_synonymtype The type of synoyms for the EntityFinder
+#'\itemize{
+#'\item EXACT_ONLY {Only exact synonyms are considered }
+#'\item ALL {All synonym types are included}
+#'}
+#' @param multipleDocs TRUE when multiple documents are loaded from a single file with each row representing a document. The file should have two columns. The first for the unique document identifier and the second for the textual descriptions
 #' @examples
 #' geo_chip <- readRDS(system.file('extdata', 'vignette_data',
 #' 'GEO_human_chip.rds', package='Onassis'))
 #'
 #' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-#' onassis_results <- annot(geo_chip, "OBO", dictionary=obo)
+#' onassis_results <- annotate(geo_chip, "OBO", dictionary=obo)
 #' entities <- entities(onassis_results)
 #' entities <- entities[sample(nrow(entities), 30),]
-#' @rdname annot
-#' @aliases annot
+#' @rdname annotate
 #' @import data.table
 #' @export
-setMethod('annot', c("data.frame", "character", "character"), function(input, dictType="OBO", dictionary=NA, dictoutdir=getwd(), d_synonymtype='EXACT', taxID=0, annot_out=getwd(), paramValueIndex=0, searchstrategy='CONTIGUOUS_MATCH', casematch='CASE_INSENSITIVE', stemmer='PORTER', stopwords='NONE', orderindependentlookup='OFF', findallmatches='NO', e_synonymtype='EXACT_ONLY', multipledocs=FALSE, disease=FALSE){
+setMethod('annotate', c("data.frame", "character", "character"), function(input, dictType="OBO", dictionary=NA, dictoutdir=getwd(), d_synonymtype='EXACT', taxID=0, annot_out=getwd(), paramValueIndex=NA, SearchStrategy='CONTIGUOUS_MATCH', CaseMatch='CASE_INSENSITIVE', Stemmer='NONE', StopWords='NONE', OrderIndependentLookup='ON', FindAllMatches='YES', e_synonymtype='ALL', multipleDocs=FALSE, disease=FALSE){
 
   #Building the dictionary
+  dict <- CMdictionary(inputFileOrDb=dictionary, dictType=dictType, outputDir=dictoutdir, synonymType=d_synonymtype, taxID=taxID)
 
-  dict <- CMdictionary(dictionary, dictType, dictoutdir, d_synonymtype, taxID)
   # Setting the annotator options for the entity finder to the default
-  myopts <- CMoptions()
-  #If user specified other arguments then use those
-  if(paramValueIndex!=0){
-    paramValueIndex(myopts) <- paramValueIndex
-  }
-  else{
-    argomenti <- as.list(c( SearchStrategy=searchstrategy, CaseMatch=casematch, Stemmer=stemmer, Stopwords=stopwords, OrderIndependentLookup=orderindependentlookup, FindAllMatches=findallmatches, SynonymType=e_synonymtype))
-    arguments(myopts) <- argomenti
-  }
+    myopts <- CMoptions(SearchStrategy=SearchStrategy,
+           CaseMatch = CaseMatch,
+           Stemmer = Stemmer,
+           StopWords = StopWords,
+           OrderIndependentLookup = OrderIndependentLookup,
+           FindAllMatches = FindAllMatches,
+           SynonymType = e_synonymtype,
+           paramValueIndex = paramValueIndex)
+  # Creating an instance of the class Onassis
   onassis <- new('Onassis')
 
   #Annotating the entitites
-  annotated_df <- annotate(inputFileorDf=input, dictionary=dict, options = myopts,
-                           outDir = annot_out, multipleDocs = FALSE)
+  annotated_df <- EntityFinder(input=input, dictionary=dict, options = myopts,
+                           outDir = annot_out, multipleDocs = multipleDocs)
 
   #Checking for 'Healthy' conditions
   if(disease){
@@ -216,33 +244,34 @@ setMethod('annot', c("data.frame", "character", "character"), function(input, di
 
   if(dictType=='OBO'){
     if(file.exists(dictionary))
-      dict(onassis) <- dictionary
+      dictionary(onassis) <- dictionary
     else if(url.exists(dictionary)){
       destination <- basename(dictionary)
-      dict(onassis) <- file.path(dictoutdir, destination)
+      dictionary(onassis) <- file.path(dictoutdir, destination)
     } }
   else
     #Creating the Onassis class to store the entitites
-    dict(onassis) <- dict_location(dict)
+    dictionary(onassis) <- dict_location(dict)
   return(onassis)
 })
 
 
 
-
 #' \code{sim}
-#'
-#' @description This method computes the similarities of the entities in an Onassis object.
+#' @param onassis instance of class \code{\link{Onassis-class}}
+#' @param iconf the information content measure see \code{pairwiseConfig} help for details
+#' @param pairconf the pairwse measure to compute semantic similarity between single concepts. See \code{pariwiseConfig} help for details
+#' @param groupconf the groupwise measure to compute semantic similarity between groups of concepts. See \code{groupConfig} help for details
+#' @description This method computes the similarities of the entities annotated in a object fo class \code{\link{Onassis-class}}.
 #' @examples
 #'geo_chip <- readRDS(system.file('extdata', 'vignette_data', 'GEO_human_chip.rds', package='Onassis'))
 #' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-#' onassis_results <- annot(geo_chip, "OBO", dictionary=obo)
+#' onassis_results <- annotate(geo_chip, "OBO", dictionary=obo)
 #' entities <- entities(onassis_results)
 #' entities(onassis_results) <- entities[sample(nrow(entities), 30),]
 #' onassis_results <- sim(onassis_results)
 #'
 #' @rdname sim
-#' @aliases sim
 #' @export
 setMethod('sim', signature=c("Onassis"), def= function(onassis, iconf='sanchez', pairconf='lin', groupconf='bma'){
 
@@ -265,7 +294,7 @@ setMethod('sim', signature=c("Onassis"), def= function(onassis, iconf='sanchez',
     trim <- function (x) gsub("^\\s+|\\s+$", "", x)
     k = nrow(unique_sets) - 1
     sim_instance <- .jnew("iit/comp/epigen/nlp/similarity/Similarity")
-    ontology_obo <- dict(onassis)
+    ontology_obo <- dictionary(onassis)
     graph <- sim_instance$loadOntology(ontology_obo)
     config_p <- sim_instance$setPairwiseConfig(pairconf, iconf)
     config_g <- sim_instance$setGroupwiseConfig(groupconf)
@@ -286,11 +315,9 @@ setMethod('sim', signature=c("Onassis"), def= function(onassis, iconf='sanchez',
         term_list2 <- trim(term_list2)
         URIs2 <- sim_instance$createURIs(.jarray(term_list2))
         if(length(term_list1)>0 & length(term_list2)>0){
-        print('termini1')
                     print(term_list1)
                     print(length(term_list1))
                     print(class(term_list2))
-          print('termini2')
                     print(term_list2)
                     print(length(term_list2))
                     print(class(term_list2))
@@ -300,12 +327,6 @@ setMethod('sim', signature=c("Onassis"), def= function(onassis, iconf='sanchez',
 
             similarity <- sm_engine$compare(config_g, config_p, URIs1, URIs2)
 
-    #      sim <- Similarity()
-    #      Onassis::ontology(sim) <-
-    #      icConfig(sim) <- iconf
-    #      pairwiseConfig(sim) <- pairconf
-    #      groupConfig(sim) <- groupconf
-    #      similarity <- groupsim(sim, as.character(as.vector(term_list1)), as.character(as.vector(term_list2)))
           semantic_net_matrix[i, j] <- semantic_net_matrix[j, i] <- similarity
           } # end if healthy
         } # end if
@@ -330,19 +351,20 @@ setMethod('sim', signature=c("Onassis"), def= function(onassis, iconf='sanchez',
 
 
 #' \code{collapse}
-#'
+#' @param onassis instance of class \code{\link{Onassis-class}}
+#' @param simil_thresh the semantic similarity threshold to use to merge similar semantic sets
 #' @description This method collapses semantic states in an Onassis object.
 #' @examples
 #'geo_chip <- readRDS(system.file('extdata', 'vignette_data',
 #' 'GEO_human_chip.rds', package='Onassis'))
 #' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-#' onassis_results <- annot(geo_chip, "OBO", dictionary=obo)
+#' onassis_results <- annotate(geo_chip, "OBO", dictionary=obo)
 #' entities <- entities(onassis_results)
 #' entities(onassis_results) <- entities[sample(nrow(entities), 15),]
 #' onassis_results <- sim(onassis_results)
 #' collapsed_onassis <- collapse(onassis_results, 0.9)
 #' @rdname collapse
-#' @aliases collapse
+#' @return a new object of class \code{\link{Onassis-class}} with collapsed annotations for the entities and a new similarity matrix of similarities between newly created semantic sets
 #' @export
 setMethod('collapse', signature=c("Onassis"), def= function(onassis, simil_thresh){
   trim <- function (x) gsub("^\\s+|\\s+$", "", x)
@@ -417,7 +439,8 @@ setMethod('collapse', signature=c("Onassis"), def= function(onassis, simil_thres
 
 
 #' \code{mergeonassis}
-#' @name mergeonassis
+#' @param onassis1 instance of class \code{\link{Onassis-class}}
+#' @param onassis2 instance of class \code{\link{Onassis-class}}
 #' @description This method unifies the entities of two Onassis objects
 #' @examples
 #'geo_chip <- readRDS(system.file('extdata', 'vignette_data',
@@ -425,13 +448,12 @@ setMethod('collapse', signature=c("Onassis"), def= function(onassis, simil_thres
 #' geo_chip <- geo_chip[sample(nrow(geo_chip), 15) ,]
 #' obo1 <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
 #' obo2 <- system.file('extdata', 'sample.do.obo', package='OnassisJavaLibs')
-#' onassis_results1 <- annot(geo_chip, "OBO", dictionary=obo1)
-#' onassis_results2 <- annot(geo_chip, "OBO", dictionary=obo2)
-#' onassis_results1 <- sim(onassis_results1)
+#' onassis_results1 <- annotate(geo_chip, "OBO", dictionary=obo1)
+#' onassis_results2 <- annotate(geo_chip, "OBO", dictionary=obo2)
 #' onassis_results <- mergeonassis(onassis_results1, onassis_results2)
 #'
 #' @rdname mergeonassis
-#' @aliases mergeonassis
+#' @return new object of type \code{\link{Onassis-class}} with merged entities
 #' @export
 setMethod('mergeonassis', signature=c("Onassis", "Onassis"), def= function(onassis1, onassis2){
   if(!class(onassis1)=='Onassis' | !class(onassis2)=='Onassis')
@@ -449,17 +471,19 @@ setMethod('mergeonassis', signature=c("Onassis", "Onassis"), def= function(onass
 
 
 #' \code{compare}
-#' @name compare
 #' @rdname compare
-#'
-#' @description This method compares a list of scored entities
+#' @param onassis instance of class \code{\link{Onassis-class}}
+#' @param score_matrix a matrix of scores containing on the rows genomic units and on the columns the samples annotated in the entities
+#' @param by 'row' if the test refers to single genomic units in multiple conditions, 'col' if the test compares all the genomic units across different conditions
+#' @param fun_name name of the test to apply
+#' @description This method compares a list of scored entities according to the semantic annotations of this entities in the semantic sets defined by a single ontology or, in case of annotations with two ontologies, the difference between second level semantic sets within a give first level semantic set (e.g. different diseases within a given tissue)
 #' @examples
 #'geo_chip <- readRDS(system.file('extdata', 'vignette_data','GEO_human_chip.rds', package='Onassis'))
 #' geo_chip <- geo_chip[sample(nrow(geo_chip), 30) ,]
 #' obo1 <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
 #' obo2 <- system.file('extdata', 'sample.do.obo', package='OnassisJavaLibs')
-#' onassis_results1 <- annot(geo_chip, "OBO", dictionary=obo1)
-#' onassis_results2 <- annot(geo_chip, "OBO", dictionary=obo2)
+#' onassis_results1 <- annotate(geo_chip, "OBO", dictionary=obo1)
+#' onassis_results2 <- annotate(geo_chip, "OBO", dictionary=obo2)
 #' n <- length(unique(geo_chip$sample_accession))
 #' m <- 50
 #' score_matrix <-   matrix(sample(0:1, m * n, replace = TRUE), m, n)
@@ -474,7 +498,6 @@ setMethod('mergeonassis', signature=c("Onassis", "Onassis"), def= function(onass
 #' comparisons3 <- compare(onassis_results1)
 #' comparisons4 <- compare(onassis_results1, by='col', fun_name='kruskal.test')
 #' @rdname compare
-#' @aliases compare
 #' @export
 setMethod('compare', signature=c("Onassis"), def= function(onassis, score_matrix=NA, by='row', fun_name='wilcox.test'  ){
   if(!is.na(score_matrix)){
@@ -596,21 +619,18 @@ setMethod('compare', signature=c("Onassis"), def= function(onassis, score_matrix
 
 
 #' \code{filterconcepts}
-#' @name filterconcepts
 #' @rdname filterconcepts
-#' @description This method filter unwanted concepts from the entities of an onassis object
-#' @param onassis An object of class Onassis with already annotated entities
+#' @description This method filters unwanted concepts from the entities of an \code{\link{Onassis-class}} object
+#' @param onassis An object of class \code{\link{Onassis-class}} with already annotated entities
 #' @param concepts_to_filter A vector with unwanted concepts
 #' @examples
 #'geo_chip <- readRDS(system.file('extdata', 'vignette_data',
 #' 'GEO_human_chip.rds', package='Onassis'))
 #' geo_chip <- geo_chip[sample(nrow(geo_chip), 15) ,]
 #' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-#' onassis_results <- annot(geo_chip, "OBO", dictionary=obo)
-#' filtered_onassis <- filterconcepts(onassi_results, c('cell'))
+#' onassis_results <- annotate(geo_chip, "OBO", dictionary=obo)
+#' filtered_onassis <- filterconcepts(onassis_results, c('cell'))
 #'
-#' @rdname filterconcepts
-#' @aliases filterconcepts
 #' @export
 setMethod('filterconcepts', signature=c("Onassis"), def= function(onassis, concepts_to_filter=c()){
   trim <- function (x) gsub("^\\s+|\\s+$", "", x)

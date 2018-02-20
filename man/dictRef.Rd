@@ -30,9 +30,9 @@ This method retrieves and sets the java reference the conceptmapper dictionary
 \code{dictRef<-}
 }
 \examples{
-dictionary <- CMdictionary()
+dictionary <- new('CMdictionary')
 dictRef(dictionary)
-dictionary <- CMdictionary()
+dictionary <- new('CMdictionary')
 dict_file <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
 dictRef(dictionary) <- .jnew('java/io/File', dict_file)
 }

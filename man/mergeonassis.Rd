@@ -3,12 +3,20 @@
 \docType{methods}
 \name{mergeonassis}
 \alias{mergeonassis}
-\alias{mergeonassis}
+\alias{mergeonassis,Onassis,Onassis-method}
 \title{\code{mergeonassis}}
 \usage{
 mergeonassis(onassis1 = NA, onassis2 = NA)
 
 \S4method{mergeonassis}{Onassis,Onassis}(onassis1 = NA, onassis2 = NA)
+}
+\arguments{
+\item{onassis1}{instance of class \code{\link{Onassis-class}}}
+
+\item{onassis2}{instance of class \code{\link{Onassis-class}}}
+}
+\value{
+new object of type \code{\link{Onassis-class}} with merged entities
 }
 \description{
 This method unifies the entities of two Onassis objects
@@ -19,9 +27,8 @@ geo_chip <- readRDS(system.file('extdata', 'vignette_data',
 geo_chip <- geo_chip[sample(nrow(geo_chip), 15) ,]
 obo1 <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
 obo2 <- system.file('extdata', 'sample.do.obo', package='OnassisJavaLibs')
-onassis_results1 <- annot(geo_chip, "OBO", dictionary=obo1)
-onassis_results2 <- annot(geo_chip, "OBO", dictionary=obo2)
-onassis_results1 <- sim(onassis_results1)
+onassis_results1 <- annotate(geo_chip, "OBO", dictionary=obo1)
+onassis_results2 <- annotate(geo_chip, "OBO", dictionary=obo2)
 onassis_results <- mergeonassis(onassis_results1, onassis_results2)
 
 }

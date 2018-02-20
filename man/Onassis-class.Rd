@@ -10,7 +10,7 @@ Onassis is a container class for annotating samples metadata with concepts from 
 \details{
 The following methods can be applied to Onassis
 
-\code{\link{annot}} \cr
+\code{\link{annotate}} \cr
 \code{\link{collapse}} \cr
 \code{\link{compare}} \cr
 }
@@ -23,6 +23,6 @@ The following methods can be applied to Onassis
 
 \item{\code{similarity}}{A matrix of the similarities between the entries in the entities slot}
 
-\item{\code{score}}{An optional score matrix containing genomic units on the rows (genes, regions) and on the columns the elements on the rows of the entities slot}
+\item{\code{scores}}{An optional score matrix containing genomic units on the rows (genes, regions) and on the columns the elements on the rows of the entities slot}
 }}
 

@@ -5,10 +5,8 @@
 \alias{entities}
 \alias{entities<-}
 \alias{entities<-,Onassis-method}
-\alias{entities<-}
 \alias{entities,Onassis-method}
-\alias{entities}
-\title{Method entities}
+\title{\code{entities<-}}
 \usage{
 entities(object)
 
@@ -18,19 +16,15 @@ entities(object) <- value
 
 \S4method{entities}{Onassis}(object)
 }
-\value{
-The Onassis object
+\arguments{
+\item{object}{instance of class \code{\link{Onassis-class}}}
 
-Ontology object
+\item{value}{a data frame with annotated entities}
 }
 \description{
-Method entities
+Method to get and set the \code{entities} slot of the class \code{\link{Onassis-class}}
 
-Method entities<-
-
-This method sets the entities of Onassis
-
-This method shows the entities matrix in Onassis.
+\code{entities}
 }
 \examples{
 onassis <- Onassis()

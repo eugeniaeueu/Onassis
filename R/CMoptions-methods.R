@@ -22,7 +22,7 @@ setMethod("show", "CMoptions", function(object) {
 })
 
 #' \code{paramValueIndex}
-#'
+#' @rdname paramValueIndex
 #' @description Method to get and set the parameter combination index corresponding to a given parameter combination. The value of the paramValueIndex lays in the range [0:575]
 #' @param x instance of class \code{\link{CMoptions}}
 #' @return The paramValueIndex corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
@@ -30,6 +30,7 @@ setMethod("show", "CMoptions", function(object) {
 #' opts <- CMoptions()
 #' paramValueIndex(opts)
 #'
+#' @export
 setMethod("paramValueIndex", "CMoptions", function(x) {
     as.character(x@paramValueIndex)
 })
@@ -42,6 +43,7 @@ setMethod("paramValueIndex", "CMoptions", function(x) {
 #' @examples
 #' opts <- CMoptions()
 #' paramValueIndex(opts) <- 2
+#' @export
 setReplaceMethod("paramValueIndex", "CMoptions", function(x,
     value) {
     options_combinations <- readRDS(system.file("extdata",
@@ -62,16 +64,17 @@ setReplaceMethod("paramValueIndex", "CMoptions", function(x,
 
 
 #' \code{SearchStrategy}
-#'
-#' @description Method to get and set the searchStrategy parameter
+#' @rdname SearchStrategy
+#' @description Method to get and set the SearchStrategy parameter
 #' @param x instance of class \code{\link{CMoptions}}
-#' @return The searchStrategy corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
+#' @return The SearchStrategy corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
 #' @examples
 #' opts <- CMoptions()
 #' SearchStrategy(opts)
 #'
+#' @export
 setMethod("SearchStrategy", "CMoptions", function(x) {
-  as.character(x@searchStrategy)
+  as.character(x@SearchStrategy)
 })
 
 
@@ -84,6 +87,7 @@ setMethod("SearchStrategy", "CMoptions", function(x) {
 #'\item{SKIP_ANY_MATCH}{Longest match of not-necessarily contiguous tokens}
 #'\item{SKIP_ANY_MATCH_ALLOW_OVERLAP}{Longest match of not-necessarily contiguous tokens, overlapping matches are allowed}
 #'}
+#' @export
 #' @examples
 #' opts <- CMoptions()
 #' SearchStrategy(opts) <- 'SKIP_ANY_MATCH_ALLOW_OVERLAP'
@@ -109,13 +113,13 @@ setReplaceMethod("SearchStrategy", "CMoptions", function(x,
 
 #' \code{CaseMatch}
 #' @rdname CaseMatch
-#' @description Method to get and set the CaseMatch parameter
+#' @description Method to get and set the CaseMatch parameter of \code{\link{CMoptions}} instances
 #' @param x instance of class \code{\link{CMoptions}}
 #' @return The CaseMatch corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
 #' @examples
 #' opts <- CMoptions()
 #' CaseMatch(opts)
-#'
+#' @export
 setMethod("CaseMatch", "CMoptions", function(x) {
   as.character(x@CaseMatch)
 })
@@ -134,6 +138,7 @@ setMethod("CaseMatch", "CMoptions", function(x) {
 #' @examples
 #' opts <- CMoptions()
 #' CaseMatch(opts) <- 'CASE_SENSITIVE'
+#' @export
 setReplaceMethod("CaseMatch", "CMoptions", function(x,
                                                          value) {
   options_combinations <- readRDS(system.file("extdata",
@@ -158,7 +163,7 @@ setReplaceMethod("CaseMatch", "CMoptions", function(x,
 
 
 #' \code{Stemmer}
-#'
+#' @rdname Stemmer
 #' @description Method to get and set the Stemmer parameter
 #' @param x instance of class \code{\link{CMoptions}}
 #' @return The Stemmer corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
@@ -166,6 +171,7 @@ setReplaceMethod("CaseMatch", "CMoptions", function(x,
 #' opts <- CMoptions()
 #' Stemmer(opts)
 #'
+#' @export
 setMethod("Stemmer", "CMoptions", function(x) {
   as.character(x@Stemmer)
 })
@@ -183,6 +189,7 @@ setMethod("Stemmer", "CMoptions", function(x) {
 #' @examples
 #' opts <- CMoptions()
 #' Stemmer(opts) <- 'PORTER'
+#' @export
 setReplaceMethod("Stemmer", "CMoptions", function(x,
                                                     value) {
   options_combinations <- readRDS(system.file("extdata",
@@ -207,7 +214,7 @@ setReplaceMethod("Stemmer", "CMoptions", function(x,
 
 
 #' \code{StopWords}
-#'
+#' @rdname StopWords
 #' @description Method to get and set the StopWords parameter
 #' @param x instance of class \code{\link{CMoptions}}
 #' @return The StopWords corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
@@ -215,6 +222,7 @@ setReplaceMethod("Stemmer", "CMoptions", function(x,
 #' opts <- CMoptions()
 #' StopWords(opts)
 #'
+#' @export
 setMethod("StopWords", "CMoptions", function(x) {
   as.character(x@StopWords)
 })
@@ -231,6 +239,7 @@ setMethod("StopWords", "CMoptions", function(x) {
 #' @examples
 #' opts <- CMoptions()
 #' StopWords(opts) <- 'NONE'
+#' @export
 setReplaceMethod("StopWords", "CMoptions", function(x,
                                                   value) {
   options_combinations <- readRDS(system.file("extdata",
@@ -253,7 +262,7 @@ setReplaceMethod("StopWords", "CMoptions", function(x,
 
 
 #' \code{OrderIndependentLookup}
-#'
+#' @rdname OrderIndependentLookup
 #' @description Method to get and set the OrderIndependentLookup parameter
 #' @param x instance of class \code{\link{CMoptions}}
 #' @return The OrderIndependentLookup corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
@@ -261,6 +270,7 @@ setReplaceMethod("StopWords", "CMoptions", function(x,
 #' opts <- CMoptions()
 #' OrderIndependentLookup(opts)
 #'
+#' @export
 setMethod("OrderIndependentLookup", "CMoptions", function(x) {
   as.character(x@OrderIndependentLookup)
 })
@@ -276,7 +286,8 @@ setMethod("OrderIndependentLookup", "CMoptions", function(x) {
 #'}
 #' @examples
 #' opts <- CMoptions()
-#' OrderIndependentLookup(opts) <- 'YES'
+#' OrderIndependentLookup(opts) <- 'ON'
+#' @export
 setReplaceMethod("OrderIndependentLookup", "CMoptions", function(x,
                                                     value) {
   options_combinations <- readRDS(system.file("extdata",
@@ -300,14 +311,14 @@ setReplaceMethod("OrderIndependentLookup", "CMoptions", function(x,
 
 
 #' \code{FindAllMatches}
-#'
+#' @rdname FindAllMatches
 #' @description Method to get and set the FindAllMatches parameter
 #' @param x instance of class \code{\link{CMoptions}}
 #' @return The FindAllMatches corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
 #' @examples
 #' opts <- CMoptions()
 #' FindAllMatches(opts)
-#'
+#' @export
 setMethod("FindAllMatches", "CMoptions", function(x) {
   as.character(x@FindAllMatches)
 })
@@ -324,6 +335,7 @@ setMethod("FindAllMatches", "CMoptions", function(x) {
 #' @examples
 #' opts <- CMoptions()
 #' FindAllMatches(opts) <- 'YES'
+#' @export
 setReplaceMethod("FindAllMatches", "CMoptions", function(x,
                                                                  value) {
   options_combinations <- readRDS(system.file("extdata",
@@ -348,7 +360,7 @@ setReplaceMethod("FindAllMatches", "CMoptions", function(x,
 
 
 #' \code{SynonymType}
-#'
+#' @rdname SynonymType
 #' @description Method to get and set the SynonymType parameter
 #' @param x instance of class \code{\link{CMoptions}}
 #' @return The SynonymType corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
@@ -356,6 +368,7 @@ setReplaceMethod("FindAllMatches", "CMoptions", function(x,
 #' opts <- CMoptions()
 #' SynonymType(opts)
 #'
+#' @export
 setMethod("SynonymType", "CMoptions", function(x) {
   as.character(x@SynonymType)
 })
@@ -372,6 +385,7 @@ setMethod("SynonymType", "CMoptions", function(x) {
 #' @examples
 #' opts <- CMoptions()
 #' SynonymType(opts) <- 'ALL'
+#' @export
 setReplaceMethod("SynonymType", "CMoptions", function(x,
                                                          value) {
   options_combinations <- readRDS(system.file("extdata",
@@ -448,9 +462,8 @@ setReplaceMethod("SynonymType", "CMoptions", function(x,
 #' @return The data frame with all the possible parameter combinations
 #' @examples
 #' o <- listCMOptions()
-
-
-listCMOptions <- function(x) {
+#' @export
+listCMOptions <- function() {
   options_combinations <- readRDS(system.file("extdata",
                                               "Options_table.rds", package = "Onassis"))
   options_combinations[, 1:ncol(options_combinations)]

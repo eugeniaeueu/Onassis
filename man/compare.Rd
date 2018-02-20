@@ -3,7 +3,7 @@
 \docType{methods}
 \name{compare}
 \alias{compare}
-\alias{compare}
+\alias{compare,Onassis-method}
 \title{\code{compare}}
 \usage{
 compare(onassis, ...)
@@ -11,16 +11,27 @@ compare(onassis, ...)
 \S4method{compare}{Onassis}(onassis, score_matrix = NA, by = "row",
   fun_name = "wilcox.test")
 }
+\arguments{
+\item{onassis}{instance of class \code{\link{Onassis-class}}}
+
+\item{...}{Optional parameters}
+
+\item{score_matrix}{a matrix of scores containing on the rows genomic units and on the columns the samples annotated in the entities}
+
+\item{by}{'row' if the test refers to single genomic units in multiple conditions, 'col' if the test compares all the genomic units across different conditions}
+
+\item{fun_name}{name of the test to apply}
+}
 \description{
-This method compares a list of scored entities
+This method compares a list of scored entities according to the semantic annotations of this entities in the semantic sets defined by a single ontology or, in case of annotations with two ontologies, the difference between second level semantic sets within a give first level semantic set (e.g. different diseases within a given tissue)
 }
 \examples{
 geo_chip <- readRDS(system.file('extdata', 'vignette_data','GEO_human_chip.rds', package='Onassis'))
 geo_chip <- geo_chip[sample(nrow(geo_chip), 30) ,]
 obo1 <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
 obo2 <- system.file('extdata', 'sample.do.obo', package='OnassisJavaLibs')
-onassis_results1 <- annot(geo_chip, "OBO", dictionary=obo1)
-onassis_results2 <- annot(geo_chip, "OBO", dictionary=obo2)
+onassis_results1 <- annotate(geo_chip, "OBO", dictionary=obo1)
+onassis_results2 <- annotate(geo_chip, "OBO", dictionary=obo2)
 n <- length(unique(geo_chip$sample_accession))
 m <- 50
 score_matrix <-   matrix(sample(0:1, m * n, replace = TRUE), m, n)

@@ -30,8 +30,8 @@ A method to get and set the location of  \code{\link{CMdictionary}}
 \code{dict_location<-}
 }
 \examples{
-dictionary <- CMdictionary()
+dictionary <- new('CMdictionary')
 loc <- dict_location(dictionary)
-dictionary <- CMdictionary()
+dictionary <- new('CMdictionary')
 dict_location(dictionary) <- getwd()
 }

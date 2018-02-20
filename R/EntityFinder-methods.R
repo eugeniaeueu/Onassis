@@ -1,12 +1,11 @@
 #' \code{typeSystemRef}
 #'
 #' @description This method sets the type system to the ccp-nlp one to run the EntityFinder
-#' @rdname EntityFinder-class
-#' @aliases typeSystemRef, EntityFinder-method
 #' @return the reference to the Java type system currently set
+#' @rdname typeSystemRef
 #' @param x instance of the class EntityFinder
 #' @examples
-#' ef <- EntityFinder()
+#' ef <- new('EntityFinder')
 #' typeSystemRef(ef)
 #' @export
 setMethod("typeSystemRef", "EntityFinder", function(x) {
@@ -16,13 +15,12 @@ setMethod("typeSystemRef", "EntityFinder", function(x) {
 
 
 #' \code{typeSystemRef<-}
-#' @aliases typeSystemRef<-,EntityFinder-method
 #' @description This method sets the type system to the ccp-nlp one to run the EntityFinder
 #' @param value the java type system to detect concepts from ontologies.
-#' @rdname EntityFinder-class
+#' @rdname typeSystemRef
 #' @return The updated EntityFinder S4 object
 #' @examples
-#' ef <- EntityFinder()
+#' ef <- new('EntityFinder')
 #'type_system_array_list <- .jnew('java/util/ArrayList')
 #' ccp_nlp_type_system <- .jfield('edu/ucdenver/ccp/nlp/uima/util/TypeSystemUtil',
 #'  name = 'CCP_TYPE_SYSTEM')
@@ -46,25 +44,26 @@ setReplaceMethod("typeSystemRef", "EntityFinder", function(x,
 
 #' \code{findEntities}
 #'
-#' @description This method finds concepts of a Conceptmapper Dictionary of type CMdictionary in a given directory or in a single pipe separated file containing a named document in each row, with a specified configuration of type CMoptions.
+#' @description This method finds concepts from a Conceptmapper Dictionary of type \code{\link{CMdictionary}} in a given directory or in a single pipe separated file containing a named document in each row, with a specified configuration of type \code{\link{CMoptions}}. This is a method of the \code{\link{EntityFinder-class}}
 #' @param object instance of the class EntityFinder
 #' @param inputDirOrFile the directory where the files to annotate are stored or the text file to annotate. A single file containing in each row sample names, the | symbol and the description of the sample is also allowed.
 #' @param multipleDocs TRUE if a single file containing different text sources has been given as inputDirOrFile. FALSE if each text is in a separate file. Defaults to FALSE
 #' @param outDir The directory where the Conceptmapper annotated files are stored. Default: the system tmp directory.
 #' @param configOpt Object of type CMoptions in which the parameters to run Conceptmapper are stored
+#' @param cmDict Instance of class \code{\link{CMdictionary}} or the file path of an already created CMdictionary
 #' @return A data frame of annotations containing the sample name, the id of the OBO concept, the corresponding name, the part of the text containing the annotation
+#' @rdname findEntities
+#' @export
 #' @examples
 #' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
 #' dict <- CMdictionary(inputFileOrDb=obo, outputDir=getwd(), synonymType='ALL')
 #'
 #' opts <- CMoptions()
-#' ef <- EntityFinder()
+#' ef <- new('EntityFinder')
 #' annotations <- findEntities(ef,
 #' system.file('extdata', 'test_samples', 'test_samples.txt', package='Onassis'), multipleDocs=TRUE, outDir=getwd(),
 #'  configOpt=opts, cmDict=dict)
 #'
-#' @aliases findEntities,EntityFinder-method
-#' @rdname EntityFinder-class
 setMethod(f = "findEntities", signature(object = "EntityFinder",
     inputDirOrFile = "character", multipleDocs = "logical",
     outDir = "character", configOpt = "CMoptions",
@@ -208,23 +207,25 @@ setMethod(f = "findEntities", signature(object = "EntityFinder",
 
 
 
-
 #' \code{annotateDF}
-#' @description This method finds concepts of a Conceptmapper Dictionary of type CMdictionary of data contained in a data frame, with a specified configuration of type CMoptions.
+#' @description Method to find concepts from a Conceptmapper Dictionary of type \code{\link{CMdictionary}} contained in a given data frame, with a specified configuration of type \code{\link{CMoptions}}. This is a method of the \code{\link{EntityFinder-class}}
+#' @param object Instance of class \code{\link{EntityFinder-class}}
 #' @param descr_df the table of text to annotate. The data frame should have identifiers in the first column and descriptions or text in the rest of the columns.
-#' @param cmDict Object of type CMdictionary containing the reference to a previously created Conceptmapper dictionary. Alternatively the path to a Conceptmapper xml file can be passed.
+#' @param cmDict Object of type \code{\link{CMdictionary-class}} containing the reference to a previously created Conceptmapper dictionary. Alternatively the path to a Conceptmapper xml file can be passed.
+#' @param outDir the output directory
+#' @param configOpt instance of class \code{\link{CMoptions-class}}
 #' @return A data frame of annotations containing the sample name, the id of the OBO concept, the corresponding name, the part of the text containing the annotation
 #' @examples
 #' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-#' dict <- dictionary(inputFileOrDb=obo, outputdir=getwd(), synonymType='ALL')
+#' dict <- CMdictionary(inputFileOrDb=obo, outputDir=getwd(), synonymType='ALL')
 #' opts <- CMoptions()
-#' ef <- EntityFinder()
+#' ef <- new('EntityFinder')
 #' methylation <- readRDS(system.file('extdata', 'vignette_data',
 #' 'GEOmethylation.rds', package='Onassis'))
 #' annotations <- annotateDF(ef, methylation[1:10, ], getwd(), opts, dict)
-#' @rdname EntityFinder-class
-#' @aliases annotateDF,EntityFinder-method
 #' @import data.table
+#' @rdname annotateDF
+#' @export
 setMethod(f = "annotateDF", signature(object = "EntityFinder",
     descr_df = "data.frame", outDir = "character",
     configOpt = "CMoptions"), definition = function(object,

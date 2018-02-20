@@ -4,7 +4,7 @@
 #' @param .Object An instance of class CMdictionary
 #' @return the path of the dictionary in the file system
 #' @examples
-#' dictionary <- CMdictionary()
+#' dictionary <- new('CMdictionary')
 #' loc <- dict_location(dictionary)
 #' @exportMethod dict_location
 setMethod(f = "dict_location", signature = "CMdictionary",
@@ -18,7 +18,7 @@ setMethod(f = "dict_location", signature = "CMdictionary",
 #' @rdname dict_location
 #' @param value the path of the new dictionary
 #' @examples
-#' dictionary <- CMdictionary()
+#' dictionary <- new('CMdictionary')
 #' dict_location(dictionary) <- getwd()
 #' @exportMethod dict_location<-
 setReplaceMethod("dict_location", "CMdictionary", function(.Object,
@@ -39,7 +39,7 @@ setReplaceMethod("dict_location", "CMdictionary", function(.Object,
 #' @description Method to get and set a list of info about the dictionary
 #' @return list of details about the dictionary
 #' @examples
-#' dictionary <- CMdictionary()
+#' dictionary <- new('CMdictionary')
 #' dictInfo(dictionary)
 #' @exportMethod dictInfo
 setMethod("dictInfo", signature = "CMdictionary", definition = function(.Object) {
@@ -53,7 +53,7 @@ setMethod("dictInfo", signature = "CMdictionary", definition = function(.Object)
 #' @param value list of details about the dictionary
 #' @return object of class \code{\link{CMdictionary}}
 #' @examples
-#' dictionary <- CMdictionary()
+#' dictionary <- new('CMdictionary')
 #' dictInfo(dictionary) <-
 #' list(Dictionary_type =  'ENTREZ from OrgDb', Dictionary_source ='OrgDb')
 #' @exportMethod dictInfo<-
@@ -71,7 +71,7 @@ setReplaceMethod("dictInfo", signature = "CMdictionary",
 #' @description This method retrieves and sets the java reference the conceptmapper dictionary
 #' @param .Object An instance of class \code{\link{CMdictionary}}
 #' @examples
-#' dictionary <- CMdictionary()
+#' dictionary <- new('CMdictionary')
 #' dictRef(dictionary)
 #' @exportMethod dictRef
 setMethod("dictRef", signature = "CMdictionary", definition = function(.Object) {
@@ -84,7 +84,7 @@ setMethod("dictRef", signature = "CMdictionary", definition = function(.Object) 
 #' @param value the reference of a XML Conceptmapper dictionary file already created
 #' @exportMethod dictRef<-
 #' @examples
-#' dictionary <- CMdictionary()
+#' dictionary <- new('CMdictionary')
 #' dict_file <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
 #' dictRef(dictionary) <- .jnew('java/io/File', dict_file)
 setReplaceMethod("dictRef", signature = "CMdictionary",

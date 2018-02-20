@@ -3,17 +3,16 @@
 \docType{methods}
 \name{pairsim}
 \alias{pairsim}
-\alias{pairsim,}
-\alias{Similarity-method}
 \alias{pairsim,Similarity,character,character-method}
-\alias{pairsim}
-\title{Method sim}
+\title{\code{pairsim}}
 \usage{
 pairsim(object, term1, term2)
 
 \S4method{pairsim}{Similarity,character,character}(object, term1, term2)
 }
 \arguments{
+\item{object}{instance of class \code{\link{Similarity-class}}}
+
 \item{term1}{The URI of the ontology term in the format http://purl.obolibrary.org/obo/Ontology_id (e.g 'http://purl.obolibrary.org/obo/CL_0000542')}
 
 \item{term2}{The URI of the ontology term}
@@ -22,15 +21,13 @@ pairsim(object, term1, term2)
 the semantic similarity of the two provided concepts
 }
 \description{
-Method sim
-
 This method computes the semantic similarity between two terms of a given ontology.
 }
 \examples{
-sim <- Similarity()
+sim <- new('Similarity')
 obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
 ontology(sim) <- obo
-pairwiseConfig(sim) <- showOpts(sim)$pairwiseMeasures[9]
+pairwiseConfig(sim) <- listSimilarities()$pairwiseMeasures[9]
 similarity <- pairsim(sim, 'http://purl.obolibrary.org/obo/CL_0000542',
 'http://purl.obolibrary.org/obo/CL_0000236')
 }

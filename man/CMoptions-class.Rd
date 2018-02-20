@@ -34,7 +34,7 @@ The following methods can be applied to CMoptions
 \code{\link{StopWords}} \cr
 \code{\link{StopWords<-}} \cr
 \code{\link{OrderIndependentLookup}} \cr
-\code{\link{OrderIndependentLookup<-}} \cr
+\code{\link{OrderIndependentLookup}} \cr
 \code{\link{FindAllMatches}} \cr
 \code{\link{FindAllMatches<-}} \cr
 \code{\link{SynonymType}} \cr

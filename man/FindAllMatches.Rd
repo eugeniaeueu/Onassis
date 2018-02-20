@@ -4,6 +4,7 @@
 \name{FindAllMatches}
 \alias{FindAllMatches}
 \alias{FindAllMatches<-}
+\alias{FindAllMatches,CMoptions-method}
 \alias{FindAllMatches<-,CMoptions-method}
 \title{Method FindAllMatches}
 \usage{
@@ -11,22 +12,33 @@ FindAllMatches(x)
 
 FindAllMatches(x) <- value
 
+\S4method{FindAllMatches}{CMoptions}(x)
+
 \S4method{FindAllMatches}{CMoptions}(x) <- value
 }
 \arguments{
+\item{x}{instance of class \code{\link{CMoptions}}}
+
 \item{value}{\itemize{
 \item YES {All the matches within the span are found }
 \item NO {Only the longest match within the span will be returned}
 }}
+}
+\value{
+The FindAllMatches corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
 }
 \description{
 Method FindAllMatches
 
 Method FindAllMatches<-
 
+Method to get and set the FindAllMatches parameter
+
 \code{FindAllMatches<-}
 }
 \examples{
+opts <- CMoptions()
+FindAllMatches(opts)
 opts <- CMoptions()
 FindAllMatches(opts) <- 'YES'
 }

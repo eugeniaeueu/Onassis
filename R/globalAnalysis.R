@@ -32,14 +32,16 @@ create_score_matrix <- function(ref_granges, granges_list) {
 #'
 #' @rdname annotateTissueDisease
 #' @param geo_metadb_path The full path of the directory where the GEOmetadb.sqlite file is stored
-#' @param gsm_list A list of GEO sample ids (GSMs) to annotate with tissue and disease concepts
+#' @param gsm_list A list of GEO sample ids (GSM)s to annotate with tissue and disease concepts
 #' @param tissue_obo The obo ontology containing concepts to identify tissues/cell lines
 #' @param disease_obo The obo ontology containing concepts to identify diseases
 #' @param outdir The directory where the results will be stored
 #' @param height_threshold The percentage of clusters to merge based on the height of the dendrogram produced by the hclust method. Height_threshold is defined in the range [0, 1].
 #' @param score_matrix A matrix where rows represent units (GRanges or genes) and columns represent GSMs.
-#' @return A list of the tissue semantic sets defined by Onassis. For each tissue, a list of diseases and for each disease the columns of the score_matrix that were annotated with a given tissue and a given disease
-#' @description annotateTissueDisease connects to the GEOmetadb to retrieve the metadata of the samples provided in the gsm_list parameter. A dictionary for tissues/cell lines is built rom the tissue_obo file provided. All the samples' metadata are annotated with tissue concepts from the tissue_obo and samples are clustered based on the semantic similarity (default measure) of the samples. In particular, the samples are clustered and then the function cutree is used to cut the clustering tree at the specified height. Tissue semantic sets are then created associating all the samples that are similar above the provided height_threshold. Within each semantic set, samples are annotated with disease concepts from disease_obo parameter. For each disease the function retrieves the columns of the score matrix.
+#' @return A list of the tissue semantic sets defined by Onassis. For each tissue, a list of diseases and for each disease the columns of the \code{score_matrix} that were annotated with a given tissue and a given disease
+#' @description annotateTissueDisease is a function to automatize the annotation process of tissues and diseases. It connects to the GEOmetadb through the \code{geo_metadb_path} parameter to retrieve the metadata of the samples provided in the \code{gsm_list} parameter.
+#' A dictionary for tissues/cell lines is built from the \code{tissue_obo} file provided as parameter. All the samples' metadata are annotated with tissue concepts from the tissue_obo and samples are clustered based on the semantic similarity of the defined semantic annotation sets.
+#' To reduce the number of tissue semantic sets, similar semantic sets are merged based on a givin semantic similarity threshold provided in the \code{height_threshold} parameter. Within each semantic set, samples are annotated with disease concepts from the dictionary obtained from \code{disease_obo} parameter. For each disease the function retrieves the columns of the \code{score_matrix} to organize them in a list with tissues, diseases and scores.
 #'
 #' @examples
 #' if(!file.exists(file.path(getwd(), 'GEOmetadb.sqlite'))){
@@ -55,7 +57,6 @@ create_score_matrix <- function(ref_granges, granges_list) {
 #'      result_list <- annotateTissueDisease(geo_metadb_path, gsm_list, tissue_obo, disease_obo, outdir, height_threshold, score_matrix)
 #'      }
 #' @importFrom stats as.dist hclust quantile cutree aggregate
-#' @export
 
 annotateTissueDisease <- function(geo_metadb_path, gsm_list, tissue_obo, disease_obo,
                                   outdir, height_threshold, score_matrix) {
@@ -72,11 +73,10 @@ annotateTissueDisease <- function(geo_metadb_path, gsm_list, tissue_obo, disease
 
   message("Creating the tissue dictionary")
   outdir = tools:::file_path_as_absolute(outdir)
-  tissue_dictionary <- dictionary(inputFileOrDb = tissue_obo, dictType = "OBO",
-                                  outputdir = outdir)
+  tissue_dictionary <- CMdictionary(tissue_obo, dictType = "OBO", outdir)
 
   message("Annotatin the metadata with tissue/ cell lines")
-  tissue_annotations <- annotate(inputFileorDf = geo_metadata, dictionary = tissue_dictionary,
+  tissue_annotations <- EntityFinder(geo_metadata, dictionary = tissue_dictionary,
                                  options = CMoptions(), outDir = outdir)
 
   message("Filtering generic tissue terms")
@@ -84,11 +84,10 @@ annotateTissueDisease <- function(geo_metadb_path, gsm_list, tissue_obo, disease
                                                    c("cell")), ]
 
   message("Creating the disease dictionary")
-  disease_dictionary <- dictionary(inputFileOrDb = disease_obo, dictType = "OBO",
-                                   outputdir = outdir)
+  disease_dictionary <- CMdictionary(disease_obo, dictType = "OBO", outdir)
 
   message("Annotating diseases")
-  disease_annotations <- annotate(inputFileorDf = geo_metadata, dictionary = disease_dictionary,
+  disease_annotations <- EntityFinder(geo_metadata, dictionary = disease_dictionary,
                                   options = CMoptions(), outDir = outdir)
 
   message("Filtering generic disease terms")
@@ -118,7 +117,7 @@ annotateTissueDisease <- function(geo_metadb_path, gsm_list, tissue_obo, disease
   for (i in 1:x) {
     j = i + 1
     for (k in j:length(annotated_gsms)) similarity_matrix[i, k] <- similarity_matrix[k,
-                                                                                     i] <- similarity(ontologyFile = tissue_obo, termlist1 = annotated_gsms[i],
+                                                                                     i] <- Similarity(tissue_obo, termlist1 = annotated_gsms[i],
                                                                                                       termlist2 = annotated_gsms[k], annotatedtab = tissue_annotations)
   }
   diag(similarity_matrix) <- 1
