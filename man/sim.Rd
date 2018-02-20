@@ -22,13 +22,16 @@ sim(onassis = NA, ...)
 
 \item{groupconf}{the groupwise measure to compute semantic similarity between groups of concepts. See \code{groupConfig} help for details}
 }
+\value{
+an instance of \code{\link{Onassis-class}} with computed similarities
+}
 \description{
 This method computes the similarities of the entities annotated in a object fo class \code{\link{Onassis-class}}.
 }
 \examples{
 geo_chip <- readRDS(system.file('extdata', 'vignette_data', 'GEO_human_chip.rds', package='Onassis'))
 obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-onassis_results <- annotate(geo_chip, "OBO", dictionary=obo)
+onassis_results <- annotate(geo_chip, 'OBO', dictionary=obo)
 entities <- entities(onassis_results)
 entities(onassis_results) <- entities[sample(nrow(entities), 30),]
 onassis_results <- sim(onassis_results)

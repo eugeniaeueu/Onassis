@@ -25,7 +25,7 @@ This method collapses semantic states in an Onassis object.
 geo_chip <- readRDS(system.file('extdata', 'vignette_data',
 'GEO_human_chip.rds', package='Onassis'))
 obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-onassis_results <- annotate(geo_chip, "OBO", dictionary=obo)
+onassis_results <- annotate(geo_chip, 'OBO', dictionary=obo)
 entities <- entities(onassis_results)
 entities(onassis_results) <- entities[sample(nrow(entities), 15),]
 onassis_results <- sim(onassis_results)

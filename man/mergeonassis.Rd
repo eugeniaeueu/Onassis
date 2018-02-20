@@ -27,8 +27,8 @@ geo_chip <- readRDS(system.file('extdata', 'vignette_data',
 geo_chip <- geo_chip[sample(nrow(geo_chip), 15) ,]
 obo1 <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
 obo2 <- system.file('extdata', 'sample.do.obo', package='OnassisJavaLibs')
-onassis_results1 <- annotate(geo_chip, "OBO", dictionary=obo1)
-onassis_results2 <- annotate(geo_chip, "OBO", dictionary=obo2)
+onassis_results1 <- annotate(geo_chip, 'OBO', dictionary=obo1)
+onassis_results2 <- annotate(geo_chip, 'OBO', dictionary=obo2)
 onassis_results <- mergeonassis(onassis_results1, onassis_results2)
 
 }

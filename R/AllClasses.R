@@ -36,13 +36,13 @@ NULL
 #'\code{\link{collapse}} \cr
 #'\code{\link{compare}} \cr
 #' @exportClass Onassis
-setClass(Class = "Onassis", representation(dictionary = "character",
-                                                entities = "data.frame", similarity = "matrix", scores="matrix"), validity = function(object) {
-                                                  text <- character()
-
-                                                  if (length(text))
-                                                    text else TRUE
-                                                })
+setClass(Class = "Onassis", representation(dictionary = "character", entities = "data.frame", 
+    similarity = "matrix", scores = "matrix"), validity = function(object) {
+    text <- character()
+    
+    if (length(text)) 
+        text else TRUE
+})
 
 
 
@@ -91,12 +91,12 @@ setClass(Class = "Onassis", representation(dictionary = "character",
 #' \code{\link{dictTypes}} \cr
 #' @examples
 #'dict <- new('CMdictionary')
-setClass(Class = "CMdictionary", representation(dict_location = "character",
-    dictInfo = "list", dictRef = "jobjRef"), validity = function(object) {
+setClass(Class = "CMdictionary", representation(dict_location = "character", dictInfo = "list", 
+    dictRef = "jobjRef"), validity = function(object) {
     text <- character()
-    if (is.na(object@dict_location) | !file.exists(object@dict_location))
+    if (is.na(object@dict_location) | !file.exists(object@dict_location)) 
         text <- c("Invalid directory Path: You should provide a valid directory for the Conceptmapper dictionary")
-    if (length(text))
+    if (length(text)) 
         text else TRUE
 })
 
@@ -105,7 +105,7 @@ setClass(Class = "CMdictionary", representation(dict_location = "character",
 
 
 #' Class to set the options to run the EntityFinder
-#
+# 
 #' @description CMoptions is a class that represents Conceptmapper configurations. It allows users to set the possible combinations of different parameters for Conceptmapper running.
 #' @slot paramValueIndex An integer value to index the 576 parameter combinations
 #' @slot SearchStrategy The matching strategy for finding concepts in the input text
@@ -168,39 +168,33 @@ setClass(Class = "CMdictionary", representation(dict_location = "character",
 #' \code{\link{SynonymType<-}} \cr
 #' @examples
 #' options <- new('CMoptions')
-setClass(Class = "CMoptions", representation = representation(paramValueIndex = "character",
-                                             SearchStrategy = "character",
-                                             CaseMatch = "character",
-                                             Stemmer = "character",
-                                             StopWords = "character",
-                                             OrderIndependentLookup = "character",
-                                             FindAllMatches = "character",
-                                             SynonymType = "character"
-), validity = function(object) {
-        text <- character()
-        options_combinations <- readRDS(system.file("extdata",
-            "Options_table.rds", package = "Onassis"))
-        if (!object@paramValueIndex %in% unique(options_combinations$paramValueIndex))
-            text <- c("Invalid paramValueIndex: should be a number in [0:575]")
-        if (!object@SearchStrategy %in% unique(options_combinations$SearchStrategy))
-          text <- c(text, "Invalid SearchStrategy argument")
-        if(!object@CaseMatch %in% unique(options_combinations$CaseMatch))
-          text <- c(text, "Invalid SearchStrategy argument")
-        if(!object@Stemmer %in% unique(options_combinations$Stemmer))
-          text <- c(text, "Invalid Stemmer argument")
-        if(!object@StopWords %in% unique(options_combinations$Stopwords))
-          text <- c(text, "Invalid StopWords argument")
-        if(!object@OrderIndependentLookup %in% unique(options_combinations$OrderIndependentLookup))
-          text <- c(text, "Invalid OrderIndependentLookup argument")
-        if(!object@FindAllMatches %in% unique(options_combinations$FindAllMatches))
-          text <- c(text, "Invalid FindAllMatches argument")
-        if(!object@SynonymType %in% unique(options_combinations$SynonymType))
-          text <- c(text, "Invalid SynonymType argument")
-
-
-        if (length(text))
-            text else TRUE
-    })
+setClass(Class = "CMoptions", representation = representation(paramValueIndex = "character", 
+    SearchStrategy = "character", CaseMatch = "character", Stemmer = "character", 
+    StopWords = "character", OrderIndependentLookup = "character", FindAllMatches = "character", 
+    SynonymType = "character"), validity = function(object) {
+    text <- character()
+    options_combinations <- readRDS(system.file("extdata", "Options_table.rds", package = "Onassis"))
+    if (!object@paramValueIndex %in% unique(options_combinations$paramValueIndex)) 
+        text <- c("Invalid paramValueIndex: should be a number in [0:575]")
+    if (!object@SearchStrategy %in% unique(options_combinations$SearchStrategy)) 
+        text <- c(text, "Invalid SearchStrategy argument")
+    if (!object@CaseMatch %in% unique(options_combinations$CaseMatch)) 
+        text <- c(text, "Invalid SearchStrategy argument")
+    if (!object@Stemmer %in% unique(options_combinations$Stemmer)) 
+        text <- c(text, "Invalid Stemmer argument")
+    if (!object@StopWords %in% unique(options_combinations$Stopwords)) 
+        text <- c(text, "Invalid StopWords argument")
+    if (!object@OrderIndependentLookup %in% unique(options_combinations$OrderIndependentLookup)) 
+        text <- c(text, "Invalid OrderIndependentLookup argument")
+    if (!object@FindAllMatches %in% unique(options_combinations$FindAllMatches)) 
+        text <- c(text, "Invalid FindAllMatches argument")
+    if (!object@SynonymType %in% unique(options_combinations$SynonymType)) 
+        text <- c(text, "Invalid SynonymType argument")
+    
+    
+    if (length(text)) 
+        text else TRUE
+})
 
 
 
@@ -245,10 +239,9 @@ setClass(Class = "EntityFinder", representation = representation(typeSystemRef =
 #'
 #' @exportClass Similarity
 #' @export
-setClass(Class = "Similarity", representation = representation(similarityInstance = "jobjRef",
-    pairwiseConfig = "character", pairwiseConfigRef = "jobjRef",
-    icConfig = "character", groupConfig = "character",
-    groupwiseConfigRef = "jobjRef", ontology = "jobjRef"))
+setClass(Class = "Similarity", representation = representation(similarityInstance = "jobjRef", 
+    pairwiseConfig = "character", pairwiseConfigRef = "jobjRef", icConfig = "character", 
+    groupConfig = "character", groupwiseConfigRef = "jobjRef", ontology = "jobjRef"))
 
 
 

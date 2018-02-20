@@ -90,6 +90,9 @@ annotate(input = NA, dictType = NA, dictionary = NA, ...)
 
 \item{disease}{A logical value set to TRUE if the annotation requires the 'Healthy' condition to be found.}
 }
+\value{
+instance of class \code{\link{Onassis-class}} with annotated entities
+}
 \description{
 This method annotates the entities contained in a data frame with the concepts from a specific dictionary.
 }
@@ -98,7 +101,7 @@ geo_chip <- readRDS(system.file('extdata', 'vignette_data',
 'GEO_human_chip.rds', package='Onassis'))
 
 obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-onassis_results <- annotate(geo_chip, "OBO", dictionary=obo)
+onassis_results <- annotate(geo_chip, 'OBO', dictionary=obo)
 entities <- entities(onassis_results)
 entities <- entities[sample(nrow(entities), 30),]
 }

@@ -22,6 +22,9 @@ compare(onassis, ...)
 
 \item{fun_name}{name of the test to apply}
 }
+\value{
+The results of the comparison between semantic classes
+}
 \description{
 This method compares a list of scored entities according to the semantic annotations of this entities in the semantic sets defined by a single ontology or, in case of annotations with two ontologies, the difference between second level semantic sets within a give first level semantic set (e.g. different diseases within a given tissue)
 }
@@ -30,8 +33,8 @@ geo_chip <- readRDS(system.file('extdata', 'vignette_data','GEO_human_chip.rds',
 geo_chip <- geo_chip[sample(nrow(geo_chip), 30) ,]
 obo1 <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
 obo2 <- system.file('extdata', 'sample.do.obo', package='OnassisJavaLibs')
-onassis_results1 <- annotate(geo_chip, "OBO", dictionary=obo1)
-onassis_results2 <- annotate(geo_chip, "OBO", dictionary=obo2)
+onassis_results1 <- annotate(geo_chip, 'OBO', dictionary=obo1)
+onassis_results2 <- annotate(geo_chip, 'OBO', dictionary=obo2)
 n <- length(unique(geo_chip$sample_accession))
 m <- 50
 score_matrix <-   matrix(sample(0:1, m * n, replace = TRUE), m, n)

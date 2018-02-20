@@ -13,7 +13,7 @@ License: GPL-2
 Depends:
     R (>= 3.4), rJava, OnassisJavaLibs
 Imports:
-    GEOmetadb, RSQLite, SRAdb, data.table, methods, tools, utils, AnnotationDbi, RCurl 
+    GEOmetadb, RSQLite, SRAdb, data.table, methods, tools, utils, AnnotationDbi, RCurl, stats 
 SystemRequirements: Java (>= 1.8)
 RoxygenNote: 6.0.1
 VignetteBuilder: rmarkdown, knitr

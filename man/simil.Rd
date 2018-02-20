@@ -21,6 +21,9 @@ simil(object) <- value
 
 \item{value}{a matrix of similarities between the entities of an object of class \code{\link{Onassis-class}}}
 }
+\value{
+the similarity matrix of an object of type \code{\link{Onassis-class}} in case of get, the new \code{\link{Onassis-class}} instance in case of set
+}
 \description{
 Method to get and set the \code{similarity} slot of the class \code{\link{Onassis-class}}
 

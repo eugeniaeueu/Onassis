@@ -21,6 +21,9 @@ entities(object) <- value
 
 \item{value}{a data frame with annotated entities}
 }
+\value{
+the entities of the Onassis object in case of get and the Onassis object with new entities in case of set
+}
 \description{
 Method to get and set the \code{entities} slot of the class \code{\link{Onassis-class}}
 

@@ -7,10 +7,9 @@
 #' sim <- new('Similarity')
 #' similarityInstance(sim)
 #' @export
-setMethod(f = "similarityInstance", signature = "Similarity",
-    definition = function(object) {
-        return(object@similarityInstance)
-    })
+setMethod(f = "similarityInstance", signature = "Similarity", definition = function(object) {
+    return(object@similarityInstance)
+})
 
 
 
@@ -22,11 +21,11 @@ setMethod(f = "similarityInstance", signature = "Similarity",
 #' sim <- new('Similarity')
 #' similarityInstance(sim) <-.jnew('iit/comp/epigen/nlp/similarity/Similarity')
 #' @export
-setReplaceMethod(f = "similarityInstance", signature = "Similarity",
-    definition = function(object, value) {
-        object@similarityInstance <- value
-        return(object)
-    })
+setReplaceMethod(f = "similarityInstance", signature = "Similarity", definition = function(object, 
+    value) {
+    object@similarityInstance <- value
+    return(object)
+})
 
 
 #' \code{icConfig}
@@ -38,7 +37,7 @@ setReplaceMethod(f = "similarityInstance", signature = "Similarity",
 #' sim <- new('Similarity')
 #' icConfig(sim)
 #' @export
-setMethod("icConfig", signature = "Similarity", definition= function(object) {
+setMethod("icConfig", signature = "Similarity", definition = function(object) {
     object@icConfig
 })
 
@@ -51,8 +50,7 @@ setMethod("icConfig", signature = "Similarity", definition= function(object) {
 #' sim <- new('Similarity')
 #' icConfig(sim) <- 'sanchez'
 #' @export
-setReplaceMethod("icConfig", "Similarity", function(object,
-    value) {
+setReplaceMethod("icConfig", "Similarity", function(object, value) {
     object@icConfig <- value
     return(object)
 })
@@ -82,35 +80,32 @@ setMethod("pairwiseConfigRef", "Similarity", function(object) {
 #' sim <- new('Similarity')
 #' pairwiseConfigRef(sim) <- c('resnik')
 #' @export
-setReplaceMethod(f = "pairwiseConfigRef", signature = "Similarity",
-    definition = function(object, value) {
-        list_result <- as.list(similarityInstance(object)$showMeasures())
-        names(list_result) <- c("pairwiseMeasures",
-            "infoContentOption", "groupwiseMeasures")
-        a <- lapply(list_result, function(x) {
-            out <- .jevalArray(x$toArray())
-            out2 <- sapply(out, function(y) y$toString())
-            return(out2)
-        })
-        icShortFlag = ""
-        if (length(value) == 1) {
-            if (!value %in% a$pairwiseMeasures)
-                stop("Invalid pairwise measure. Please run listSimilarities method to visualize valid values")
-            # This is set to the default even if we are not
-            # using an IC based measure
-            icShortFlag = "sanchez"
-            if (!icShortFlag == "NA" & !icShortFlag %in%
-                a$infoContentOption)
-                stop("Invalid IC measure. Pleas run listSimilarities method to visualize valid IC options")
-
-        } else {
-            icShortFlag = value[2]
-
-        }
-        object@pairwiseConfigRef <- similarityInstance(object)$setPairwiseConfig(value[1],
-            icShortFlag)
-        return(object)
+setReplaceMethod(f = "pairwiseConfigRef", signature = "Similarity", definition = function(object, 
+    value) {
+    list_result <- as.list(similarityInstance(object)$showMeasures())
+    names(list_result) <- c("pairwiseMeasures", "infoContentOption", "groupwiseMeasures")
+    a <- lapply(list_result, function(x) {
+        out <- .jevalArray(x$toArray())
+        out2 <- sapply(out, function(y) y$toString())
+        return(out2)
     })
+    icShortFlag = ""
+    if (length(value) == 1) {
+        if (!value %in% a$pairwiseMeasures) 
+            stop("Invalid pairwise measure. Please run listSimilarities method to visualize valid values")
+        # This is set to the default even if we are not using an IC based measure
+        icShortFlag = "sanchez"
+        if (!icShortFlag == "NA" & !icShortFlag %in% a$infoContentOption) 
+            stop("Invalid IC measure. Pleas run listSimilarities method to visualize valid IC options")
+        
+    } else {
+        icShortFlag = value[2]
+        
+    }
+    object@pairwiseConfigRef <- similarityInstance(object)$setPairwiseConfig(value[1], 
+        icShortFlag)
+    return(object)
+})
 
 
 #' \code{pairwiseConfig}
@@ -258,43 +253,40 @@ setMethod("pairwiseConfig", "Similarity", function(object) {
 #'  #The following configuration uses an information content based measure
 #'  pairwiseConfig(sim) <- c('resnik', 'seco')
 #' @export
-setReplaceMethod(f = "pairwiseConfig", signature = "Similarity",
-    definition = function(object, value) {
-        list_result <- as.list(object@similarityInstance$showMeasures())
-        names(list_result) <- c("pairwiseMeasures",
-            "infoContentOption", "groupwiseMeasures")
-        a <- lapply(list_result, function(x) {
-            out <- .jevalArray(x$toArray())
-            out2 <- sapply(out, function(y) y$toString())
-            return(out2)
-        })
-        if (length(value) == 1) {
-            if (!value %in% a$pairwiseMeasures)
-                stop("Invalid pairwise measure. Please run listSimilarities method to visualize valid values")
-            # This is set to the default even if we are not
-            # using an IC based measure
-            icShortFlag = "sanchez"
-        } else if (length(value) == 2) {
-            if (!value[1] %in% a$pairwiseMeasures)
-                stop("Invalid pairwise measure. Please run listSimilarities method to visualize valid values")
-            icShortFlag <- value[2]
-            if (!icShortFlag == "NA" & !icShortFlag %in%
-                a$infoContentOption)
-                stop("Invalid IC measure. Pleas run listSimilarities method to visualize valid IC options")
-            if (icShortFlag == "NA")
-                icShortFlag = "sanchez"
-        } else {
-            stop("Invalid number of arguments")
-        }
-
-
-
-        object@icConfig <- icShortFlag
-        object@pairwiseConfigRef <- similarityInstance(object)$setPairwiseConfig(value[1],
-            icShortFlag)
-        object@pairwiseConfig <- value[1]
-        return(object)
+setReplaceMethod(f = "pairwiseConfig", signature = "Similarity", definition = function(object, 
+    value) {
+    list_result <- as.list(object@similarityInstance$showMeasures())
+    names(list_result) <- c("pairwiseMeasures", "infoContentOption", "groupwiseMeasures")
+    a <- lapply(list_result, function(x) {
+        out <- .jevalArray(x$toArray())
+        out2 <- sapply(out, function(y) y$toString())
+        return(out2)
     })
+    if (length(value) == 1) {
+        if (!value %in% a$pairwiseMeasures) 
+            stop("Invalid pairwise measure. Please run listSimilarities method to visualize valid values")
+        # This is set to the default even if we are not using an IC based measure
+        icShortFlag = "sanchez"
+    } else if (length(value) == 2) {
+        if (!value[1] %in% a$pairwiseMeasures) 
+            stop("Invalid pairwise measure. Please run listSimilarities method to visualize valid values")
+        icShortFlag <- value[2]
+        if (!icShortFlag == "NA" & !icShortFlag %in% a$infoContentOption) 
+            stop("Invalid IC measure. Pleas run listSimilarities method to visualize valid IC options")
+        if (icShortFlag == "NA") 
+            icShortFlag = "sanchez"
+    } else {
+        stop("Invalid number of arguments")
+    }
+    
+    
+    
+    object@icConfig <- icShortFlag
+    object@pairwiseConfigRef <- similarityInstance(object)$setPairwiseConfig(value[1], 
+        icShortFlag)
+    object@pairwiseConfig <- value[1]
+    return(object)
+})
 
 
 
@@ -322,21 +314,20 @@ setMethod("groupwiseConfigRef", "Similarity", function(object) {
 #' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
 #' groupwiseConfigRef(sim) <- 'ui'
 #' @export
-setReplaceMethod(f = "groupwiseConfigRef", signature = "Similarity",
-    definition = function(object, value) {
-        list_result <- as.list(similarityInstance(object)$showMeasures())
-        names(list_result) <- c("pairwiseMeasures",
-            "infoContentOption", "groupwiseMeasures")
-        a <- lapply(list_result, function(x) {
-            out <- .jevalArray(x$toArray())
-            out2 <- sapply(out, function(y) y$toString())
-            return(out2)
-        })
-        if (!value %in% a$groupwiseMeasures)
-            stop("Invalid groupwise measure")
-        object@groupwiseConfigRef <- similarityInstance(object)$setGroupwiseConfig(value)
-        return(object)
+setReplaceMethod(f = "groupwiseConfigRef", signature = "Similarity", definition = function(object, 
+    value) {
+    list_result <- as.list(similarityInstance(object)$showMeasures())
+    names(list_result) <- c("pairwiseMeasures", "infoContentOption", "groupwiseMeasures")
+    a <- lapply(list_result, function(x) {
+        out <- .jevalArray(x$toArray())
+        out2 <- sapply(out, function(y) y$toString())
+        return(out2)
     })
+    if (!value %in% a$groupwiseMeasures) 
+        stop("Invalid groupwise measure")
+    object@groupwiseConfigRef <- similarityInstance(object)$setGroupwiseConfig(value)
+    return(object)
+})
 
 
 
@@ -403,25 +394,23 @@ setMethod("groupConfig", "Similarity", function(object) {
 #' groupConfig(sim) <- 'ui'
 #'
 #' @export
-setReplaceMethod(f = "groupConfig", signature = "Similarity",
-    definition = function(object, value) {
-        list_result <- as.list(object@similarityInstance$showMeasures())
-        names(list_result) <- c("pairwiseMeasures",
-            "infoContentOption", "groupwiseMeasures")
-        a <- lapply(list_result, function(x) {
-            out <- .jevalArray(x$toArray())
-            out2 <- sapply(out, function(y) y$toString())
-            return(out2)
-        })
-        if (!value %in% a$groupwiseMeasures)
-            stop("Invalid groupwise measure")
-        if (value %in% c("min", "max", "average", "bma",
-            "bmm") & is.na(object@pairwiseConfig))
-            stop("The selected groupwise measure requires that pairwiseConfig is set to the one of available pairwise measures")
-        object@groupwiseConfigRef <- similarityInstance(object)$setGroupwiseConfig(value)
-        object@groupConfig <- value
-        return(object)
+setReplaceMethod(f = "groupConfig", signature = "Similarity", definition = function(object, 
+    value) {
+    list_result <- as.list(object@similarityInstance$showMeasures())
+    names(list_result) <- c("pairwiseMeasures", "infoContentOption", "groupwiseMeasures")
+    a <- lapply(list_result, function(x) {
+        out <- .jevalArray(x$toArray())
+        out2 <- sapply(out, function(y) y$toString())
+        return(out2)
     })
+    if (!value %in% a$groupwiseMeasures) 
+        stop("Invalid groupwise measure")
+    if (value %in% c("min", "max", "average", "bma", "bmm") & is.na(object@pairwiseConfig)) 
+        stop("The selected groupwise measure requires that pairwiseConfig is set to the one of available pairwise measures")
+    object@groupwiseConfigRef <- similarityInstance(object)$setGroupwiseConfig(value)
+    object@groupConfig <- value
+    return(object)
+})
 
 
 
@@ -440,13 +429,13 @@ setReplaceMethod(f = "groupConfig", signature = "Similarity",
 #' obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
 #' ontology(sim) <- obo
 #' @export
-setReplaceMethod(f = "ontology", signature = "Similarity",
-    definition = function(object, value) {
-        if (!file.exists(value))
-            stop("Invalid input ontology path")
-        object@ontology = object@similarityInstance$loadOntology(value)
-        return(object)
-    })
+setReplaceMethod(f = "ontology", signature = "Similarity", definition = function(object, 
+    value) {
+    if (!file.exists(value)) 
+        stop("Invalid input ontology path")
+    object@ontology = object@similarityInstance$loadOntology(value)
+    return(object)
+})
 
 
 
@@ -460,11 +449,10 @@ setReplaceMethod(f = "ontology", signature = "Similarity",
 #' sim <- new('Similarity')
 #' ontology(sim)
 #' @export
-setMethod(f = "ontology", signature = "Similarity",
-    definition = function(object) {
-
-        return(object@ontology)
-    })
+setMethod(f = "ontology", signature = "Similarity", definition = function(object) {
+    
+    return(object@ontology)
+})
 
 
 #' \code{pairsim}
@@ -482,22 +470,18 @@ setMethod(f = "ontology", signature = "Similarity",
 #' similarity <- pairsim(sim, 'http://purl.obolibrary.org/obo/CL_0000542',
 #' 'http://purl.obolibrary.org/obo/CL_0000236')
 #' @export
-setMethod(f = "pairsim", signature("Similarity", "character",
-    "character"), definition = function(object, term1,
-    term2) {
-    URI1 <- .jcast(object@similarityInstance$createURI(term1),
-        new.class = "org.openrdf.model.URI", check = FALSE,
-        convert.array = FALSE)
-    URI2 <- .jcast(object@similarityInstance$createURI(term2),
-        new.class = "org.openrdf.model.URI", check = FALSE,
-        convert.array = FALSE)
-    if (is.jnull(pairwiseConfigRef(object)))
+setMethod(f = "pairsim", signature("Similarity", "character", "character"), definition = function(object, 
+    term1, term2) {
+    URI1 <- .jcast(object@similarityInstance$createURI(term1), new.class = "org.openrdf.model.URI", 
+        check = FALSE, convert.array = FALSE)
+    URI2 <- .jcast(object@similarityInstance$createURI(term2), new.class = "org.openrdf.model.URI", 
+        check = FALSE, convert.array = FALSE)
+    if (is.jnull(pairwiseConfigRef(object))) 
         stop("No similarity measure defined. Please run setPairwiseConfig method")
-    if (is.jnull(ontology(object)))
+    if (is.jnull(ontology(object))) 
         stop("No graph loaded. To load a graph use the ontology method")
-    similarity_score <- .jcall(similarityInstance(object),
-        "D", "pair_similarity", URI1, URI2, .jcast(ontology(object),
-            new.class = "slib.graph.model.graph.G"),
+    similarity_score <- .jcall(similarityInstance(object), "D", "pair_similarity", 
+        URI1, URI2, .jcast(ontology(object), new.class = "slib.graph.model.graph.G"), 
         pairwiseConfigRef(object))
     return(similarity_score)
 })
@@ -523,20 +507,18 @@ setMethod(f = "pairsim", signature("Similarity", "character",
 #' similarity
 #'
 #' @export
-setMethod(f = "groupsim", signature("Similarity", "character",
-    "character"), definition = function(object, termList1,
-    termList2) {
+setMethod(f = "groupsim", signature("Similarity", "character", "character"), definition = function(object, 
+    termList1, termList2) {
     URIs1 <- similarityInstance(object)$createURIs(.jarray(termList1))
     URIs2 <- similarityInstance(object)$createURIs(.jarray(termList2))
-    if (is.jnull(pairwiseConfigRef(object)))
+    if (is.jnull(pairwiseConfigRef(object))) 
         stop("No similarity measure defined. Use pairwiseConfig(similarity_object) to set the pairwise configuration option")
-    if (is.jnull(ontology(object)))
+    if (is.jnull(ontology(object))) 
         stop("No graph loaded. To load a graph use the loadOntology method")
-    if (is.jnull(groupwiseConfigRef(object)))
+    if (is.jnull(groupwiseConfigRef(object))) 
         stop("Non group similarity measure defined. Use groupConfig(similarity_object) to set the pairwise configuration option")
-    similarity_score <- similarityInstance(object)$group_similarity(URIs1,
-        URIs2, ontology(object), groupwiseConfigRef(object),
-        pairwiseConfigRef(object))
+    similarity_score <- similarityInstance(object)$group_similarity(URIs1, URIs2, 
+        ontology(object), groupwiseConfigRef(object), pairwiseConfigRef(object))
     return(similarity_score)
 })
 
@@ -568,16 +550,15 @@ setMethod(f = "groupsim", signature("Similarity", "character",
 #' s <- samplesim(sim, as.character(as.vector(chipseq_dict_annot$sample_id[1])),
 #' as.character(as.vector(chipseq_dict_annot$sample_id[7])) , chipseq_dict_annot)
 #' @export
-setMethod(f = "samplesim", signature("Similarity",
-    "character", "character", "data.frame"), definition = function(object,
-    sample1, sample2, annotated_df) {
-    if (!"term_url" %in% colnames(annotated_df))
-        stop("Invalid annotation data frame")
-    similarity_score <- groupsim(object, as.character(as.vector(annotated_df$term_url[which(annotated_df$sample_id ==
-        sample1)])), as.character(as.vector(annotated_df$term_url[which(annotated_df$sample_id ==
-        sample2)])))
-    return(similarity_score)
-})
+setMethod(f = "samplesim", signature("Similarity", "character", "character", "data.frame"), 
+    definition = function(object, sample1, sample2, annotated_df) {
+        if (!"term_url" %in% colnames(annotated_df)) 
+            stop("Invalid annotation data frame")
+        similarity_score <- groupsim(object, as.character(as.vector(annotated_df$term_url[which(annotated_df$sample_id == 
+            sample1)])), as.character(as.vector(annotated_df$term_url[which(annotated_df$sample_id == 
+            sample2)])))
+        return(similarity_score)
+    })
 
 
 
@@ -627,43 +608,39 @@ setMethod(f = "samplesim", signature("Similarity",
 #' as.character(as.vector(samples[1,1])),
 #' as.character(as.vector(samples[5,1])), 'mean')
 #' @export
-setMethod(f = "multisim", signature(similarities = "list",
-    annotations = "list", sample1 = "character", sample2 = "character"),
-    definition = function(similarities, annotations,
-        sample1, sample2, aggregating_function = "mean") {
-        lapply(similarities, function(similarity) {
-            if (!is(similarity, "Similarity"))
-                stop(paste0("Invalid Similarity object ",
-                  similarity))
-        })
-
-        lapply(annotations, function(annot_df) {
-            if (!is.data.frame(annot_df))
-                stop(paste0("Invalid annotation", annot_df))
-            if (!"term_url" %in% colnames(annot_df))
-                stop("Invalid annotation data frame")
-        })
-        if (!length(similarities) == length(annotations))
-            stop("The number of Similarity classes is different from the number of annotation data frames provided")
-        all_similarities <- c(rep(0, length(similarities)))
-        for (i in 1:length(similarities)) {
-            sim <- similarities[[i]]
-            annot <- annotations[[i]]
-
-            term_list1 <- as.character(as.vector(annot$term_url[which(annot$sample_id ==
-                sample1)]))
-            term_list2 <- as.character(as.vector(annot$term_url[which(annot$sample_id ==
-                sample2)]))
-            if (identical(term_list1, character(0)) |
-                identical(term_list2, character(0)))
-                similarity_score <- 0 else similarity_score <- groupsim(sim,
-                as.character(unlist(as.list(term_list1))),
-                as.character(unlist(as.list(term_list2))))
-            all_similarities[i] <- similarity_score
-        }
-        aggr_f <- match.fun(aggregating_function)
-        return(aggr_f(all_similarities))
+setMethod(f = "multisim", signature(similarities = "list", annotations = "list", 
+    sample1 = "character", sample2 = "character"), definition = function(similarities, 
+    annotations, sample1, sample2, aggregating_function = "mean") {
+    lapply(similarities, function(similarity) {
+        if (!is(similarity, "Similarity")) 
+            stop(paste0("Invalid Similarity object ", similarity))
     })
+    
+    lapply(annotations, function(annot_df) {
+        if (!is.data.frame(annot_df)) 
+            stop(paste0("Invalid annotation", annot_df))
+        if (!"term_url" %in% colnames(annot_df)) 
+            stop("Invalid annotation data frame")
+    })
+    if (!length(similarities) == length(annotations)) 
+        stop("The number of Similarity classes is different from the number of annotation data frames provided")
+    all_similarities <- c(rep(0, length(similarities)))
+    for (i in 1:length(similarities)) {
+        sim <- similarities[[i]]
+        annot <- annotations[[i]]
+        
+        term_list1 <- as.character(as.vector(annot$term_url[which(annot$sample_id == 
+            sample1)]))
+        term_list2 <- as.character(as.vector(annot$term_url[which(annot$sample_id == 
+            sample2)]))
+        if (identical(term_list1, character(0)) | identical(term_list2, character(0))) 
+            similarity_score <- 0 else similarity_score <- groupsim(sim, as.character(unlist(as.list(term_list1))), 
+            as.character(unlist(as.list(term_list2))))
+        all_similarities[i] <- similarity_score
+    }
+    aggr_f <- match.fun(aggregating_function)
+    return(aggr_f(all_similarities))
+})
 
 
 
@@ -678,16 +655,15 @@ setMethod(f = "multisim", signature(similarities = "list",
 #' s <- listSimilarities()
 #' @export
 listSimilarities <- function() {
-            object <- new('Similarity')
-            list_result <- as.list(object@similarityInstance$showMeasures())
-            names(list_result) <- c("pairwiseMeasures",
-                                    "infoContentOption", "groupwiseMeasures")
-            a <- lapply(list_result, function(x) {
-              out <- .jevalArray(x$toArray())
-              out2 <- sapply(out, function(y) y$toString())
-              return(out2)
-            })
-            return(a)
-
-          }
+    object <- new("Similarity")
+    list_result <- as.list(object@similarityInstance$showMeasures())
+    names(list_result) <- c("pairwiseMeasures", "infoContentOption", "groupwiseMeasures")
+    a <- lapply(list_result, function(x) {
+        out <- .jevalArray(x$toArray())
+        out2 <- sapply(out, function(y) y$toString())
+        return(out2)
+    })
+    return(a)
+    
+}
 

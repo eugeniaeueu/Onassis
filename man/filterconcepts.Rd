@@ -15,6 +15,9 @@ filterconcepts(onassis, concepts_to_filter)
 
 \item{concepts_to_filter}{A vector with unwanted concepts}
 }
+\value{
+the instance of \code{\link{Onassis-class}} with filtered entities
+}
 \description{
 This method filters unwanted concepts from the entities of an \code{\link{Onassis-class}} object
 }
@@ -23,7 +26,7 @@ geo_chip <- readRDS(system.file('extdata', 'vignette_data',
 'GEO_human_chip.rds', package='Onassis'))
 geo_chip <- geo_chip[sample(nrow(geo_chip), 15) ,]
 obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
-onassis_results <- annotate(geo_chip, "OBO", dictionary=obo)
+onassis_results <- annotate(geo_chip, 'OBO', dictionary=obo)
 filtered_onassis <- filterconcepts(onassis_results, c('cell'))
 
 }

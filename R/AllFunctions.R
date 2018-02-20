@@ -13,17 +13,17 @@
 #' healthy_gsms <- findHealthy(metadatafile)
 #' @export
 
-findHealthy <- function(metadata_df){
-  markers <-"disease state: normal|tissuetype: normal|no ad present|healthy|disease: healthy|disease: normal|disease: presumed normal|disease: none|disease: null|disease: na|disease status: normal|tumor: none"
-  gsm_list <- c()
-  metadata_df[,1] <- as.character(as.vector(metadata_df[,1]))
-  for(i in 2:ncol(metadata_df)){
-  #  metadata_df[,i] <-   as.character(as.vector(gsub('ξ', '', metadata_df[,i])))
-    gsms <- metadata_df[,1][grep(markers, tolower(metadata_df[,i]))]
-    if(length(gsms)>0)
-      gsm_list <- c(gsm_list, gsms)
-  }
-  return(unique(gsm_list))
+findHealthy <- function(metadata_df) {
+    markers <- "disease state: normal|tissuetype: normal|no ad present|healthy|disease: healthy|disease: normal|disease: presumed normal|disease: none|disease: null|disease: na|disease status: normal|tumor: none"
+    gsm_list <- c()
+    metadata_df[, 1] <- as.character(as.vector(metadata_df[, 1]))
+    for (i in 2:ncol(metadata_df)) {
+        # metadata_df[,i] <- as.character(as.vector(gsub('ξ', '', metadata_df[,i])))
+        gsms <- metadata_df[, 1][grep(markers, tolower(metadata_df[, i]))]
+        if (length(gsms) > 0) 
+            gsm_list <- c(gsm_list, gsms)
+    }
+    return(unique(gsm_list))
 }
 
 
@@ -41,11 +41,12 @@ findHealthy <- function(metadata_df){
 #' healthy_gsms <- findHealthy(metadatafile)
 #' @export
 
-filterTerms <- function(annotated_df, termlist=c()){
-  if(length(termlist)>0){
-    annotated_df <- annotated_df[which(!tolower(annotated_df$term_name) %in% tolower(termlist)),]
-  }
-  return( annotated_df)
+filterTerms <- function(annotated_df, termlist = c()) {
+    if (length(termlist) > 0) {
+        annotated_df <- annotated_df[which(!tolower(annotated_df$term_name) %in% 
+            tolower(termlist)), ]
+    }
+    return(annotated_df)
 }
 
 

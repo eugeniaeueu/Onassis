@@ -7,11 +7,10 @@
 #' dictionary <- new('CMdictionary')
 #' loc <- dict_location(dictionary)
 #' @exportMethod dict_location
-setMethod(f = "dict_location", signature = "CMdictionary",
-          definition = function(.Object) {
-            validObject(.Object)
-            return(.Object@dict_location)
-          })
+setMethod(f = "dict_location", signature = "CMdictionary", definition = function(.Object) {
+    validObject(.Object)
+    return(.Object@dict_location)
+})
 
 
 #' \code{dict_location<-}
@@ -21,13 +20,12 @@ setMethod(f = "dict_location", signature = "CMdictionary",
 #' dictionary <- new('CMdictionary')
 #' dict_location(dictionary) <- getwd()
 #' @exportMethod dict_location<-
-setReplaceMethod("dict_location", "CMdictionary", function(.Object,
-                                                           value) {
-  if (file.exists(value)) {
-    .Object@dict_location <- value
-    .Object
-  } else stop("Invalid location parameter")
-
+setReplaceMethod("dict_location", "CMdictionary", function(.Object, value) {
+    if (file.exists(value)) {
+        .Object@dict_location <- value
+        .Object
+    } else stop("Invalid location parameter")
+    
 })
 
 
@@ -43,8 +41,8 @@ setReplaceMethod("dict_location", "CMdictionary", function(.Object,
 #' dictInfo(dictionary)
 #' @exportMethod dictInfo
 setMethod("dictInfo", signature = "CMdictionary", definition = function(.Object) {
-  info <- .Object@dictInfo
-  return(info)
+    info <- .Object@dictInfo
+    return(info)
 })
 
 
@@ -57,11 +55,11 @@ setMethod("dictInfo", signature = "CMdictionary", definition = function(.Object)
 #' dictInfo(dictionary) <-
 #' list(Dictionary_type =  'ENTREZ from OrgDb', Dictionary_source ='OrgDb')
 #' @exportMethod dictInfo<-
-setReplaceMethod("dictInfo", signature = "CMdictionary",
-                 definition = function(.Object, value) {
-                   .Object@dictInfo <- value
-                   .Object
-                 })
+setReplaceMethod("dictInfo", signature = "CMdictionary", definition = function(.Object, 
+    value) {
+    .Object@dictInfo <- value
+    .Object
+})
 
 
 
@@ -75,7 +73,7 @@ setReplaceMethod("dictInfo", signature = "CMdictionary",
 #' dictRef(dictionary)
 #' @exportMethod dictRef
 setMethod("dictRef", signature = "CMdictionary", definition = function(.Object) {
-  return(.Object@dictRef)
+    return(.Object@dictRef)
 })
 
 
@@ -87,11 +85,11 @@ setMethod("dictRef", signature = "CMdictionary", definition = function(.Object) 
 #' dictionary <- new('CMdictionary')
 #' dict_file <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
 #' dictRef(dictionary) <- .jnew('java/io/File', dict_file)
-setReplaceMethod("dictRef", signature = "CMdictionary",
-                 definition = function(.Object, value) {
-                   .Object@dictRef <- value
-                   .Object
-                 })
+setReplaceMethod("dictRef", signature = "CMdictionary", definition = function(.Object, 
+    value) {
+    .Object@dictRef <- value
+    .Object
+})
 
 
 #' \code{dictTypes}
@@ -101,11 +99,9 @@ setReplaceMethod("dictRef", signature = "CMdictionary",
 #' @examples
 #' dictTypes()
 #' @export
-dictTypes <-  function() {
-            LABEL <- c("ENTREZ", "OBO", "TARGET", "CMDICT")
-            DESCRIPTION <- c("Entrez genes dictionary",
-                             "OBO Ontologies in OBO or RFD format. It is the default dictionary type",
-                             "Entrez genes dictionary with Histone marks and Histone modifications",
-                             "Dictionary in the Conceptmapper format")
-            return(as.data.frame(cbind(LABEL, DESCRIPTION)))
-          }
+dictTypes <- function() {
+    LABEL <- c("ENTREZ", "OBO", "TARGET", "CMDICT")
+    DESCRIPTION <- c("Entrez genes dictionary", "OBO Ontologies in OBO or RFD format. It is the default dictionary type", 
+        "Entrez genes dictionary with Histone marks and Histone modifications", "Dictionary in the Conceptmapper format")
+    return(as.data.frame(cbind(LABEL, DESCRIPTION)))
+}

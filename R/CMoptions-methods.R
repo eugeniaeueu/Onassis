@@ -10,15 +10,10 @@
 #' show(opt)
 setMethod("show", "CMoptions", function(object) {
     message("CMoptions object to set ConceptMapper Options")
-        message(
-          'SearchStrategy: ', object@SearchStrategy, '\n',
-          'CaseMatch: ' , object@CaseMatch, '\n',
-          'Stemmer: ' , object@Stemmer, '\n',
-          'StopWords: ' , object@StopWords, '\n',
-          'OrderIndependentLookup: ' , object@OrderIndependentLookup, '\n',
-          'FindAllMatches: ', object@FindAllMatches, '\n',
-          'SynonymType: ' , object@SynonymType
-        )
+    message("SearchStrategy: ", object@SearchStrategy, "\n", "CaseMatch: ", object@CaseMatch, 
+        "\n", "Stemmer: ", object@Stemmer, "\n", "StopWords: ", object@StopWords, 
+        "\n", "OrderIndependentLookup: ", object@OrderIndependentLookup, "\n", "FindAllMatches: ", 
+        object@FindAllMatches, "\n", "SynonymType: ", object@SynonymType)
 })
 
 #' \code{paramValueIndex}
@@ -44,20 +39,25 @@ setMethod("paramValueIndex", "CMoptions", function(x) {
 #' opts <- CMoptions()
 #' paramValueIndex(opts) <- 2
 #' @export
-setReplaceMethod("paramValueIndex", "CMoptions", function(x,
-    value) {
-    options_combinations <- readRDS(system.file("extdata",
-        "Options_table.rds", package = "Onassis"))
-     x@paramValueIndex <- as.character(value)
-     x@SearchStrategy = as.character(as.vector(unique(options_combinations$SearchStrategy[which(options_combinations$paramValueIndex==value)])))
-     x@CaseMatch = as.character(as.vector(unique(options_combinations$CaseMatch[which(options_combinations$paramValueIndex==value)])))
-     x@Stemmer = as.character(as.vector(unique(options_combinations$Stemmer[which(options_combinations$paramValueIndex==value)])))
-     x@StopWords = as.character(as.vector(unique(options_combinations$Stopwords[which(options_combinations$paramValueIndex==value)])))
-     x@OrderIndependentLookup = as.character(as.vector(unique(options_combinations$OrderIndependentLookup[which(options_combinations$paramValueIndex==value)])))
-     x@FindAllMatches = as.character(as.vector(unique(options_combinations$FindAllMatches[which(options_combinations$paramValueIndex==value)])))
-     x@SynonymType = as.character(as.vector(unique(options_combinations$SynonymType[which(options_combinations$paramValueIndex==value)])))
-     validObject(x)
-     x
+setReplaceMethod("paramValueIndex", "CMoptions", function(x, value) {
+    options_combinations <- readRDS(system.file("extdata", "Options_table.rds", package = "Onassis"))
+    x@paramValueIndex <- as.character(value)
+    x@SearchStrategy = as.character(as.vector(unique(options_combinations$SearchStrategy[which(options_combinations$paramValueIndex == 
+        value)])))
+    x@CaseMatch = as.character(as.vector(unique(options_combinations$CaseMatch[which(options_combinations$paramValueIndex == 
+        value)])))
+    x@Stemmer = as.character(as.vector(unique(options_combinations$Stemmer[which(options_combinations$paramValueIndex == 
+        value)])))
+    x@StopWords = as.character(as.vector(unique(options_combinations$Stopwords[which(options_combinations$paramValueIndex == 
+        value)])))
+    x@OrderIndependentLookup = as.character(as.vector(unique(options_combinations$OrderIndependentLookup[which(options_combinations$paramValueIndex == 
+        value)])))
+    x@FindAllMatches = as.character(as.vector(unique(options_combinations$FindAllMatches[which(options_combinations$paramValueIndex == 
+        value)])))
+    x@SynonymType = as.character(as.vector(unique(options_combinations$SynonymType[which(options_combinations$paramValueIndex == 
+        value)])))
+    validObject(x)
+    x
 })
 
 
@@ -74,7 +74,7 @@ setReplaceMethod("paramValueIndex", "CMoptions", function(x,
 #'
 #' @export
 setMethod("SearchStrategy", "CMoptions", function(x) {
-  as.character(x@SearchStrategy)
+    as.character(x@SearchStrategy)
 })
 
 
@@ -91,22 +91,16 @@ setMethod("SearchStrategy", "CMoptions", function(x) {
 #' @examples
 #' opts <- CMoptions()
 #' SearchStrategy(opts) <- 'SKIP_ANY_MATCH_ALLOW_OVERLAP'
-setReplaceMethod("SearchStrategy", "CMoptions", function(x,
-                                                          value) {
-  options_combinations <- readRDS(system.file("extdata",
-                                              "Options_table.rds", package = "Onassis"))
-  x@SearchStrategy <- as.character(value)
-  x@paramValueIndex <- as.character(as.vector(unique(options_combinations$paramValueIndex[
-    which(options_combinations$SearchStrategy==x@SearchStrategy &
-            options_combinations$CaseMatch==x@CaseMatch &
-            options_combinations$Stemmer==x@Stemmer &
-            options_combinations$Stopwords==x@StopWords &
-            options_combinations$OrderIndependentLookup==x@OrderIndependentLookup &
-            options_combinations$FindAllMatches==x@FindAllMatches &
-            options_combinations$SynonymType==x@SynonymType
-    )])))
-  validObject(x)
-  x
+setReplaceMethod("SearchStrategy", "CMoptions", function(x, value) {
+    options_combinations <- readRDS(system.file("extdata", "Options_table.rds", package = "Onassis"))
+    x@SearchStrategy <- as.character(value)
+    x@paramValueIndex <- as.character(as.vector(unique(options_combinations$paramValueIndex[which(options_combinations$SearchStrategy == 
+        x@SearchStrategy & options_combinations$CaseMatch == x@CaseMatch & options_combinations$Stemmer == 
+        x@Stemmer & options_combinations$Stopwords == x@StopWords & options_combinations$OrderIndependentLookup == 
+        x@OrderIndependentLookup & options_combinations$FindAllMatches == x@FindAllMatches & 
+        options_combinations$SynonymType == x@SynonymType)])))
+    validObject(x)
+    x
 })
 
 
@@ -121,7 +115,7 @@ setReplaceMethod("SearchStrategy", "CMoptions", function(x,
 #' CaseMatch(opts)
 #' @export
 setMethod("CaseMatch", "CMoptions", function(x) {
-  as.character(x@CaseMatch)
+    as.character(x@CaseMatch)
 })
 
 
@@ -139,22 +133,16 @@ setMethod("CaseMatch", "CMoptions", function(x) {
 #' opts <- CMoptions()
 #' CaseMatch(opts) <- 'CASE_SENSITIVE'
 #' @export
-setReplaceMethod("CaseMatch", "CMoptions", function(x,
-                                                         value) {
-  options_combinations <- readRDS(system.file("extdata",
-                                              "Options_table.rds", package = "Onassis"))
-  x@CaseMatch <- as.character(value)
-  x@paramValueIndex <- as.character(as.vector(unique(options_combinations$paramValueIndex[
-    which(options_combinations$SearchStrategy==x@SearchStrategy &
-            options_combinations$CaseMatch==x@CaseMatch &
-            options_combinations$Stemmer==x@Stemmer &
-            options_combinations$Stopwords==x@StopWords &
-            options_combinations$OrderIndependentLookup==x@OrderIndependentLookup &
-            options_combinations$FindAllMatches==x@FindAllMatches &
-            options_combinations$SynonymType==x@SynonymType
-    )])))
-  validObject(x)
-  x
+setReplaceMethod("CaseMatch", "CMoptions", function(x, value) {
+    options_combinations <- readRDS(system.file("extdata", "Options_table.rds", package = "Onassis"))
+    x@CaseMatch <- as.character(value)
+    x@paramValueIndex <- as.character(as.vector(unique(options_combinations$paramValueIndex[which(options_combinations$SearchStrategy == 
+        x@SearchStrategy & options_combinations$CaseMatch == x@CaseMatch & options_combinations$Stemmer == 
+        x@Stemmer & options_combinations$Stopwords == x@StopWords & options_combinations$OrderIndependentLookup == 
+        x@OrderIndependentLookup & options_combinations$FindAllMatches == x@FindAllMatches & 
+        options_combinations$SynonymType == x@SynonymType)])))
+    validObject(x)
+    x
 })
 
 
@@ -173,7 +161,7 @@ setReplaceMethod("CaseMatch", "CMoptions", function(x,
 #'
 #' @export
 setMethod("Stemmer", "CMoptions", function(x) {
-  as.character(x@Stemmer)
+    as.character(x@Stemmer)
 })
 
 
@@ -190,22 +178,16 @@ setMethod("Stemmer", "CMoptions", function(x) {
 #' opts <- CMoptions()
 #' Stemmer(opts) <- 'PORTER'
 #' @export
-setReplaceMethod("Stemmer", "CMoptions", function(x,
-                                                    value) {
-  options_combinations <- readRDS(system.file("extdata",
-                                              "Options_table.rds", package = "Onassis"))
-  x@Stemmer <- as.character(value)
-  x@paramValueIndex <- as.character(as.vector(unique(options_combinations$paramValueIndex[
-    which(options_combinations$SearchStrategy==x@SearchStrategy &
-            options_combinations$CaseMatch==x@CaseMatch &
-            options_combinations$Stemmer==x@Stemmer &
-            options_combinations$Stopwords==x@StopWords &
-            options_combinations$OrderIndependentLookup==x@OrderIndependentLookup &
-            options_combinations$FindAllMatches==x@FindAllMatches &
-            options_combinations$SynonymType==x@SynonymType
-    )])))
-  validObject(x)
-  x
+setReplaceMethod("Stemmer", "CMoptions", function(x, value) {
+    options_combinations <- readRDS(system.file("extdata", "Options_table.rds", package = "Onassis"))
+    x@Stemmer <- as.character(value)
+    x@paramValueIndex <- as.character(as.vector(unique(options_combinations$paramValueIndex[which(options_combinations$SearchStrategy == 
+        x@SearchStrategy & options_combinations$CaseMatch == x@CaseMatch & options_combinations$Stemmer == 
+        x@Stemmer & options_combinations$Stopwords == x@StopWords & options_combinations$OrderIndependentLookup == 
+        x@OrderIndependentLookup & options_combinations$FindAllMatches == x@FindAllMatches & 
+        options_combinations$SynonymType == x@SynonymType)])))
+    validObject(x)
+    x
 })
 
 
@@ -224,7 +206,7 @@ setReplaceMethod("Stemmer", "CMoptions", function(x,
 #'
 #' @export
 setMethod("StopWords", "CMoptions", function(x) {
-  as.character(x@StopWords)
+    as.character(x@StopWords)
 })
 
 
@@ -240,22 +222,16 @@ setMethod("StopWords", "CMoptions", function(x) {
 #' opts <- CMoptions()
 #' StopWords(opts) <- 'NONE'
 #' @export
-setReplaceMethod("StopWords", "CMoptions", function(x,
-                                                  value) {
-  options_combinations <- readRDS(system.file("extdata",
-                                              "Options_table.rds", package = "Onassis"))
-  x@StopWords <- as.character(value)
-  x@paramValueIndex <- as.character(as.vector(unique(options_combinations$paramValueIndex[
-    which(options_combinations$SearchStrategy==x@SearchStrategy &
-            options_combinations$CaseMatch==x@CaseMatch &
-            options_combinations$Stemmer==x@Stemmer &
-            options_combinations$Stopwords==x@StopWords &
-            options_combinations$OrderIndependentLookup==x@OrderIndependentLookup &
-            options_combinations$FindAllMatches==x@FindAllMatches &
-            options_combinations$SynonymType==x@SynonymType
-    )])))
-  validObject(x)
-  x
+setReplaceMethod("StopWords", "CMoptions", function(x, value) {
+    options_combinations <- readRDS(system.file("extdata", "Options_table.rds", package = "Onassis"))
+    x@StopWords <- as.character(value)
+    x@paramValueIndex <- as.character(as.vector(unique(options_combinations$paramValueIndex[which(options_combinations$SearchStrategy == 
+        x@SearchStrategy & options_combinations$CaseMatch == x@CaseMatch & options_combinations$Stemmer == 
+        x@Stemmer & options_combinations$Stopwords == x@StopWords & options_combinations$OrderIndependentLookup == 
+        x@OrderIndependentLookup & options_combinations$FindAllMatches == x@FindAllMatches & 
+        options_combinations$SynonymType == x@SynonymType)])))
+    validObject(x)
+    x
 })
 
 
@@ -272,7 +248,7 @@ setReplaceMethod("StopWords", "CMoptions", function(x,
 #'
 #' @export
 setMethod("OrderIndependentLookup", "CMoptions", function(x) {
-  as.character(x@OrderIndependentLookup)
+    as.character(x@OrderIndependentLookup)
 })
 
 
@@ -288,22 +264,16 @@ setMethod("OrderIndependentLookup", "CMoptions", function(x) {
 #' opts <- CMoptions()
 #' OrderIndependentLookup(opts) <- 'ON'
 #' @export
-setReplaceMethod("OrderIndependentLookup", "CMoptions", function(x,
-                                                    value) {
-  options_combinations <- readRDS(system.file("extdata",
-                                              "Options_table.rds", package = "Onassis"))
-  x@OrderIndependentLookup <- as.character(value)
-  x@paramValueIndex <- as.character(as.vector(unique(options_combinations$paramValueIndex[
-    which(options_combinations$SearchStrategy==x@SearchStrategy &
-            options_combinations$CaseMatch==x@CaseMatch &
-            options_combinations$Stemmer==x@Stemmer &
-            options_combinations$Stopwords==x@StopWords &
-            options_combinations$OrderIndependentLookup==x@OrderIndependentLookup &
-            options_combinations$FindAllMatches==x@FindAllMatches &
-            options_combinations$SynonymType==x@SynonymType
-    )])))
-  validObject(x)
-  x
+setReplaceMethod("OrderIndependentLookup", "CMoptions", function(x, value) {
+    options_combinations <- readRDS(system.file("extdata", "Options_table.rds", package = "Onassis"))
+    x@OrderIndependentLookup <- as.character(value)
+    x@paramValueIndex <- as.character(as.vector(unique(options_combinations$paramValueIndex[which(options_combinations$SearchStrategy == 
+        x@SearchStrategy & options_combinations$CaseMatch == x@CaseMatch & options_combinations$Stemmer == 
+        x@Stemmer & options_combinations$Stopwords == x@StopWords & options_combinations$OrderIndependentLookup == 
+        x@OrderIndependentLookup & options_combinations$FindAllMatches == x@FindAllMatches & 
+        options_combinations$SynonymType == x@SynonymType)])))
+    validObject(x)
+    x
 })
 
 
@@ -320,7 +290,7 @@ setReplaceMethod("OrderIndependentLookup", "CMoptions", function(x,
 #' FindAllMatches(opts)
 #' @export
 setMethod("FindAllMatches", "CMoptions", function(x) {
-  as.character(x@FindAllMatches)
+    as.character(x@FindAllMatches)
 })
 
 
@@ -336,22 +306,16 @@ setMethod("FindAllMatches", "CMoptions", function(x) {
 #' opts <- CMoptions()
 #' FindAllMatches(opts) <- 'YES'
 #' @export
-setReplaceMethod("FindAllMatches", "CMoptions", function(x,
-                                                                 value) {
-  options_combinations <- readRDS(system.file("extdata",
-                                              "Options_table.rds", package = "Onassis"))
-  x@FindAllMatches <- as.character(value)
-  x@paramValueIndex <- as.character(as.vector(unique(options_combinations$paramValueIndex[
-    which(options_combinations$SearchStrategy==x@SearchStrategy &
-            options_combinations$CaseMatch==x@CaseMatch &
-            options_combinations$Stemmer==x@Stemmer &
-            options_combinations$Stopwords==x@StopWords &
-            options_combinations$OrderIndependentLookup==x@OrderIndependentLookup &
-            options_combinations$FindAllMatches==x@FindAllMatches &
-            options_combinations$SynonymType==x@SynonymType
-    )])))
-  validObject(x)
-  x
+setReplaceMethod("FindAllMatches", "CMoptions", function(x, value) {
+    options_combinations <- readRDS(system.file("extdata", "Options_table.rds", package = "Onassis"))
+    x@FindAllMatches <- as.character(value)
+    x@paramValueIndex <- as.character(as.vector(unique(options_combinations$paramValueIndex[which(options_combinations$SearchStrategy == 
+        x@SearchStrategy & options_combinations$CaseMatch == x@CaseMatch & options_combinations$Stemmer == 
+        x@Stemmer & options_combinations$Stopwords == x@StopWords & options_combinations$OrderIndependentLookup == 
+        x@OrderIndependentLookup & options_combinations$FindAllMatches == x@FindAllMatches & 
+        options_combinations$SynonymType == x@SynonymType)])))
+    validObject(x)
+    x
 })
 
 
@@ -370,7 +334,7 @@ setReplaceMethod("FindAllMatches", "CMoptions", function(x,
 #'
 #' @export
 setMethod("SynonymType", "CMoptions", function(x) {
-  as.character(x@SynonymType)
+    as.character(x@SynonymType)
 })
 
 
@@ -386,22 +350,16 @@ setMethod("SynonymType", "CMoptions", function(x) {
 #' opts <- CMoptions()
 #' SynonymType(opts) <- 'ALL'
 #' @export
-setReplaceMethod("SynonymType", "CMoptions", function(x,
-                                                         value) {
-  options_combinations <- readRDS(system.file("extdata",
-                                              "Options_table.rds", package = "Onassis"))
-  x@SynonymType <- as.character(value)
-  x@paramValueIndex <- as.character(as.vector(unique(options_combinations$paramValueIndex[
-    which(options_combinations$SearchStrategy==x@SearchStrategy &
-            options_combinations$CaseMatch==x@CaseMatch &
-            options_combinations$Stemmer==x@Stemmer &
-            options_combinations$Stopwords==x@StopWords &
-            options_combinations$OrderIndependentLookup==x@OrderIndependentLookup &
-            options_combinations$FindAllMatches==x@FindAllMatches &
-            options_combinations$SynonymType==x@SynonymType
-    )])))
-  validObject(x)
-  x
+setReplaceMethod("SynonymType", "CMoptions", function(x, value) {
+    options_combinations <- readRDS(system.file("extdata", "Options_table.rds", package = "Onassis"))
+    x@SynonymType <- as.character(value)
+    x@paramValueIndex <- as.character(as.vector(unique(options_combinations$paramValueIndex[which(options_combinations$SearchStrategy == 
+        x@SearchStrategy & options_combinations$CaseMatch == x@CaseMatch & options_combinations$Stemmer == 
+        x@Stemmer & options_combinations$Stopwords == x@StopWords & options_combinations$OrderIndependentLookup == 
+        x@OrderIndependentLookup & options_combinations$FindAllMatches == x@FindAllMatches & 
+        options_combinations$SynonymType == x@SynonymType)])))
+    validObject(x)
+    x
 })
 
 
@@ -464,7 +422,6 @@ setReplaceMethod("SynonymType", "CMoptions", function(x,
 #' o <- listCMOptions()
 #' @export
 listCMOptions <- function() {
-  options_combinations <- readRDS(system.file("extdata",
-                                              "Options_table.rds", package = "Onassis"))
-  options_combinations[, 1:ncol(options_combinations)]
+    options_combinations <- readRDS(system.file("extdata", "Options_table.rds", package = "Onassis"))
+    options_combinations[, 1:ncol(options_combinations)]
 }

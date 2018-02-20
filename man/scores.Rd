@@ -21,6 +21,9 @@ scores(object) <- value
 
 \item{value}{a matrix of scores}
 }
+\value{
+the matrix of scores in case of get and the new \code{\link{Onassis-class}} object in case of set
+}
 \description{
 This method gets and sets the \code{scores} slot of a class \code{\link{Onassis-class}}
 

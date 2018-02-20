@@ -1,5 +1,4 @@
-############################################### Generics for class dictBuilder
-############################################### ##################################
+############################################### Generics for class dictBuilder ##################################
 
 #' @rdname dict_location
 setGeneric("dict_location", function(.Object) standardGeneric("dict_location"))
@@ -26,8 +25,7 @@ setGeneric("dictRef<-", function(.Object, value) standardGeneric("dictRef<-"))
 
 
 
-# ##############################################
-# Generics for class CMoptions
+# ############################################## Generics for class CMoptions
 # ###################################
 
 
@@ -102,8 +100,7 @@ setGeneric("Stemmer<-", function(x, value) standardGeneric("Stemmer<-"))
 
 
 
-# ###########################################
-# Generics for class EntityFinder
+# ########################################### Generics for class EntityFinder
 # ################################
 
 #' Method typeSystemRef
@@ -112,26 +109,23 @@ setGeneric(name = "typeSystemRef", def = function(x) standardGeneric("typeSystem
 
 #' Method typeSystemRef<-
 #' @rdname typeSystemRef
-setGeneric(name = "typeSystemRef<-", def = function(x,
-    value) standardGeneric("typeSystemRef<-"))
+setGeneric(name = "typeSystemRef<-", def = function(x, value) standardGeneric("typeSystemRef<-"))
 
 #' @name annotateDF
-setGeneric(name = "annotateDF", def = function(object,
-    descr_df, outDir = tempdir(), configOpt, cmDict) {
+setGeneric(name = "annotateDF", def = function(object, descr_df, outDir = tempdir(), 
+    configOpt, cmDict) {
     standardGeneric("annotateDF")
 })
 
 
 #' Method findEntities
 #' @name findEntities
-setGeneric(name = "findEntities", def = function(object,
-    inputDirOrFile, multipleDocs = FALSE, outDir = tempdir(),
-    configOpt, cmDict) {
+setGeneric(name = "findEntities", def = function(object, inputDirOrFile, multipleDocs = FALSE, 
+    outDir = tempdir(), configOpt, cmDict) {
     standardGeneric("findEntities")
 })
 
-# ###########################################
-# Generics for class Similarity
+# ########################################### Generics for class Similarity
 # #######################################
 
 
@@ -139,8 +133,7 @@ setGeneric(name = "findEntities", def = function(object,
 setGeneric(name = "similarityInstance", def = function(object) standardGeneric("similarityInstance"))
 
 #' @rdname similarityInstance
-setGeneric(name = "similarityInstance<-", def = function(object,
-    value) {
+setGeneric(name = "similarityInstance<-", def = function(object, value) {
     standardGeneric("similarityInstance<-")
 })
 
@@ -148,8 +141,8 @@ setGeneric(name = "similarityInstance<-", def = function(object,
 setGeneric(name = "icConfig", def = function(object) standardGeneric("icConfig"))
 
 #' @rdname icConfig
-setGeneric(name = "icConfig<-", def = function(object,value) {
-  standardGeneric("icConfig<-")
+setGeneric(name = "icConfig<-", def = function(object, value) {
+    standardGeneric("icConfig<-")
 })
 
 #' @rdname pairwiseConfig
@@ -157,17 +150,15 @@ setGeneric(name = "pairwiseConfig", def = function(object) standardGeneric("pair
 
 
 #' @rdname pairwiseConfig
-setGeneric(name = "pairwiseConfig<-", def = function(object,
-                                                     value) {
-  standardGeneric("pairwiseConfig<-")
+setGeneric(name = "pairwiseConfig<-", def = function(object, value) {
+    standardGeneric("pairwiseConfig<-")
 })
 
 #' @rdname pairwiseConfigRef
 setGeneric(name = "pairwiseConfigRef", def = function(object) standardGeneric("pairwiseConfigRef"))
 
 #' @rdname pairwiseConfigRef
-setGeneric(name = "pairwiseConfigRef<-", def = function(object,
-    value) {
+setGeneric(name = "pairwiseConfigRef<-", def = function(object, value) {
     standardGeneric("pairwiseConfigRef<-")
 })
 
@@ -176,8 +167,7 @@ setGeneric(name = "groupwiseConfigRef", def = function(object) standardGeneric("
 
 
 #' @rdname groupwiseConfigRef
-setGeneric(name = "groupwiseConfigRef<-", def = function(object,
-    value) {
+setGeneric(name = "groupwiseConfigRef<-", def = function(object, value) {
     standardGeneric("groupwiseConfigRef<-")
 })
 
@@ -187,8 +177,7 @@ setGeneric(name = "groupConfig", def = function(object) {
 })
 
 #' @rdname groupConfig
-setGeneric(name = "groupConfig<-", def = function(object,
-    value) {
+setGeneric(name = "groupConfig<-", def = function(object, value) {
     standardGeneric("groupConfig<-")
 })
 
@@ -201,34 +190,30 @@ setGeneric(name = "ontology", def = function(object) {
 
 
 #' @rdname ontology
-setGeneric(name = "ontology<-", def = function(object,
-    value) {
+setGeneric(name = "ontology<-", def = function(object, value) {
     standardGeneric("ontology<-")
 })
 
 
 
 #' @rdname pairsim
-setGeneric(name = "pairsim", def = function(object, term1,
-    term2) {
+setGeneric(name = "pairsim", def = function(object, term1, term2) {
     standardGeneric("pairsim")
 })
 
 #' @rdname groupsim
-setGeneric(name = "groupsim", def = function(object,
-    termList1, termList2) {
+setGeneric(name = "groupsim", def = function(object, termList1, termList2) {
     standardGeneric("groupsim")
 })
 
 #' @rdname samplesim
-setGeneric(name = "samplesim", def = function(object,
-    sample1, sample2, annotated_df) {
+setGeneric(name = "samplesim", def = function(object, sample1, sample2, annotated_df) {
     standardGeneric("samplesim")
 })
 
 #' @rdname multisim
-setGeneric(name = "multisim", def = function(similarities,
-    annotations, sample1, sample2, aggregating_function) {
+setGeneric(name = "multisim", def = function(similarities, annotations, sample1, 
+    sample2, aggregating_function) {
     standardGeneric("multisim")
 })
 
@@ -236,83 +221,79 @@ setGeneric(name = "multisim", def = function(similarities,
 
 #' @rdname dictionary
 setGeneric(name = "dictionary", def = function(object) {
-  standardGeneric("dictionary")
+    standardGeneric("dictionary")
 })
 
 
 #' @rdname dictionary
-setGeneric(name = "dictionary<-", def = function(object,
-                                               value) {
-  standardGeneric("dictionary<-")
+setGeneric(name = "dictionary<-", def = function(object, value) {
+    standardGeneric("dictionary<-")
 })
 
 #' @rdname simil
 setGeneric(name = "simil", def = function(object) {
-  standardGeneric("simil")
+    standardGeneric("simil")
 })
 
 
 #' @rdname simil
-setGeneric(name = "simil<-", def = function(object,
-                                                 value) {
-  standardGeneric("simil<-")
+setGeneric(name = "simil<-", def = function(object, value) {
+    standardGeneric("simil<-")
 })
 
 
 #' @rdname entities
 setGeneric(name = "entities", def = function(object) {
-  standardGeneric("entities")
+    standardGeneric("entities")
 })
 
 
 #' @rdname entities
-setGeneric(name = "entities<-", def = function(object,
-                                                 value) {
-  standardGeneric("entities<-")
+setGeneric(name = "entities<-", def = function(object, value) {
+    standardGeneric("entities<-")
 })
 
 
 #' @rdname scores
 setGeneric(name = "scores", def = function(object) {
-  standardGeneric("scores")
+    standardGeneric("scores")
 })
 
 
 #' @rdname scores
-setGeneric(name = "scores<-", def = function(object,
-                                               value) {
-  standardGeneric("scores<-")
+setGeneric(name = "scores<-", def = function(object, value) {
+    standardGeneric("scores<-")
 })
 
 
 #' @rdname annotate
 #' @param ... Optional parameters
-setGeneric(name='annotate', signature= c("input", "dictType", "dictionary"), def=function(input=NA, dictType=NA, dictionary=NA, ...) standardGeneric('annotate')
-)
+setGeneric(name = "annotate", signature = c("input", "dictType", "dictionary"), def = function(input = NA, 
+    dictType = NA, dictionary = NA, ...) standardGeneric("annotate"))
 
 
 #' @rdname sim
 #' @param ... Optional parameters
-setGeneric(name='sim', signature= c("onassis"), def=function(onassis=NA, ...) standardGeneric('sim')
-)
+setGeneric(name = "sim", signature = c("onassis"), def = function(onassis = NA, ...) standardGeneric("sim"))
 
 
 #' @rdname collapse
-setGeneric(name='collapse', signature= c("onassis"), def=function(onassis=NA, simil_thresh) standardGeneric('collapse')
-)
+setGeneric(name = "collapse", signature = c("onassis"), def = function(onassis = NA, 
+    simil_thresh) standardGeneric("collapse"))
 
 
 
 #' @rdname mergeonassis
-setGeneric(name='mergeonassis', signature= c("onassis1", "onassis2"), def=function(onassis1=NA, onassis2=NA) standardGeneric('mergeonassis')
-)
+setGeneric(name = "mergeonassis", signature = c("onassis1", "onassis2"), def = function(onassis1 = NA, 
+    onassis2 = NA) standardGeneric("mergeonassis"))
 
 #' @rdname compare
 #' @param ... Optional parameters
-setGeneric(name='compare', signature=c('onassis'), def=function(onassis, ...) standardGeneric('compare'))
+setGeneric(name = "compare", signature = c("onassis"), def = function(onassis, ...) standardGeneric("compare"))
 
 
 
 
 #' @rdname filterconcepts
-setGeneric(name='filterconcepts', signature=c('onassis'), def=function(onassis, concepts_to_filter) standardGeneric('filterconcepts'))
+setGeneric(name = "filterconcepts", signature = c("onassis"), def = function(onassis, 
+    concepts_to_filter) standardGeneric("filterconcepts"))

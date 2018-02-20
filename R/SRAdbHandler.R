@@ -98,8 +98,8 @@ library_sources <- function(SRAcon) {
 #'    }
 #' @export
 
-getSRAMetadata <- function(sra_con, library_strategy, 
-    library_source = NA, taxon_id = NA, center_name = NA) {
+getSRAMetadata <- function(sra_con, library_strategy, library_source = NA, taxon_id = NA, 
+    center_name = NA) {
     exp_types <- library_strategies(sra_con)
     samples <- NA
     samples_df <- NA
@@ -109,12 +109,10 @@ getSRAMetadata <- function(sra_con, library_strategy,
         samples_query <- paste0("select sample_accession, description, sample_attribute, sample_url_link from sample where taxon_id='", 
             taxon_id, "' and sample_accession IS NOT NULL")
         if (!is.na(center_name)) 
-            samples_query <- paste0(samples_query, 
-                " and center_name='", center_name, 
+            samples_query <- paste0(samples_query, " and center_name='", center_name, 
                 "'")
         samples_df <- dbGetQuery(sra_con, samples_query)
-        samples <- unique(as.character(as.vector(samples_df[, 
-            1])))
+        samples <- unique(as.character(as.vector(samples_df[, 1])))
     }
     experiment_query <- paste0("select experiment_accession, center_name, title, sample_accession, sample_name, experiment_alias, library_strategy, library_layout, experiment_url_link, experiment_attribute from experiment where library_strategy='", 
         library_strategy, "'")
@@ -123,41 +121,34 @@ getSRAMetadata <- function(sra_con, library_strategy,
             2])
         sources <- sources[which(!is.na(sources))]
         if (!library_source %in% sources) 
-            stop("Invalid library_source") else experiment_query <- paste0(experiment_query, 
-            " and library_source ='", library_source, 
-            "' ")
+            stop("Invalid library_source") else experiment_query <- paste0(experiment_query, " and library_source ='", 
+            library_source, "' ")
     }
     if (is.character(samples) & length(samples) > 0) 
-        experiment_query <- paste0(experiment_query, 
-            " and sample_accession in ('", paste(unique(samples), 
-                collapse = "','"), "')")
+        experiment_query <- paste0(experiment_query, " and sample_accession in ('", 
+            paste(unique(samples), collapse = "','"), "')")
     if (!is.na(center_name)) {
-        experiment_query <- paste0(experiment_query, 
-            " and center_name=='", center_name, "'")
+        experiment_query <- paste0(experiment_query, " and center_name=='", center_name, 
+            "'")
     }
     message("Running the query")
     experiment_df <- dbGetQuery(sra_con, experiment_query)
     message("Done!")
-    if (is.data.frame(samples_df) & nrow(samples_df) > 
-        0) 
-        experiment_df <- merge(experiment_df, samples_df, 
-            by = "sample_accession")
+    if (is.data.frame(samples_df) & nrow(samples_df) > 0) 
+        experiment_df <- merge(experiment_df, samples_df, by = "sample_accession")
     experiment_df$experiment_attribute <- sapply(experiment_df$experiment_attribute, 
         function(value) {
             gsub("||", "  ", value)
         })
-    experiment_df$sample_attribute <- sapply(experiment_df$sample_attribute, 
-        function(value) {
-            gsub("||", "  ", value)
-        })
-    experiment_df$sample_name <- sapply(experiment_df$sample_name, 
-        function(value) {
-            gsub("_", " ", value)
-        })
-    experiment_df$experiment_alias <- sapply(experiment_df$experiment_alias, 
-        function(value) {
-            gsub("_", " ", value)
-        })
+    experiment_df$sample_attribute <- sapply(experiment_df$sample_attribute, function(value) {
+        gsub("||", "  ", value)
+    })
+    experiment_df$sample_name <- sapply(experiment_df$sample_name, function(value) {
+        gsub("_", " ", value)
+    })
+    experiment_df$experiment_alias <- sapply(experiment_df$experiment_alias, function(value) {
+        gsub("_", " ", value)
+    })
     
     return(experiment_df)
 }

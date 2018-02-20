@@ -19,21 +19,19 @@
 #' @export
 #' @importFrom GEOmetadb getSQLiteFile
 #' @importFrom RSQLite dbConnect SQLite
-connectToGEODB <- function(sqliteFileName = NULL, download = FALSE,
-    destdir = getwd()) {
+connectToGEODB <- function(sqliteFileName = NULL, download = FALSE, destdir = getwd()) {
     geo_con <- NA
     if (is.null(sqliteFileName)) {
         # set the filename to default
         sqliteFileName <- "GEOmetadb.sqlite"
     }
-
-
-    if (!file.exists(file.path(destdir, sqliteFileName)) &
-        download == TRUE) {
+    
+    
+    if (!file.exists(file.path(destdir, sqliteFileName)) & download == TRUE) {
         sqlfile <- GEOmetadb::getSQLiteFile(destdir = destdir)
     }
-
-    if (file.exists(file.path(destdir, sqliteFileName)))
+    
+    if (file.exists(file.path(destdir, sqliteFileName))) 
         geo_con <- RSQLite::dbConnect(SQLite(), sqliteFileName) else stop("please provide a valid connection")
     return(geo_con)
 }
@@ -58,14 +56,12 @@ connectToGEODB <- function(sqliteFileName = NULL, download = FALSE,
 #' @importFrom RSQLite dbGetQuery
 experiment_types <- function(GEOcon) {
     gse_types <- dbGetQuery(GEOcon, "select distinct type from gse order by type")
-    gse_types <- unlist(sapply(as.character(as.vector(gse_types[,
-        1])), function(list_of_types) {
-        if (grepl(";", list_of_types))
+    gse_types <- unlist(sapply(as.character(as.vector(gse_types[, 1])), function(list_of_types) {
+        if (grepl(";", list_of_types)) 
             NA else list_of_types
     }))
     names(gse_types) <- rep(NA, length(gse_types))
-    gse_types <- unique(sapply(gse_types, function(type_string) gsub(";",
-        "", type_string)))
+    gse_types <- unique(sapply(gse_types, function(type_string) gsub(";", "", type_string)))
     gse_types <- unique(gse_types[which(!is.na(gse_types))])
     return(gse_types)
 }
@@ -87,9 +83,8 @@ experiment_types <- function(GEOcon) {
 
 organism_types <- function(geo_con) {
     organisms <- dbGetQuery(geo_con, "select distinct organism_ch1 from gsm")
-    organisms <- unlist(sapply(as.character(as.vector(organisms[,
-        1])), function(list_of_types) {
-        if (grepl(";", list_of_types))
+    organisms <- unlist(sapply(as.character(as.vector(organisms[, 1])), function(list_of_types) {
+        if (grepl(";", list_of_types)) 
             NA else list_of_types
     }))
     organisms <- unique(organisms[which(!is.na(organisms))])
@@ -119,63 +114,57 @@ organism_types <- function(geo_con) {
 #' }
 #' @export
 
-getGEOMetadata <- function(geo_con, experiment_type = NA,
-    organism = NA, gpl = NA) {
+getGEOMetadata <- function(geo_con, experiment_type = NA, organism = NA, gpl = NA) {
     experiment_acs <- NA
     experiment_metadata <- NA
     statement <- " where "
     if (!is.na(experiment_type)) {
         exp_types <- experiment_types(geo_con)
-        if (!experiment_type %in% exp_types)
+        if (!experiment_type %in% exp_types) 
             stop("Invalid experiment type. Please run experiment_types(GEOcon) to view valid values")
-        experiment_query <- paste0("select gse, title, summary from gse where type ='",
+        experiment_query <- paste0("select gse, title, summary from gse where type ='", 
             experiment_type, "'")
-        experiment_metadata <- dbGetQuery(geo_con,
-            experiment_query)
-        colnames(experiment_metadata) <- c("gse", "experiment_title",
-            "experiment_summary")
+        experiment_metadata <- dbGetQuery(geo_con, experiment_query)
+        colnames(experiment_metadata) <- c("gse", "experiment_title", "experiment_summary")
         experiment_acs <- unique(experiment_metadata$gse)
     }
     sample_query <- "select series_id, gsm, title, gpl, source_name_ch1, organism_ch1, characteristics_ch1, description from gsm"
-
+    
     if (!is.na(experiment_acs[1])) {
-        sample_query <- paste0(sample_query, statement,
-            "series_id in ('", paste(unique(experiment_acs),
-                collapse = "','"), "')")
+        sample_query <- paste0(sample_query, statement, "series_id in ('", paste(unique(experiment_acs), 
+            collapse = "','"), "')")
         statement <- " and "
     }
-
+    
     if (!is.na(organism)) {
         organism_types <- organism_types(geo_con)
-        if (!organism %in% organism_types)
+        if (!organism %in% organism_types) 
             stop("Invalid organism. Please run organism_types to visualize valid values") else {
-            sample_query <- paste0(sample_query, statement,
-                " organism_ch1 ='", organism, "'")
+            sample_query <- paste0(sample_query, statement, " organism_ch1 ='", organism, 
+                "'")
             statement <- " and "
         }
     }
     if (!is.na(gpl)) {
-        sample_query <- paste0(sample_query, statement,
-            " gpl = '", gpl, "'")
+        sample_query <- paste0(sample_query, statement, " gpl = '", gpl, "'")
     }
     sample_metadata <- dbGetQuery(geo_con, sample_query)
     columns <- c(2, 1, 3:ncol(sample_metadata))
     if (!is.na(experiment_metadata)) {
-        geo_metadata <- merge(sample_metadata, experiment_metadata,
-            by.x = "series_id", by.y = "gse")
+        geo_metadata <- merge(sample_metadata, experiment_metadata, by.x = "series_id", 
+            by.y = "gse")
         columns <- c(2, 3, 5, 7, 8, 9, 10, 1, 4, 6)
     } else {
         geo_metadata <- sample_metadata
-
+        
     }
-    geo_metadata$characteristics_ch1 <- sapply(geo_metadata$characteristics_ch1,
+    geo_metadata$characteristics_ch1 <- sapply(geo_metadata$characteristics_ch1, 
         function(value) {
             gsub(";\t", "  ", value)
         })
-    geo_metadata$description <- sapply(geo_metadata$description,
-        function(value) {
-            gsub(";\t", "  ", value)
-        })
-
+    geo_metadata$description <- sapply(geo_metadata$description, function(value) {
+        gsub(";\t", "  ", value)
+    })
+    
     return(geo_metadata[, columns])
 }
