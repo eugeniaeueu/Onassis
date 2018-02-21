@@ -10,7 +10,7 @@ annotateTissueDisease(geo_metadb_path, gsm_list, tissue_obo, disease_obo,
 \arguments{
 \item{geo_metadb_path}{The full path of the directory where the GEOmetadb.sqlite file is stored}
 
-\item{gsm_list}{A list of GEO sample ids (GSMs) to annotate with tissue and disease concepts}
+\item{gsm_list}{A list of GEO sample ids (GSM)s to annotate with tissue and disease concepts}
 
 \item{tissue_obo}{The obo ontology containing concepts to identify tissues/cell lines}
 
@@ -23,10 +23,12 @@ annotateTissueDisease(geo_metadb_path, gsm_list, tissue_obo, disease_obo,
 \item{score_matrix}{A matrix where rows represent units (GRanges or genes) and columns represent GSMs.}
 }
 \value{
-A list of the tissue semantic sets defined by Onassis. For each tissue, a list of diseases and for each disease the columns of the score_matrix that were annotated with a given tissue and a given disease based
+A list of the tissue semantic sets defined by Onassis. For each tissue, a list of diseases and for each disease the columns of the \code{score_matrix} that were annotated with a given tissue and a given disease
 }
 \description{
-annotateTissueDisease connects to the GEOmetadb to retrieve the metadata of the samples provided in the gsm_list parameter. A dictionary for tissues/cell lines is built rom the tissue_obo file provided. All the samples' metadata are annotated with tissue concepts from the tissue_obo and samples are clustered based on the semantic similarity (default measure) of the samples. In particular, the samples are clustered and then the function cutree is used to cut the clustering tree at the specified height. Tissue semantic sets are then created associating all the samples that are similar above the provided height_threshold. Within each semantic set, samples are annotated with disease concepts from disease_obo parameter. For each disease the function retrieves the columns of the score matrix.
+annotateTissueDisease is a function to automatize the annotation process of tissues and diseases. It connects to the GEOmetadb through the \code{geo_metadb_path} parameter to retrieve the metadata of the samples provided in the \code{gsm_list} parameter.
+A dictionary for tissues/cell lines is built from the \code{tissue_obo} file provided as parameter. All the samples' metadata are annotated with tissue concepts from the tissue_obo and samples are clustered based on the semantic similarity of the defined semantic annotation sets.
+To reduce the number of tissue semantic sets, similar semantic sets are merged based on a givin semantic similarity threshold provided in the \code{height_threshold} parameter. Within each semantic set, samples are annotated with disease concepts from the dictionary obtained from \code{disease_obo} parameter. For each disease the function retrieves the columns of the \code{score_matrix} to organize them in a list with tissues, diseases and scores.
 }
 \examples{
 if(!file.exists(file.path(getwd(), 'GEOmetadb.sqlite'))){

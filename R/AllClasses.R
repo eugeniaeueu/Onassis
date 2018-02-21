@@ -23,11 +23,33 @@ NULL
 
 
 
+#' Onassis-class
+#'
+#' @description Onassis is a container class for annotating samples metadata with concepts from dictionaries/ontologies, creating semantic sets of unique annotations, computing the distances between different semantic sets and eventually comparing the different identified conditions.
+#' @slot dictionary One or more input dictionaries to annotate samples metadata
+#' @slot entities a data frame containing the result of the annotation of the input with ontology terms
+#' @slot similarity A matrix of the similarities between the entries in the entities slot
+#' @slot scores An optional score matrix containing genomic units on the rows (genes, regions) and on the columns the elements on the rows of the entities slot
+#' @details The following methods can be applied to Onassis
+#'
+#'\code{\link{annotate}} \cr
+#'\code{\link{collapse}} \cr
+#'\code{\link{compare}} \cr
+#' @exportClass Onassis
+setClass(Class = "Onassis", representation(dictionary = "character", entities = "data.frame", 
+    similarity = "matrix", scores = "matrix"), validity = function(object) {
+    text <- character()
+    
+    if (length(text)) 
+        text else TRUE
+})
 
-#' CMdictionary class that stores a Conceptmapper dictionary
-#
-#' @name CMdictionary-class
-#' @rdname CMdictionary-class
+
+
+
+
+#' Class that stores a Conceptmapper dictionary
+#'
 #' @description CMdictionary is a class that wraps a Conceptmapper ccp-nlp Java dictionary. Its methods allow the creation of a dictionary from OBO ontologies in OBO or OWL format. Different options to build the dictionary are available.
 #' @slot dict_location The path of the created dictionary file
 #' @slot dictRef Reference to the java object representing the dictionary
@@ -56,20 +78,25 @@ NULL
 #'
 #'\item{taxID The NCBI taxon identifier for species to create the Entrez gene dictionary (e.g 9606 for Mus musculus)}
 #'}
-#' @details The following methods can be applied to CMdictionary
+#' @details The following methods can be applied to CMdictionary instances
 #'
-#'\code{\link{dictTypes}} \cr
-#'\code{\link{buildDictionary}} \cr
-#'\code{\link{dictInfo}} \cr
+#' \code{\link{dict_location}} \cr
+#' \code{\link{dict_location<-}} \cr
+#' \code{\link{dictInfo}} \cr
+#' \code{\link{dictInfo<-}} \cr
+#' \code{\link{dictRef}} \cr
+#' \code{\link{dictRef<-}} \cr
+#'
+#' To show the available dictionary types use the function
+#' \code{\link{dictTypes}} \cr
 #' @examples
 #'dict <- new('CMdictionary')
-#' @exportClass CMdictionary
-setClass(Class = "CMdictionary", representation(dict_location = "character",
-    dictInfo = "list", dictRef = "jobjRef"), validity = function(object) {
+setClass(Class = "CMdictionary", representation(dict_location = "character", dictInfo = "list", 
+    dictRef = "jobjRef"), validity = function(object) {
     text <- character()
-    if (is.na(object@dict_location) | !file.info(object@dict_location)$isdir)
+    if (is.na(object@dict_location) | !file.exists(object@dict_location)) 
         text <- c("Invalid directory Path: You should provide a valid directory for the Conceptmapper dictionary")
-    if (length(text))
+    if (length(text)) 
         text else TRUE
 })
 
@@ -77,113 +104,118 @@ setClass(Class = "CMdictionary", representation(dict_location = "character",
 
 
 
-#' CMoptions
-#
-#' @name CMoptions-class
-#' @rdname CMoptions-class
-#' @description CMoptions is a class that represents Conceptmapper configurations. It allows users to show and set the possible combinations of different parameters for Conceptmapper running.
-#' @slot arguments The following argument can be set to run Conceptmapper
-#'\describe{
-#'\item{paramValueIndex}{An integer value to index the 576 parameter combinations}
-#'\item{SearchStrategy}{The matching strategy for finding concepts in the input text}
+#' Class to set the options to run the EntityFinder
+# 
+#' @description CMoptions is a class that represents Conceptmapper configurations. It allows users to set the possible combinations of different parameters for Conceptmapper running.
+#' @slot paramValueIndex An integer value to index the 576 parameter combinations
+#' @slot SearchStrategy The matching strategy for finding concepts in the input text
 #'\itemize{
 #'\item{CONTIGUOUS_MATCH}{Longets match of contiguous tokens within enclosing span}
 #'\item{SKIP_ANY_MATCH}{Longest match of not-necessarily contiguous tokens}
 #'\item{SKIP_ANY_MATCH_ALLOW_OVERLAP}{Longest match of not-necessarily contiguous tokens, overlapping matches are allowed}
 #'}
-#'\item{CaseMatch}{}
+#' @slot CaseMatch
 #'\itemize{
 #'\item{CASE_IGNORE}{Fold everything to lowercase for matching}
 #'\item{CASE_INSENSITIVE}{Fold only tokens with initial caps to lowercase}
 #'\item{CASE_FOLD_DIGITS}{Fold all (and only) tokens with a digit}
 #'\item{CASE_SENSITIVE}{Perform no case folding}
 #'}
-#'\item{Stemmer}{}
+#' @slot Stemmer
 #'\itemize{
 #'\item BIOLEMMATIZER {A stemmer specific for biomedical literature}
 #'\item PORTER {A stemmer that removes the commoner morphological and inflexional endings from words in English}
 #'\item NONE {No word stemming}
 #'}
-#'\item{StopWords}{}
+#' @slot StopWords
 #'\itemize{
 #'\item PUBMED {A list of stop words obtained analyzing Pubmed papers}
 #'\item NONE {No stop words }
 #'}
-#'\item{OrderIndependentLookup}{}
+#'@slot OrderIndependentLookup
 #'\itemize{
 #'\item ON {Ordering within span is ignored (i.e. 'Breast cancer' would equal 'Cancer breast') }
 #'\item OFF {Ordering is taken into consideration}
 #'}
-#'\item{FindAllMatches}{}
+#' @slot FindAllMatches
 #'\itemize{
 #'\item YES {All the matches within the span are found }
 #'\item NO {Only the longest match within the span will be returned}
 #'}
-#'\item{SynonymType}{}
+#' @slot SynonymType
 #'\itemize{
 #'\item EXACT_ONLY {Only exact synonyms are considered }
 #'\item ALL {All synonym types are included}
 #'}
-#'}
 #' @details The following methods can be applied to CMoptions
 #'
-#'\code{\link{paramValueIndex}} \cr
-#'\code{\link{show}}  \cr
-#'\code{\link{arguments}} \cr
-#'\code{\link{listCombinations}} \cr
+#' \code{\link{show}}  \cr
+#' \code{\link{paramValueIndex}} \cr
+#' \code{\link{paramValueIndex<-}} \cr
+#' \code{\link{SearchStrategy}} \cr
+#' \code{\link{SearchStrategy<-}} \cr
+#' \code{\link{CaseMatch}} \cr
+#' \code{\link{CaseMatch<-}} \cr
+#' \code{\link{Stemmer}} \cr
+#' \code{\link{Stemmer<-}} \cr
+#' \code{\link{StopWords}} \cr
+#' \code{\link{StopWords<-}} \cr
+#' \code{\link{OrderIndependentLookup}} \cr
+#' \code{\link{OrderIndependentLookup}} \cr
+#' \code{\link{FindAllMatches}} \cr
+#' \code{\link{FindAllMatches<-}} \cr
+#' \code{\link{SynonymType}} \cr
+#' \code{\link{SynonymType<-}} \cr
 #' @examples
 #' options <- new('CMoptions')
-#' @exportClass CMoptions
-#' @export
-setClass(Class = "CMoptions", representation(arguments = "list"),
-    validity = function(object) {
-        text <- character()
-        options_combinations <- readRDS(system.file("extdata",
-            "Options_table.rds", package = "Onassis"))
-        if (class(object@arguments) != "list")
-            text <- c("Invalid arguments: Arguments should be a list")
-        if (length(object@arguments) != 8)
-            text <- c("Arguments missing. The number of arguments should be 8")
-        for (argument_name in names(object@arguments)) {
-            if (!argument_name %in% colnames(options_combinations))
-                text <- c("Invalid argument name")
-            if (!(as.character(object@arguments[[argument_name]]) %in%
-                levels(options_combinations[, c(argument_name)])))
-                text <- c("Invalid argument value for argument ",
-                  argument_name)
-        }
-        if (length(text))
-            text else TRUE
-    })
+setClass(Class = "CMoptions", representation = representation(paramValueIndex = "character", 
+    SearchStrategy = "character", CaseMatch = "character", Stemmer = "character", 
+    StopWords = "character", OrderIndependentLookup = "character", FindAllMatches = "character", 
+    SynonymType = "character"), validity = function(object) {
+    text <- character()
+    options_combinations <- readRDS(system.file("extdata", "Options_table.rds", package = "Onassis"))
+    if (!object@paramValueIndex %in% unique(options_combinations$paramValueIndex)) 
+        text <- c("Invalid paramValueIndex: should be a number in [0:575]")
+    if (!object@SearchStrategy %in% unique(options_combinations$SearchStrategy)) 
+        text <- c(text, "Invalid SearchStrategy argument")
+    if (!object@CaseMatch %in% unique(options_combinations$CaseMatch)) 
+        text <- c(text, "Invalid SearchStrategy argument")
+    if (!object@Stemmer %in% unique(options_combinations$Stemmer)) 
+        text <- c(text, "Invalid Stemmer argument")
+    if (!object@StopWords %in% unique(options_combinations$Stopwords)) 
+        text <- c(text, "Invalid StopWords argument")
+    if (!object@OrderIndependentLookup %in% unique(options_combinations$OrderIndependentLookup)) 
+        text <- c(text, "Invalid OrderIndependentLookup argument")
+    if (!object@FindAllMatches %in% unique(options_combinations$FindAllMatches)) 
+        text <- c(text, "Invalid FindAllMatches argument")
+    if (!object@SynonymType %in% unique(options_combinations$SynonymType)) 
+        text <- c(text, "Invalid SynonymType argument")
+    
+    
+    if (length(text)) 
+        text else TRUE
+})
 
 
 
 
 
 #' EntityFinder class to create a Conceptmapper instance
-#
-#' @name EntityFinder-class
-#' @rdname EntityFinder-class
 #' @description EntityFinder is a class that wraps a Conceptmapper pipeline using the CCP UIMA Type System \url{https://github.com/UCDenver-ccp/ccp-nlp}. The pipeline includes a sentence detector, offset tokenizer and retrieves concepts from dictionaries built from  OBO/OWL formatted ontology files.
 #' @slot typeSystemRef The reference to the Java object representing the type system
 #' @details The following methods can be applied to EntityFinder
 #'
 #'\code{\link{findEntities}} \cr
-#'\code{\link{buildDictionary}} \cr
+#'\code{\link{annotateDF}} \cr
+#' The methods can be automatically called using the function
+#' \code{\link{EntityFinder}} \cr
 #' @examples
 #' finder <- new('EntityFinder')
-#' @exportClass EntityFinder
-#' @export
 setClass(Class = "EntityFinder", representation = representation(typeSystemRef = "jobjRef"))
-
-
-
 
 
 #' Similarity class to compute similarities between concepts in ontologies and samples annotated with different concepts
 #'\code{Similarity-class}
-#' @name Similarity-class
-#' @rdname Similarity-class
 #' @description Similarity is a class that wraps some methods of the Java library slib \url{http://www.semantic-measures-library.org/sml/}. Starting from OBO ontologies it is possible to build semantic graphs that allow the computation of different similarity measures between concepts belonging to the same ontology, group of concepts, samples annotated with different ontology concepts. Further details about the graph based semantic similarity measures are available at \url{http://www.semantic-measures-library.org/sml/index.php?q=doc_graph_based_advanced}
 #' @slot similarityInstance The Java reference to the Java Similarity class.
 #' @slot pairwiseConfig The list of measures used to compute the semantic similarity between two concpets in the same ontology.
@@ -198,19 +230,18 @@ setClass(Class = "EntityFinder", representation = representation(typeSystemRef =
 #'\code{\link{ontology<-}} \cr
 #'\code{\link{pairwiseConfig}} \cr
 #'\code{\link{groupConfig}} \cr
-#'\code{\link{showOpts}} \cr
 #'\code{\link{sim}} \cr
 #'\code{\link{groupsim}} \cr
 #'\code{\link{samplesim}} \cr
+#' To see the available similarity measures run the function \code{\link{listSimilarities}}
 #' @examples
 #' sim <- new('Similarity')
 #'
 #' @exportClass Similarity
 #' @export
-setClass(Class = "Similarity", representation = representation(similarityInstance = "jobjRef",
-    pairwiseConfig = "character", pairwiseConfigRef = "jobjRef",
-    icConfig = "character", groupConfig = "character",
-    groupwiseConfigRef = "jobjRef", ontology = "jobjRef"))
+setClass(Class = "Similarity", representation = representation(similarityInstance = "jobjRef", 
+    pairwiseConfig = "character", pairwiseConfigRef = "jobjRef", icConfig = "character", 
+    groupConfig = "character", groupwiseConfigRef = "jobjRef", ontology = "jobjRef"))
 
 
 
