@@ -320,12 +320,6 @@ setMethod("sim", signature = c("Onassis"), def = function(onassis, iconf = "sanc
                 URIs2 <- sim_instance$createURIs(.jarray(term_list2))
                 if (length(term_list1) > 0 & length(term_list2) > 0)
                   {
-                    print(term_list1)
-                    print(length(term_list1))
-                    print(class(term_list2))
-                    print(term_list2)
-                    print(length(term_list2))
-                    print(class(term_list2))
                     if ((length(term_list1) == 1 & term_list1[1] == "Healthy") |
                       (length(term_list2) == 1 & term_list2[1] == "Healthy"))
                       semantic_net_matrix[i, j] <- semantic_net_matrix[j, i] <- 0 else {
