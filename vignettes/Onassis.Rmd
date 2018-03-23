@@ -479,7 +479,7 @@ Annotations with semantic similarities above a given threshold can be unified us
 The similarity slot will be consequently updated
 
 ```{r collapsing_similarities, echo=TRUE, eval=TRUE}
-collapsed_onassis <- collapse(filtered_onassis, 0.8)
+collapsed_onassis <- Onassis::collapse(filtered_onassis, 0.8)
 head(entities(collapsed_onassis))
 heatmap.2(simil(collapsed_onassis))
 ```
