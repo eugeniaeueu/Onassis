@@ -455,7 +455,7 @@ onassis_annotations <- annotate(sra_chip_seq, 'OBO',obo )
 
 To retrieve the annotations we provided the accessor method `entities`
 
-```{r show_onassis_annotations, echo=TRUE, eval=TRURE}
+```{r show_onassis_annotations, echo=TRUE, eval=TRUE}
 onassis_entities <- entities(onassis_annotations) 
 head(onassis_entities[sample(nrow(onassis_entities), 10),])
 ```
