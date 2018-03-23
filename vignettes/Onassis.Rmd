@@ -17,6 +17,7 @@ library(Onassis)
 library(DT)
 library(gplots)
 library(org.Hs.eg.db)
+
 ```
 
 # Introduction to OnASSis 
@@ -32,6 +33,8 @@ In particular the software includes modules to assist on:
 </ul>
 Onassis uses Conceptmapper, an Apache UIMA (Unstructured Information Management Architecture) dictionary lookup tool to retrieve dictionary terms in a given text. https://uima.apache.org/downloads/sandbox/ConceptMapperAnnotatorUserGuide/ConceptMapperAnnotatorUserGuide.html  
 In particular, the ccp-nlp Conceptmapper wrapper, specific for the biomedical domain, implements a pipeline through which it is possible to retrieve concepts from OBO ontologies in any given text with different adjustable options [@Verspoor:2009b].
+
+Onassis features can be easily accessed through a main class named \code{Onassis}, having as slots \code{dictionary}, \code{entities}, \code{similarity} and \code{scores}. In the following sections we first show details on the usage of the classes and methods that constitute the building blocks of typical metadata integration workflows and than we show how using the Onassis class their usage is further simplified. 
 
 Onassis can handle any type of text as input, but is particularly well suited for the analysis of the metadata from Gene Expression Omnibus (GEO). This represents a fundamental first step in the integrative analysis of the data from those repositories [@galeota2016ontology]. Indeed it provides the possibility to associate concepts from any OBO ontology to GEO, but also SRA metadata retrieved using `r BiocStyle::Biocpkg("GEOmetadb")`. In addition to the ontological concepts, the recognition of gene/protein symbols or epigenetic modifications can be highly relevant, especially for experiments directed to those specific factors or marks (such as ChIP-seq experiments).
 
@@ -345,7 +348,6 @@ columnDefs = list(list(targets= c(0,1,2,3,4),
 
 ```
 
-
 # Semantic similarity 
 
 With Onassis it is possible to quantify the semantic similarity between the concepts of a given ontology using different semantic similarity measures. `Similarity` is an Onassis class applying methods of the Java library slib \url{http://www.semantic-measures-library.org/sml/} [@harispe2014semantic], which builds a semantic graph starting from OBO ontology concepts and their hierarchical relationships.
@@ -440,6 +442,46 @@ for(i in 1:(n-1)){
 }
 diag(samples_results) <- 1
 heatmap.2(samples_results, density.info = "none", trace="none", main='Semantic similarity of annotated samples', margins=c(5,5))
+```
+
+
+# Onassis class
+
+In this section we illustrate the use of the Onassis class to annotate the previously retrieved metadata. The method `annotate` takes as input a data frame of metadata to annotate, the type of dictionary and the path of an ontology file and returns an instance of class Onassis. 
+
+```{r onassis_class_usage, echo=TRUE, eval=TRUE}
+onassis_annotations <- annotate(sra_chip_seq, 'OBO',obo )
+```
+
+To retrieve the annotations we provided the accessor method `entities`
+
+```{r show_onassis_annotations, echo=TRUE, eval=TRURE}
+onassis_entities <- entities(onassis_annotations) 
+head(onassis_entities[sample(nrow(onassis_entities), 10),])
+```
+
+The `filterconcepts` method can be used to filter out unwanted annotations. It takes the Onassis object and removes from its entities the undesired concepts.
+
+```{r term_filtering, echo=TRUE, eval=TRUE}
+filtered_onassis <- filterconcepts(onassis_annotations, c('cell'))
+head(entities(filtered_onassis))
+```
+
+The method `sim` cretes a matrix of the semantic similarities between the annotations of each couple of samples annotated in the entities slot of an Onassis object. 
+
+```{r similarity_of_samples, echo=TRUE, eval=TRUE}
+
+filtered_onassis <- sim(filtered_onassis)
+
+```
+
+Annotations with semantic similarities above a given threshold can be unified using the method `collapse`. This method unifies the similar annotations by concatenating their unique concepts. Entities are replaced with the new concatenated annotations. For each concept in the concatenated annotations the number of samples associated is also reported, together with the total number of samples annotated with the new annotations. 
+The similarity slot will be consequently updated
+
+```{r collapsing_similarities, echo=TRUE, eval=TRUE}
+collapsed_onassis <- collapse(filtered_onassis, 0.8)
+head(entities(collapsed_onassis))
+heatmap.2(simil(collapsed_onassis))
 ```
 
 # References
