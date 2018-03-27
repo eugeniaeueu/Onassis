@@ -176,7 +176,7 @@ setMethod(f = "findEntities", signature(object = "EntityFinder", inputDirOrFile 
         
         J("org.uimafit.pipeline.SimplePipeline")$runPipeline(collection_reader, pipeline_ae_list)
         
-        print(outDir)
+#        print(outDir)
         outdf <- loadEntities(outDir, FALSE)
         
         if (is.null(outdf)) 
