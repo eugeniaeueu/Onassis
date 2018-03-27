@@ -14,7 +14,7 @@ loadEntities <- function(entityDirectory, deleteDir = TRUE) {
         message("Unable to load data from ", entityDirectory)
     entityfiles <- list.files(entityDirectory, pattern = ".a1$")
     entity_table <- lapply(entityfiles, function(entityfile) {
-        print(file.path(entityDirectory, entityfile))
+      #  print(file.path(entityDirectory, entityfile))
         if (file.info(file.path(entityDirectory, entityfile))$size != 0) {
             fromerror = FALSE
             tryCatch({

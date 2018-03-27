@@ -255,7 +255,7 @@ semanticdifference <- function(score_matrix, list_of_annotations, fun_name, test
                   test_res_col <- c(test_res$statistic, test_res$p.value)
                   test_res_col
                 }))
-                print(test_result)
+                # print(test_result)
                 colnames(test_result) <- c("statistic", "p.value")
                 rownames(test_result) <- rownames(disease_list[[1]])
                 results <- test_result
