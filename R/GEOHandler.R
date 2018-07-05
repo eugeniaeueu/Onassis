@@ -32,7 +32,7 @@ connectToGEODB <- function(sqliteFileName = NULL, download = FALSE, destdir = ge
     }
     
     if (file.exists(file.path(destdir, sqliteFileName))) 
-        geo_con <- RSQLite::dbConnect(SQLite(), sqliteFileName) else stop("please provide a valid connection")
+        geo_con <- RSQLite::dbConnect(RSQLite::SQLite(), sqliteFileName) else stop("please provide a valid connection")
     return(geo_con)
 }
 
