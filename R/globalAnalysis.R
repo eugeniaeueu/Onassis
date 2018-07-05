@@ -62,8 +62,11 @@ annotateTissueDisease <- function(geo_metadb_path, gsm_list, tissue_obo, disease
     outdir, height_threshold, score_matrix) {
     
     message("Connecting to the GEOmetadb")
-    geo_con <- connectToGEODB(sqliteFileName = "GEOmetadb.sqlite", destdir = geo_metadb_path)
-    
+    if(file.exists(geo_metadb_path))
+      geo_con <- connectToGEODB(sqliteFilePath = geo_metadb_path)
+    else
+      geo_con <- connectToGEODB(download=TRUE, destdir = geo_metadb_path)
+      
     message("Retrieving GSM metadata")
     gsm_list <- as.character(as.vector(gsm_list))
     gsm_list <- paste0("'", paste(gsm_list, collapse = "', '"), "'")

@@ -2,9 +2,9 @@
 #' @name connectToGEODB
 #' @aliases connectToGEODB, GEOHandler-function
 #' @rdname GEOHandler-functions
-#' @param sqliteFileName optional SQLite file path of the SQLite database if already downloaded
+#' @param sqliteFilePath optional SQLite full file path of the SQLite database if already downloaded
 #' @param download If TRUE allow the automatic downloading of the database file.
-#' @param destdir optional destination directory
+#' @param destdir optional destination directory. Current working directory is the default
 #' @return A connection to the GEOmetadb
 #' @description This method allows users to connect to the GEOmetadb downloaded. If no parameter is provided than the function retrieves the database in sqlite format and returns a connection to query the database
 #' @examples
@@ -19,20 +19,19 @@
 #' @export
 #' @importFrom GEOmetadb getSQLiteFile
 #' @importFrom RSQLite dbConnect SQLite
-connectToGEODB <- function(sqliteFileName = NULL, download = FALSE, destdir = getwd()) {
+connectToGEODB <- function(sqliteFilePath = NULL, download = FALSE, destdir = getwd()) {
     geo_con <- NA
-    if (is.null(sqliteFileName)) {
-        # set the filename to default
+    if(download==TRUE){
+      if(dir.exists(destdir)){
         sqliteFileName <- "GEOmetadb.sqlite"
-    }
-    
-    
-    if (!file.exists(file.path(destdir, sqliteFileName)) & download == TRUE) {
         sqlfile <- GEOmetadb::getSQLiteFile(destdir = destdir)
+        sqliteFilePath = file.path(destdir, sqliteFileName)
+      }
     }
-    
-    if (file.exists(file.path(destdir, sqliteFileName))) 
-        geo_con <- RSQLite::dbConnect(RSQLite::SQLite(), sqliteFileName) else stop("please provide a valid connection")
+    if(file.exists(sqliteFilePath))
+        geo_con <- RSQLite::dbConnect(RSQLite::SQLite(), sqliteFilePath)
+    else
+      message('Please provide the valid full path for GEOmetadb.sqlite file')
     return(geo_con)
 }
 
@@ -124,7 +123,7 @@ getGEOMetadata <- function(geo_con, experiment_type = NA, organism = NA, gpl = N
             stop("Invalid experiment type. Please run experiment_types(GEOcon) to view valid values")
         experiment_query <- paste0("select gse, title, summary from gse where type ='", 
             experiment_type, "'")
-        experiment_metadata <- dbGetQuery(geo_con, experiment_query)
+        experiment_metadata <- RSQLite::dbGetQuery(geo_con, experiment_query)
         colnames(experiment_metadata) <- c("gse", "experiment_title", "experiment_summary")
         experiment_acs <- unique(experiment_metadata$gse)
     }
@@ -148,9 +147,9 @@ getGEOMetadata <- function(geo_con, experiment_type = NA, organism = NA, gpl = N
     if (!is.na(gpl)) {
         sample_query <- paste0(sample_query, statement, " gpl = '", gpl, "'")
     }
-    sample_metadata <- dbGetQuery(geo_con, sample_query)
+    sample_metadata <- RSQLite::dbGetQuery(geo_con, sample_query)
     columns <- c(2, 1, 3:ncol(sample_metadata))
-    if (!is.na(experiment_metadata)) {
+    if (is.data.frame(experiment_metadata) & nrow(experiment_metadata)>=1) {
         geo_metadata <- merge(sample_metadata, experiment_metadata, by.x = "series_id", 
             by.y = "gse")
         columns <- c(2, 3, 5, 7, 8, 9, 10, 1, 4, 6)
