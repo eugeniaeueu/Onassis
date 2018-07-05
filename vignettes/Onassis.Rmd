@@ -12,12 +12,11 @@ vignette: >
   %\VignetteDepends{Onassis}
 ---
 
-```{r imports, echo=FALSE,eval=TRUE, message=FALSE}
+```{r imports, echo=FALSE,eval=TRUE, message=FALSE, warning=FALSE}
 library(Onassis)
 library(DT)
 library(gplots)
 library(org.Hs.eg.db)
-
 ```
 
 # Introduction to OnASSis 
@@ -41,6 +40,17 @@ Onassis can handle any type of text as input, but is particularly well suited fo
 The semantic similarity module uses different semantic similarity measures to determine the semantic similarity of concepts in a given ontology. This
 module has been developed on the basis of the Java slib http://www.semantic-measures-library.org/sml.
 To run Onassis Java (>= 1.8) is needed. 
+For the correct working of the following examples please install the following libraries:
+
+```{r echo=TRUE, eval=FALSE}
+source("https://bioconductor.org/biocLite.R")
+biocLite('org.Hs.eg.db')
+biocLite("GenomicRanges")
+install.packages('data.table')
+install.packages('DT')
+install.packages('gplots')
+
+```
 
 # Retrieving public repositories metadata
 
@@ -53,7 +63,7 @@ First, it is necessary to obtain and get a connection to the SQLite database. `c
 
 ```{r connectTodb, echo=TRUE,eval=FALSE}
 ## Running this function might take long time if the database has to be downloaded.
-geo_con <- connectToGEODB(system.file(getwd(), 'GEOmetadb.sqlite'))
+geo_con <- connectToGEODB(download=TRUE)
 
 #Showing the experiment types available in GEO
 experiments <- experiment_types(geo_con)
@@ -478,10 +488,17 @@ filtered_onassis <- sim(filtered_onassis)
 Annotations with semantic similarities above a given threshold can be unified using the method `collapse`. This method unifies the similar annotations by concatenating their unique concepts. Entities are replaced with the new concatenated annotations. For each concept in the concatenated annotations the number of samples associated is also reported, together with the total number of samples annotated with the new annotations. 
 The similarity slot will be consequently updated
 
-```{r collapsing_similarities, echo=TRUE, eval=TRUE}
+```{r collapsing_similarities, echo=TRUE, eval=TRUE, fig.width=5, fig.height=5}
 collapsed_onassis <- Onassis::collapse(filtered_onassis, 0.8)
 head(entities(collapsed_onassis))
-heatmap.2(simil(collapsed_onassis))
+
+heatmap.2(simil(collapsed_onassis), margins=c(15,15), cexRow = 1, cexCol = 1)
 ```
 
+# Session Info
+
+Here is the output of the sessionInfo() on the system on which this document was compiled through kintr:
+`{r sessionInfo(), echo=FALSE, eval=TRUE}
+sessionInfo()
+```
 # References

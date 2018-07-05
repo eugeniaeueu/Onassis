@@ -6,14 +6,14 @@
 \alias{GEOHandler-function}
 \title{\code{connectToGEODB}}
 \usage{
-connectToGEODB(sqliteFileName = NULL, download = FALSE, destdir = getwd())
+connectToGEODB(sqliteFilePath = NULL, download = FALSE, destdir = getwd())
 }
 \arguments{
-\item{sqliteFileName}{optional SQLite file path of the SQLite database if already downloaded}
+\item{sqliteFilePath}{optional SQLite full file path of the SQLite database if already downloaded}
 
 \item{download}{If TRUE allow the automatic downloading of the database file.}
 
-\item{destdir}{optional destination directory}
+\item{destdir}{optional destination directory. Current working directory is the default}
 }
 \value{
 A connection to the GEOmetadb
