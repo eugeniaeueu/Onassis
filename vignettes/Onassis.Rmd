@@ -17,6 +17,7 @@ library(Onassis)
 library(DT)
 library(gplots)
 library(org.Hs.eg.db)
+library(kableExtra)
 ```
 
 # Introduction to OnASSis 
@@ -39,6 +40,9 @@ Onassis can handle any type of text as input, but is particularly well suited fo
 
 The semantic similarity module uses different semantic similarity measures to determine the semantic similarity of concepts in a given ontology. This
 module has been developed on the basis of the Java slib http://www.semantic-measures-library.org/sml.
+
+# Installing Suggested libraries to run the examples
+
 To run Onassis Java (>= 1.8) is needed. 
 For the correct working of the following examples please install the following libraries:
 
@@ -49,7 +53,6 @@ biocLite("GenomicRanges")
 install.packages('data.table')
 install.packages('DT')
 install.packages('gplots')
-
 ```
 
 # Retrieving public repositories metadata
@@ -58,7 +61,7 @@ One of the most straightforward ways to retrieve GEO metadata is through `r Bioc
 
 ## Handling GEO (Gene Expression Omnibus) Metadata
 
-First, it is necessary to obtain and get a connection to the SQLite database. `connectToGEODB` returns a connection to the database given the path of the SQLite file. If the latter is missing, it is automatically downloaded into the current working directory. Because of the size of these files (0.5-4GB), the results of the queries illustrated below are available into Onassis for subsequent analysis illustrated in this document. Then, the `getGEOmetadata` function can be used to retrieve the metadata of specific GEO samples, taking as minimal parameters the connection to the database and one of the experiment types available. Optionally it is possible to specify the organism and the platform.
+Firstly, it is necessary to obtain and get a connection to the SQLite database. `connectToGEODB` returns a connection to the database given the path of the SQLite database file. If the latter is missing, it will be automatically downloaded into the current working directory. Because of the size of these files (0.5-4GB), the results of the queries illustrated below are available into Onassis for the subsequent analyses illustrated in this document. Then, the `getGEOmetadata` function can be used to retrieve the metadata of specific GEO samples, taking as minimal parameters the connection to the database and one of the experiment types available. Optionally it is possible to specify the organism and the platform.
 
 
 ```{r connectTodb, echo=TRUE,eval=FALSE}
@@ -82,35 +85,21 @@ Some of the experiment types available are the following:
 
 ```{r experimentTypesshow, echo=FALSE, eval=TRUE}
 experiments <- readRDS(system.file('extdata', 'vignette_data', 'experiment_types.rds', package='Onassis'))
-knitr::kable(experiments[1:10], rownames=FALSE, 
-              caption = htmltools::tags$caption(
-                style = 'caption-side: top-left; text-align: left;',
-                'Table 1: ', htmltools::em('Experiments available in GEO')),
-              options=list(
-                pageLength =5,
-                autoWidth = TRUE, 
-                scrollX='300px',
-                rownames=FALSE))
 
-
+knitr::kable(as.data.frame(experiments[1:10]), col.names = c('Experiment')) %>% kable_styling(bootstrap_options = c("striped"), position="center") %>%
+  scroll_box(width = "300px", height = "200px")
 ```
 
 Some of the organisms available are the following:
 
 ```{r speciesShow, echo=FALSE,eval=TRUE}
 species <- readRDS(system.file('extdata', 'vignette_data', 'organisms.rds', package='Onassis'))
-knitr::kable(species[1:10], rownames=FALSE, 
-              caption = htmltools::tags$caption(
-                style = 'caption-side: top-left; text-align: left;',
-                'Table 1: ', htmltools::em('Species available in GEO')),
-              options=list(
-                pageLength =5,
-                autoWidth = TRUE, 
-                scrollX='300px',
-                rownames=FALSE))
+knitr::kable(as.data.frame(species[1:10]), col.names=c('Species')) %>%
+              kable_styling(bootstrap_options = c("striped"), position="center") %>%
+  scroll_box(width = "300px", height = "200px")
 ```
 
-To avoid installing GEOmetadb meth_metadata was previously saved and can be loaded from Onassis:  
+As specified before in this document, to correctly query GEOmetadb, it is necessary to download the sqLite file, which occupies sever GB of disk space. Only for this vignette, meth_metadata was previously saved from the getGEOmetadata function and can be loaded from Onassis external data:  
 
 ```{r loadgeoMetadata, echo=TRUE, eval=TRUE}
 meth_metadata <- readRDS(system.file('extdata', 'vignette_data', 'GEOmethylation.rds', package='Onassis'))
@@ -120,32 +109,18 @@ meth_metadata <- readRDS(system.file('extdata', 'vignette_data', 'GEOmethylation
 
 methylation_tmp <- meth_metadata
 methylation_tmp$experiment_summary <- sapply(methylation_tmp$experiment_summary, function(x) substr(x, 1, 50))
-knitr::kable(methylation_tmp[1:10,], rownames=FALSE, 
-              caption = htmltools::tags$caption(
-                style = 'caption-side: top-left; text-align: left;',
-                'Table 1: ', htmltools::em('Methylation profiling by high througput sequencing metadata from GEOmetadb.')),
-              options=list(
-                pageLength =5,
-                autoWidth = TRUE, 
-                scrollX='300px',
-                rownames=FALSE))
-              #  columnDefs = list(list(targets=10,
-              #                         render = JS(
-              #                           "function(data, type, row, meta) {",
-              #                           "return type === 'display' && data.length > 50 ?",
-              #                           "'<span title=\"' + data + '\">' + data.substr(0, 50) + '...</span>' : data;",
-              #                           "}")
-              #  )))), callback = JS('table.page("next").draw(false);'))
+knitr::kable(methylation_tmp[1:10,], 
+              caption = 'Methylation profiling by high througput sequencing metadata from GEOmetadb.') %>%
+              kable_styling(bootstrap_options = c("striped"), position="center") %>%
+  scroll_box(width = "80%", height = "300px")
 
 ```
 
 ## Handling SRA (Sequence Read Archive) Metadata
 
-In this section we provide an example showing how it is possible to retrieve data from other databases such as SRA. In this case we only show hot to query the database and store the metadata in a data frame to be used in Onassis. The following code requires the file SRAdb.sqlite, containing SRA metadata.
+In this section we provide an example showing how it is possible to retrieve data from other sources such as SRA. In this case we only show an example on how to query the database and store the metadata in a data frame. The following code requires the file SRAdb.sqlite, containing SRA metadata. Also in this case the database file occupies serveral GB of disk space and running this part of code is optional. The database file and the queries can be carried out in R through the Bioconductor package `SRAdb`.
 
-
-we As for GEO, the `getSRAMetadata` function allows the retrieval of metadata of high througput sequencing data stored in SRA through . To facilitate the retrieval of experiment types in SRA, the Onassis function `library_strategies` can be used. Filters for the sample's material (*GENOMIC*, *TRANSCRIPTOMIC*, *METAGENOMIC*...), the species and the center hosting the data are allowed.
-For example, to obtain SRA metadata of ChIP-Seq human samples and Bisulfite sequencing samples the following code can be used. 
+The following code shows how to obtain SRA metadata of ChIP-Seq human samples and Bisulfite sequencing samples: 
 
 ```{r connectSRA, echo=TRUE,eval=FALSE}
 # Connection to the SRAmetadb and potential download of the sqlite file
@@ -153,25 +128,28 @@ sqliteFileName <- './data/SRAdb.sqlite'
 sra_con <- dbConnect(SQLite(), sqliteFileName)()
 
 # Query for the ChIP-Seq experiments contained in GEO for human samples 
-library_strategy <- 'ChIP-Seq'
-library_source='GENOMIC'
-taxon_id=9606
-center_name='GEO'
+library_strategy <- 'ChIP-Seq' #ChIP-Seq data
+library_source='GENOMIC' 
+taxon_id=9606 #Human samples
+center_name='GEO' #Data from GEO
  
+# Query to the sample table 
 samples_query <- paste0("select sample_accession, description, sample_attribute, sample_url_link from sample where taxon_id='", taxon_id, "' and sample_accession IS NOT NULL", " and center_name='", center_name, "'",  )
 
 samples_df <- dbGetQuery(sra_con, samples_query)
 samples <- unique(as.character(as.vector(samples_df[, 1])))
 
-
-
+# Query to the experiment table
 experiment_query <- paste0("select experiment_accession, center_name, title, sample_accession, sample_name, experiment_alias, library_strategy, library_layout, experiment_url_link, experiment_attribute from experiment where library_strategy='", 
-                           library_strategy, "'" , " and library_source ='", library_source, 
+                           library_strategy, "'" , " and library_source ='", library_source,
                            "' " )
 
 experiment_df <- dbGetQuery(sra_con, experiment_query)
 
+#Merging the columns from the sample and the experiment table
 experiment_df <- merge(experiment_df, samples_df, by = "sample_accession")
+
+# Replacing the field separators with white spaces
 experiment_df$experiment_attribute <- sapply(experiment_df$experiment_attribute, 
                                              function(value) {
                                                gsub("||", "  ", value)
@@ -180,6 +158,7 @@ experiment_df$sample_attribute <- sapply(experiment_df$sample_attribute,
                                          function(value) {
                                            gsub("||", "  ", value)
                                          })
+# Replacing the '_' character with whitespaces
 experiment_df$sample_name <- sapply(experiment_df$sample_name, 
                                     function(value) {
                                       gsub("_", " ", value)
@@ -189,7 +168,6 @@ experiment_df$experiment_alias <- sapply(experiment_df$experiment_alias,
                                            gsub("_", " ", value)
                                          })
 sra_chip_seq <- experiment_df
-
 ```
 
 To avoid installing SRAmetadb sra_chip_seq was previously saved and can be loaded from Onassis: 
@@ -201,22 +179,10 @@ sra_chip_seq <- readRDS(system.file('extdata', 'vignette_data', 'GEO_human_chip.
 ```{r printchromatinIP, echo=FALSE,eval=TRUE}
 
 knitr::kable(head(sra_chip_seq, 10), rownames=FALSE, 
-  caption = htmltools::tags$caption(
-    style = 'caption-side: top-left; text-align: left;',
-    'Table: ', htmltools::em('ChIP-Seq metadata obtained from SRAdb.')),
-  options=list(
-  pageLength =5,
-  autoWidth = TRUE, 
-  scrollX='300px',
-  rownames=FALSE))#, 
-#columnDefs = list(list(targets=9,
-#           render = JS(
-#    "function(data, type, row, meta) {",
-#    "return type === 'display' && data.length > 50 ?",
-#    "'<span title=\"' + data + '\">' + data.substr(0, 50) + '...</span>' : data;",
-#    "}")
-#))), callback = JS('table.page("next").draw(false);'))
-                       
+  caption = 'ChIP-Seq metadata obtained from SRAdb') %>%
+              kable_styling(bootstrap_options = c("striped"), position="center") %>%
+  scroll_box(width = "80%", height = "300px")
+
 ```
 
 # Annotating text with Ontology Concepts
@@ -256,8 +222,8 @@ Conceptmapper dictionaries are XML files with a set of entries specified by the 
 The constructor `CMdictionary` creates an instance of the class `CMdictionary`. 
 
   * If an XML file containing the Conceptmapper dictionary is already available,  it can be uploaded into Onassis indicating its path and setting the `dictType` option to "CMDICT".
-  * If the dictionary has to be built from an OBO ontology (as a file in the OBO or OWL format), its path has to be provided and dictType has to be set to "OBO". The synonymType argument can be set to EXACT_ONLY or ALL to consider only canonical concept names or also to include any synonym. The resulting XML file is written in the indicated outputdir. Alternatively, to automatically download the ontology the URL to the OBO. 
-  * To build a dictionary containing only gene/protein names, dictType has to be set to either TARGET or ENTREZ, to include histone types and marks or not, respetively. If a specific Org.xx.eg.db Bioconductor library is indicated in the inputFileOrDb parameter as a character string, gene names will be derived from it. Alterantively, if a specific species is indicated in the taxID parameter, the gene_info.gz file hosted at NCBI is used. If available, this file can be located with the inputFile parameter. Otherwise, it will be automatically downloaded (300MB).
+  * If the dictionary has to be built from an OBO ontology (as a file in the OBO or OWL format), its path has to be provided and dictType has to be set to "OBO". The synonymType argument can be set to EXACT_ONLY or ALL to consider only canonical concept names or also to include any synonym. The resulting XML file is written in the indicated outputdir. Alternatively, to automatically download the ontology, the URL where the OBO file is located can be provided. 
+  * To build a dictionary containing only gene/protein names, dictType has to be set to either TARGET or ENTREZ, to include histone types and marks or not, respetively. If a specific Org.xx.eg.db Bioconductor library is indicated in the inputFileOrDb parameter as a character string, gene names will be derived from it. Instead, if inputFileOrDb is empty and a specific species is indicated in the taxID parameter, the gene_info.gz file hosted at NCBI will be downloaded and used to find gene names. If available, this file can be located with the inputFile parameter. Otherwise, it will be automatically downloaded (300MB).
 
 ```{r createSampleAndTargetDict, echo=TRUE,eval=TRUE, message=FALSE}
 # If a Conceptmapper dictionary is already available the dictType CMDICT can be specified and the corresponding file loaded
@@ -275,16 +241,30 @@ targets <- CMdictionary(dictType='TARGET', inputFileOrDb = 'org.Hs.eg.db')
 
 
 ## Setting the options for the annotator
-Conceptmapper includes 7 different options controlling the annotation step. These are documented in detail in the documentation of the CMoptions function. They can be listed through the `listCMOptions` function. The `CMoptions` constructor instantiates an object of class CMoptions with the different parameters that will be required for the subsequent step of annotation. We also provided getter and setter methods for each of the 7 combinations  
+Conceptmapper includes 7 different options controlling the annotation step. These are documented in detail in the documentation of the CMoptions function. They can be listed through the `listCMOptions` function. The `CMoptions` constructor instantiates an object of class CMoptions with the different parameters that will be required for the subsequent step of annotation. We also provided getter and setter methods for each of the 7 parameters.  
 
 ```{r settingOptions, echo=TRUE,eval=TRUE}
 
-#Showing configuration permutations 
+#Creating a CMoptions object and showing hte default parameters 
 opts <- CMoptions()  
 show(opts)
+```
+
+To list the possible combinations:
+
+```{r listCombinations, echo=TRUE, eval=TRUE}
 combinations <- listCMOptions()
+```
+
+To create a CMoptions object having has SynonymType 'EXACT_ONLY'
+
+```{r setsynonymtype, echo=TRUE, eval=TRUE}
 myopts <- CMoptions(SynonymType = 'EXACT_ONLY')
 myopts
+```
+
+To change a given parameter
+```{r changeparameter, echo=TRUE, eval=TRUE}
 #Changing the SearchStrategy parameter
 SearchStrategy(myopts) <- 'SKIP_ANY_MATCH_ALLOW_OVERLAP'
 myopts
@@ -293,11 +273,11 @@ myopts
 
 ## Running the entity finder
 
-The class `EntityFinder` is used to define a type system and run the Conceptmapper pipeline. It can find concepts of any OBO ontology in a given text. The `findEntities` and `annotateDF` methods accept text within files or data.frame, respetively, as described in Section 3.1.
+The class `EntityFinder` is used to define a type system and run the Conceptmapper pipeline. It can find concepts of any OBO ontology in a given text. The `findEntities` and `annotateDF` methods accept text within files or data.frame, respectively, as described in Section 4.1.
 The function `EntityFinder` automatically adapts to the provided input type, creates an instance of the `EntityFinder` class to initialize the type system and runs the pipeline with the provided options and dictionary. 
 For example, to annotate the metadata derived from ChIP-seq experiments obtained from SRA with tissue and cell type concepts belonging to BRENDA ontology the following code can be used:
 
-```{r EntityFinder, echo=TRUE, eval=TRUE}
+```{r EntityFinder, echo=TRUE, eval=TRUE, results='hide', message=FALSE, warning=FALSE }
 chipseq_dict_annot <- EntityFinder(sra_chip_seq[1:20,c('sample_accession', 'title', 'experiment_attribute', 'sample_attribute', 'description')], dictionary=sample_dict, options=myopts)
 
 ```
@@ -309,53 +289,24 @@ The resulting data.frame contains for each row a match to the provided dictionar
 #methylation_brenda_annot <- readRDS(system.file('extdata', 'vignette_data', 'methylation_brenda_annot.rds', package='Onassis'))
 #UPDATE con ChIP-seq
 knitr::kable(head(chipseq_dict_annot, 20), rownames=FALSE, 
-  caption = htmltools::tags$caption(
-    style = 'caption-side: top-left; text-align: left;',
-    'Table: ', htmltools::em('Annotations of the methylation profiling by high througput sequencing metadata obtained from GEO with BRENDA ontology concepts')),
-  options=list(
-  pageLength =10,
-  autoWidth = TRUE, 
-  scrollX='300px',
-  rownames=FALSE))#, 
-#columnDefs = list(list(targets=1,
-#           render = JS(
-#    "function(data, type, row, meta) {",
-#    "return type === 'display' && data.length > 50 ?",
-#    "'<span title=\"' + data + '\">' + data.substr(0, 50) + '...</span>' : data;",
-#    "}")
-#))), callback = JS('table.page("next").draw(false);'))
-                 
-    
+  caption = 'Annotations of the methylation profiling by high througput sequencing metadata obtained from GEO with BRENDA ontology concepts') %>% kable_styling() %>%
+  scroll_box(width = "80%", height = "400px")
 ```
 
 \r
 \r
 The function `EntityFinder` can also be used to identify the targeted entity of each ChIP-seq experiment, by retrieving gene names and histone types or modifications in the ChIP-seq metadata.   
 
-```{r annotateGenes, echo=TRUE, eval=TRUE, message=FALSE}
+```{r annotateGenes, echo=TRUE, eval=TRUE, results='hide', message=FALSE, warning=FALSE}
 
 #Finding the TARGET entities
 target_entities <- EntityFinder(input=sra_chip_seq[1:20,c('sample_accession', 'title', 'experiment_attribute', 'sample_attribute', 'description')], options = myopts, dictionary=targets) 
 ```
 
 ```{r printKable, echo=FALSE, eval=TRUE}
-knitr::kable(target_entities, rownames=FALSE, 
-  caption = htmltools::tags$caption(
-    style = 'caption-side: top-left; text-align: left;',
-    'Table: ', htmltools::em('Annotations of ChIP-seq test metadata obtained from SRAdb and stored into files with the TARGETs (genes and histone variants)')),
-  options=list(
-  pageLength =10,
-  autoWidth = TRUE, 
-  scrollX='100px',
-  rownames=FALSE, 
-columnDefs = list(list(targets= c(0,1,2,3,4),
-           render = JS(
-    "function(data, type, row, meta) {",
-    "return type === 'display' && data.length > 50 ?",
-    "'<span title=\"' + data + '\">' + data.substr(0, 50) + '...</span>' : data;",
-    "}")
-))), callback = JS('table.page("next").draw(false);'))
-
+knitr::kable(target_entities, 
+  caption = 'Annotations of ChIP-seq test metadata obtained from SRAdb and stored into files with the TARGETs (genes and histone variants)') %>% kable_styling(bootstrap_options = c("striped"), position="center") %>%
+  scroll_box(width = "80%", height = "400px")
 ```
 
 # Semantic similarity 
@@ -396,30 +347,12 @@ colnames(pairwise_results)[length(colnames(pairwise_results))] <- 'term2_name'
 pairwise_results <- merge(pairwise_results, chipseq_dict_annot[, c('term_url', 'term_name')], by.x='term1', by.y='term_url', all.x=TRUE)
 colnames(pairwise_results)[length(colnames(pairwise_results))] <- 'term1_name'
 pairwise_results <- unique(pairwise_results)
-
 ```
 
-
-```{r showing_similarity1, echo=FALSE, eval=TRUE, message=FALSE}
-
-
-knitr::kable(pairwise_results, rownames=FALSE, 
-  caption = htmltools::tags$caption(
-    style = 'caption-side: top-left; text-align: left;',
-    'Table: ', htmltools::em('Pairwise similarities of cell line terms annotating the ChIP-seq metadata')),
-  options=list(
-  pageLength =10,
-  autoWidth = TRUE, 
-  scrollX='100px',
-  rownames=FALSE))#, 
-#columnDefs = list(list(targets= 1,
-#           render = JS(
-#    "function(data, type, row, meta) {",
-#    "return type === 'display' && data.length > 50 ?",
-#    "'<span title=\"' + data + '\">' + data.substr(0, 50) + '...</span>' : data;",
-#    "}")
-#))), callback = JS('table.page("next").draw(false);'))
-
+```{r showSim, echo=FALSE, eval=TRUE}
+knitr::kable(pairwise_results,  
+  caption = 'Pairwise similarities of cell line terms annotating the ChIP-seq metadata') %>% kable_styling(bootstrap_options = c("striped"), position="center") %>%
+  scroll_box(width = "80%", height = "400px")
 ```
 
 In the following code the semantic similarity between two groups of terms is computed using the <b>ui</b> measure, a groupwise direct measure combining the intersection and the union of the set of ancestors of the two groups of concepts. 
@@ -430,7 +363,7 @@ Similarity(obo, found_terms[1:2], found_terms[3])
 
 ```
 
-Finally, the pariwise semantic similarity between ChIP-seq samples is illustrated.
+Lastly, the pariwise semantic similarity between ChIP-seq samples is illustrated.
 
 ```{r samples_similarity, echo=TRUE, eval=TRUE, message=FALSE}
 
@@ -457,25 +390,44 @@ heatmap.2(samples_results, density.info = "none", trace="none", main='Semantic s
 
 # Onassis class
 
+The class Onassis was built to wrap the functionalities of the package in a single class.
+It consists of 4 slots:
+ * dictionary: stores the source dictionary used to find entities
+ * entities: a table containing the annotations of documents (samples) in terms of semantic sets
+ * similarity: a matrix of the similarities between the unique semantic sets identified in the entities table
+ * scores: a dataset of quantitative measurements (e.g. gene expression) associated to the samples annotated in entities and separated in the different semantic sets identified in the annotation process.
+ 
 In this section we illustrate the use of the Onassis class to annotate the previously retrieved metadata. The method `annotate` takes as input a data frame of metadata to annotate, the type of dictionary and the path of an ontology file and returns an instance of class Onassis. 
 
-```{r onassis_class_usage, echo=TRUE, eval=TRUE}
+```{r onassis_class_usage, echo=TRUE, eval=TRUE, results='hide', message=FALSE, warning=FALSE }
 onassis_annotations <- annotate(sra_chip_seq, 'OBO',obo )
 ```
 
-To retrieve the annotations we provided the accessor method `entities`
+To retrieve the annotations in an object of class Onassis we provided the accessor method `entities`
 
 ```{r show_onassis_annotations, echo=TRUE, eval=TRUE}
 onassis_entities <- entities(onassis_annotations) 
-head(onassis_entities[sample(nrow(onassis_entities), 10),])
+```
+
+```{r showing_entities, echo=FALSE, eval=TRUE}
+knitr::kable(
+onassis_entities[sample(nrow(onassis_entities), 10),], 
+  caption = 'Entities in Onassis object') %>% kable_styling(bootstrap_options = c("striped"), position="center") %>%
+  scroll_box(width = "80%", height = "400px")
 ```
 
 The `filterconcepts` method can be used to filter out unwanted annotations. It takes the Onassis object and removes from its entities the undesired concepts.
 
 ```{r term_filtering, echo=TRUE, eval=TRUE}
 filtered_onassis <- filterconcepts(onassis_annotations, c('cell'))
-head(entities(filtered_onassis))
 ```
+
+```{r showing_filt_entities, echo=FALSE, eval=TRUE}
+knitr::kable(entities(filtered_onassis), 
+  caption = 'Entities in filtered Onassis object') %>% kable_styling(bootstrap_options = c("striped"), position="center") %>%
+  scroll_box(width = "80%", height = "400px")
+```
+
 
 The method `sim` cretes a matrix of the semantic similarities between the annotations of each couple of samples annotated in the entities slot of an Onassis object. 
 
@@ -488,7 +440,7 @@ filtered_onassis <- sim(filtered_onassis)
 Annotations with semantic similarities above a given threshold can be unified using the method `collapse`. This method unifies the similar annotations by concatenating their unique concepts. Entities are replaced with the new concatenated annotations. For each concept in the concatenated annotations the number of samples associated is also reported, together with the total number of samples annotated with the new annotations. 
 The similarity slot will be consequently updated
 
-```{r collapsing_similarities, echo=TRUE, eval=TRUE, fig.width=5, fig.height=5}
+```{r collapsing_similarities, echo=TRUE, eval=TRUE, message=FALSE, results='hide', fig.width=6, fig.height=6}
 collapsed_onassis <- Onassis::collapse(filtered_onassis, 0.8)
 head(entities(collapsed_onassis))
 
@@ -497,8 +449,9 @@ heatmap.2(simil(collapsed_onassis), margins=c(15,15), cexRow = 1, cexCol = 1)
 
 # Session Info
 
-Here is the output of the sessionInfo() on the system on which this document was compiled through kintr:
-`{r sessionInfo(), echo=FALSE, eval=TRUE}
+Here is the output of sessionInfo() on the system on which this document was compiled through kintr:
+
+```{r sessionInfo(), echo=FALSE, eval=TRUE}
 sessionInfo()
 ```
 # References
