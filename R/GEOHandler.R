@@ -28,6 +28,7 @@ connectToGEODB <- function(sqliteFilePath = NULL, download = FALSE, destdir = ge
         sqliteFilePath = file.path(destdir, sqliteFileName)
       }
     }
+
     if(file.exists(sqliteFilePath))
         geo_con <- RSQLite::dbConnect(RSQLite::SQLite(), sqliteFilePath)
     else
