@@ -11,7 +11,10 @@ vignette: >
   %\VignettePackage{Onassis}
   %\VignetteDepends{Onassis}
 ---
-
+<style>
+body {
+text-align: justify}
+</style>
 ```{r imports, echo=FALSE,eval=TRUE, message=FALSE, warning=FALSE}
 library(Onassis)
 library(DT)
@@ -21,16 +24,18 @@ library(kableExtra)
 ```
 
 # Introduction to OnASSis 
-
 Public repositories contain thousands of experiments and samples that are difficult to mine. Annotating the description of this data with controlled vocabularies or ontology terms could improve the retrieval of data of interest both programmatically or manually [@galeota2016ontology].
 <b>OnASSiS</b> (Ontology Annotations and Semantic Similarity software) is a package aimed at matching metadata associated with biological experiments with concepts from ontologies, thus aiming at obtaining semantically coherent omics datasets, possibly representing various data types ad derived from independent studies. The recognition of domain specific entities not only allows users to retrieve samples related to a given cell type or experimental condition, but also to discover different and not immediately obvious relationships between experiments. Onassis applies Natural Language Processing techniques to analyze sample's and experiments' descriptions, recognize concepts from a multitude of biomedical ontologies and to quantify the similarities/divergences between pairs or groups of query studies.
-In particular the software includes modules to assist on: 
-<ul>
-<li> the <b>retrieval</b> of samples’ metadata from repositories of large scale biologial data </li>
-<li> the <b>annotation</b> of these data with concepts belonging to OBO   biomedical ontologies </li> 
-<li> the organization of available samples in comparable and coherent groups based on <b>semantic similarity</b> measures </li>
-<li> the comparison of semantic sets based on given matrix of scores related to the annotated entities </li>
-</ul>
+In particular the software includes modules to assist on:
+
+* the <b>retrieval</b> of samples’ metadata from repositories of large scale biologial data
+
+* the <b>annotation</b> of these data with concepts belonging to OBO   biomedical ontologies 
+
+* the organization of available samples in comparable and coherent groups based on <b>semantic similarity</b> measures
+
+* the comparison of semantic sets based on given matrix of scores related to the annotated entities
+
 Onassis uses Conceptmapper, an Apache UIMA (Unstructured Information Management Architecture) dictionary lookup tool to retrieve dictionary terms in a given text. https://uima.apache.org/downloads/sandbox/ConceptMapperAnnotatorUserGuide/ConceptMapperAnnotatorUserGuide.html  
 In particular, the ccp-nlp Conceptmapper wrapper, specific for the biomedical domain, implements a pipeline through which it is possible to retrieve concepts from OBO ontologies in any given text with different adjustable options [@Verspoor:2009b].
 
