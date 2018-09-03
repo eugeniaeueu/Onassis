@@ -78,7 +78,7 @@ setMethod("pairwiseConfigRef", "Similarity", function(object) {
 #' @description configures the pairwise java object to compute semantic similarity between two concepts of a given ontology, by passing as input the java reference to one of the allowed pairwise semantic similarity measures. For a complete list check the details section of the function pairwiseConfig.
 #' @examples
 #' sim <- new('Similarity')
-#' pairwiseConfigRef(sim) <- c('resnik')
+#' pairwiseConfigRef(sim) <- c('lin')
 #' @export
 setReplaceMethod(f = "pairwiseConfigRef", signature = "Similarity", definition = function(object, 
     value) {

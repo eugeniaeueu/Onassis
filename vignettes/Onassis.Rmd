@@ -25,7 +25,7 @@ library(kableExtra)
 
 # Introduction to OnASSis 
 Public repositories contain thousands of experiments and samples that are difficult to mine. Annotating the description of this data with controlled vocabularies or ontology terms could improve the retrieval of data of interest both programmatically or manually [@galeota2016ontology].
-<b>OnASSiS</b> (Ontology Annotations and Semantic Similarity software) is a package aimed at matching metadata associated with biological experiments with concepts from ontologies, thus aiming at obtaining semantically coherent omics datasets, possibly representing various data types ad derived from independent studies. The recognition of domain specific entities not only allows users to retrieve samples related to a given cell type or experimental condition, but also to discover different and not immediately obvious relationships between experiments. Onassis applies Natural Language Processing techniques to analyze sample's and experiments' descriptions, recognize concepts from a multitude of biomedical ontologies and to quantify the similarities/divergences between pairs or groups of query studies.
+<b>OnASSiS</b> (Ontology Annotations and Semantic Similarity software) is a package aimed at matching metadata associated with biological experiments with concepts from ontologies, thus aiming at obtaining semantically coherent omics datasets, possibly representing various data types as derived from independent studies. The recognition of domain specific entities not only allows users to retrieve samples related to a given cell type or experimental condition, but also to discover different and not immediately obvious relationships between experiments. Onassis applies Natural Language Processing tools to annotate sample's and experiments' descriptions, recognizing concepts from a multitude of biomedical ontologies and quantifying the similarities/divergences between pairs or groups of query studies.
 In particular the software includes modules to assist on:
 
 * the <b>retrieval</b> of samples’ metadata from repositories of large scale biologial data
@@ -34,22 +34,24 @@ In particular the software includes modules to assist on:
 
 * the organization of available samples in comparable and coherent groups based on <b>semantic similarity</b> measures
 
-* the comparison of semantic sets based on given matrix of scores related to the annotated entities
+* the comparison of biological signal stored in a matrix of scores (e.g. gene expression in different samples) based on the annotated entities associated to each sample
 
 Onassis uses Conceptmapper, an Apache UIMA (Unstructured Information Management Architecture) dictionary lookup tool to retrieve dictionary terms in a given text. https://uima.apache.org/downloads/sandbox/ConceptMapperAnnotatorUserGuide/ConceptMapperAnnotatorUserGuide.html  
 In particular, the ccp-nlp Conceptmapper wrapper, specific for the biomedical domain, implements a pipeline through which it is possible to retrieve concepts from OBO ontologies in any given text with different adjustable options [@Verspoor:2009b].
 
-Onassis features can be easily accessed through a main class named \code{Onassis}, having as slots \code{dictionary}, \code{entities}, \code{similarity} and \code{scores}. In the following sections we first show details on the usage of the classes and methods that constitute the building blocks of typical metadata integration workflows and than we show how using the Onassis class their usage is further simplified. 
+Onassis features can be easily accessed through a main class named \code{Onassis}, having as slots \code{dictionary}, \code{entities}, \code{similarity} and \code{scores}. In the following sections we first show details on the usage of the classes and methods that constitute the building blocks of typical metadata integration workflows and than we show how the Onassis class wraps all these functions for a simplified access and usage.
 
-Onassis can handle any type of text as input, but is particularly well suited for the analysis of the metadata from Gene Expression Omnibus (GEO). This represents a fundamental first step in the integrative analysis of the data from those repositories [@galeota2016ontology]. Indeed it provides the possibility to associate concepts from any OBO ontology to GEO, but also SRA metadata retrieved using `r BiocStyle::Biocpkg("GEOmetadb")`. In addition to the ontological concepts, the recognition of gene/protein symbols or epigenetic modifications can be highly relevant, especially for experiments directed to those specific factors or marks (such as ChIP-seq experiments).
-
+Onassis can handle any type of text as input, but is particularly well suited for the analysis of the metadata from Gene Expression Omnibus (GEO).Indeed it provides the possibility to associate concepts from any OBO ontology to GEO metadata retrieved using `r BiocStyle::Biocpkg("GEOmetadb")`.
+This represents a fundamental first step in the integrative analysis of the data from large scale repositories [@galeota2016ontology]. In general, any table or database (Sequence Read Archive (SRA) [@Zhu2013] or Cistrome [@Shengling2017] ) containing textual descriptions that can be easily imported in R as a data frame can be used as input for Onassis. 
+In addition to the ontological concepts, the recognition of gene/protein symbols or epigenetic modifications can be highly relevant, especially for experiments directed to those specific factors or marks (such as ChIP-seq experiments).
 The semantic similarity module uses different semantic similarity measures to determine the semantic similarity of concepts in a given ontology. This
 module has been developed on the basis of the Java slib http://www.semantic-measures-library.org/sml.
+The score module applies simple statistical tests to determine if biological signals from samples annotated with different concepts are significantly different.
 
-# Installing Suggested libraries to run the examples
+# Installing additional libraries to run the examples in the vignette
 
-To run Onassis Java (>= 1.8) is needed. 
-For the correct working of the following examples please install the following libraries:
+To run Onassis Java (>= 1.8) is needed. Some of the optional functions, which will be described in the followign parts of the vignette, require additional libraries. 
+For the analyses in this vignette please install following libraries:
 
 ```{r echo=TRUE, eval=FALSE}
 if (!requireNamespace("BiocManager", quietly=TRUE))
@@ -63,12 +65,11 @@ install.packages('gplots')
 
 # Retrieving public repositories metadata
 
-One of the most straightforward ways to retrieve GEO metadata is through `r BiocStyle::Biocpkg("GEOmetadb")` package. In order to use them through Onassis the user should download the corresponding SQLite database following the instructions provided in the packages vignette. While the SQLite source databases are required, Onassis allows to access to those data without any knowledge on SQL programming, thus providing functions to help the metadata retrieval without the need of explicitly making queries to the database.
+One of the most straightforward ways to retrieve metadata of samples provided in GEO is through `r BiocStyle::Biocpkg("GEOmetadb")` package. In order to use GEOmetadb through Onassis, users should download the corresponding SQLite database file, by following the instructions provided in the package vignette. Onassis provides functions to help GEO metadata retrieval without the need of explicitly making SQL queries to the database. While GEOmetadb can be accessed on any platform, another important database `r BiocStyle::Biocpkg("SRAdb")`, is not available for Windows users. In the following sections we show how to query GEOmetadb through Onassis, but we also provide an example accessing SRAdb metadata. 
 
 ## Handling GEO (Gene Expression Omnibus) Metadata
 
-Firstly, it is necessary to obtain and get a connection to the SQLite database. `connectToGEODB` returns a connection to the database given the path of the SQLite database file. If the latter is missing, it will be automatically downloaded into the current working directory. Because of the size of these files (0.5-4GB), the results of the queries illustrated below are available into Onassis for the subsequent analyses illustrated in this document. Then, the `getGEOmetadata` function can be used to retrieve the metadata of specific GEO samples, taking as minimal parameters the connection to the database and one of the experiment types available. Optionally it is possible to specify the organism and the platform.
-
+Firstly, it is necessary to obtain a connection to the SQLite database. `connectToGEODB` returns a connection to the database given the path of the SQLite database file. If the latter is missing, it will be automatically downloaded into the current working directory. Because of the size of this file (0.5 GB), the results of the queries illustrated below are available into Onassis for the subsequent analyses illustrated in this document. Then, the `getGEOmetadata` function can be used to retrieve the metadata related to specific GEO samples, taking as minimal parameters the connection to the database and one of the experiment types available. Optionally it is possible to specify the organism and the platform. 
 
 ```{r connectTodb, echo=TRUE,eval=FALSE}
 ## Running this function might take long time if the database has to be downloaded.
@@ -105,7 +106,7 @@ knitr::kable(as.data.frame(species[1:10]), col.names=c('Species')) %>%
   scroll_box(width = "300px", height = "200px")
 ```
 
-As specified before in this document, to correctly query GEOmetadb, it is necessary to download the sqLite file, which occupies sever GB of disk space. Only for this vignette, meth_metadata was previously saved from the getGEOmetadata function and can be loaded from Onassis external data:  
+As specified before in this document, to correctly query GEOmetadb, it is necessary to download the corresponding database SQLite file, which occupies sever GB of disk space. Only for this vignette, meth_metadata was previously saved from the getGEOmetadata function and can be loaded from the Onassis package external data:  
 
 ```{r loadgeoMetadata, echo=TRUE, eval=TRUE}
 meth_metadata <- readRDS(system.file('extdata', 'vignette_data', 'GEOmethylation.rds', package='Onassis'))
@@ -124,14 +125,14 @@ knitr::kable(methylation_tmp[1:10,],
 
 ## Handling SRA (Sequence Read Archive) Metadata
 
-In this section we provide an example showing how it is possible to retrieve data from other sources such as SRA. In this case we only show an example on how to query the database and store the metadata in a data frame. The following code requires the file SRAdb.sqlite, containing SRA metadata. Also in this case the database file occupies serveral GB of disk space and running this part of code is optional. The database file and the queries can be carried out in R through the Bioconductor package `SRAdb`.
+In this section we provide an example showing how it is possible to retrieve data from other sources such as SRA. In this case we only show an example on how to query the database and store the metadata in a data frame table. The following code requires the file SRAmetadb.sqlite, containing SRA metadata. Since also this database occupies disk space (~4GB), we provide the results of the query as external data and running the following part of code is optional. The database file and the queries can be obtained and executed in R through the Bioconductor package `SRAdb`.
 
 The following code shows how to obtain SRA metadata of ChIP-Seq human samples and Bisulfite sequencing samples: 
 
 ```{r connectSRA, echo=TRUE,eval=FALSE}
 # Connection to the SRAmetadb and potential download of the sqlite file
 sqliteFileName <- './data/SRAdb.sqlite'
-sra_con <- dbConnect(SQLite(), sqliteFileName)()
+sra_con <- dbConnect(SQLite(), sqliteFileName)
 
 # Query for the ChIP-Seq experiments contained in GEO for human samples 
 library_strategy <- 'ChIP-Seq' #ChIP-Seq data
@@ -164,7 +165,7 @@ experiment_df$sample_attribute <- sapply(experiment_df$sample_attribute,
                                          function(value) {
                                            gsub("||", "  ", value)
                                          })
-# Replacing the '_' character with whitespaces
+# Replacing the '_' character with white spaces
 experiment_df$sample_name <- sapply(experiment_df$sample_name, 
                                     function(value) {
                                       gsub("_", " ", value)
@@ -176,7 +177,7 @@ experiment_df$experiment_alias <- sapply(experiment_df$experiment_alias,
 sra_chip_seq <- experiment_df
 ```
 
-To avoid installing SRAmetadb sra_chip_seq was previously saved and can be loaded from Onassis: 
+The previously saved sra_chip_seq can be retrieved in Onassis: 
 
 ```{r readCHIP, echo=TRUE, eval=TRUE}
 sra_chip_seq <- readRDS(system.file('extdata', 'vignette_data', 'GEO_human_chip.rds',  package='Onassis'))
@@ -193,7 +194,7 @@ knitr::kable(head(sra_chip_seq, 10), rownames=FALSE,
 
 # Annotating text with Ontology Concepts
 
-The Onassis `EntityFinder` class has methods for annotating any text with dictionary terms. More specifically, Onassis can take advantage of the OBO dictionaries (http://www.obofoundry.org/), as shown in the next section where we will define relationships between different samples annotated with different ontology concepts  thanks to the structure of the ontology.
+The Onassis `EntityFinder` class has methods for annotating any text with dictionary terms. More specifically, Onassis can take advantage of the OBO dictionaries (http://www.obofoundry.org/), as shown in the next section where we will define relationships between different samples annotated with different ontology concepts thanks to the structure of the ontology.
 
 ## Data preparation
 
@@ -201,7 +202,7 @@ Input text can be provided as:
 
   * The path of a directory containing named documents (findEntities method). 
   * The path of a single file containing multiple documents. In this case each row contains the name/identifier of the document followed by a '|' separator and the text to annotate (findEntities method). 
-  * A data frame. In this case each row represents a document, first column has to be the document identifier, and the remaining columns will be combined and contain the text to analyze  (annotateDF method). This option can be conveniently used with the metadata retrieved from `r BiocStyle::Biocpkg("GEOmetadb")` and `r BiocStyle::Biocpkg("SRAdb")`, possibly selecting a subset of columns.
+  * A data frame. In this case each row represents a document, first column has to be the document identifier, and the remaining columns will be combined and contain the text to analyze  (annotateDF method). This option can be conveniently used with the metadata retrieved from `r BiocStyle::Biocpkg("GEOmetadb")` and `r BiocStyle::Biocpkg("SRAdb")`, possibly selecting a subset of the available columns.
 
 ## Creation of a Conceptmapper Dictionary
 
@@ -279,7 +280,7 @@ myopts
 
 ## Running the entity finder
 
-The class `EntityFinder` is used to define a type system and run the Conceptmapper pipeline. It can find concepts of any OBO ontology in a given text. The `findEntities` and `annotateDF` methods accept text within files or data.frame, respectively, as described in Section 4.1.
+The class `EntityFinder` defines a type system and runs the Conceptmapper pipeline. It can find concepts of any OBO ontology in a given text. The `findEntities` and `annotateDF` methods accept text within files or data.frame, respectively, as described in Section 4.1.
 The function `EntityFinder` automatically adapts to the provided input type, creates an instance of the `EntityFinder` class to initialize the type system and runs the pipeline with the provided options and dictionary. 
 For example, to annotate the metadata derived from ChIP-seq experiments obtained from SRA with tissue and cell type concepts belonging to BRENDA ontology the following code can be used:
 
@@ -288,7 +289,7 @@ chipseq_dict_annot <- EntityFinder(sra_chip_seq[1:20,c('sample_accession', 'titl
 
 ```
 
-The resulting data.frame contains for each row a match to the provided dictionary for a specific document/sample (indicated in the first column). The annotation is reported with the id of the concept (term_id), its canonical name (term name), its URL in the obo format, and the matching sentence of the document.
+The resulting data.frame contains, for each row, a match to the provided dictionary for a specific document/sample (indicated in the first column). The annotation is reported with the id of the concept (term_id), its canonical name (term name), its URL in the obo format, and the matching sentence of the document.
 
 ```{r showchipresults, echo=FALSE, eval=TRUE, message=FALSE}
 
@@ -328,7 +329,7 @@ The function `listSimilarities` shows all the measures supported by Onassis. For
 similarities <- listSimilarities()
 ```
 
-The following example shows the pairwise similarities between sample cell concepts obtained annotating the ChIP-seq metadata. The <b>resnik</b> similarity measure is used by default, which is based on the information content of the most informative common ancestor of the considered concepts. In particular, the <b> seco </b> information content is used by default, which determines the specificity of each concept based on the number of concepts it subsumes. 
+The following example shows the pairwise similarities between sample cell concepts obtained annotating the ChIP-seq metadata. The <b>lin</b> similarity measure is used by default, which relies on a ratio between the Information content (IC) of the Most Specific Common Ancestor of the compared concepts and the sum of their IC based on the information content of the most informative common ancestor of the considered concepts. In particular, the <b> seco </b> information content is used by default, which determines the specificity of each concept based on the number of concepts it subsumes. 
 
 ```{r computing measures, echo=TRUE, eval=TRUE, message=FALSE}
 
@@ -393,15 +394,18 @@ diag(samples_results) <- 1
 heatmap.2(samples_results, density.info = "none", trace="none", main='Semantic similarity of annotated samples', margins=c(5,5))
 ```
 
-
 # Onassis class
 
-The class Onassis was built to wrap the functionalities of the package in a single class.
+The class Onassis was built to wrap the main functionalities of the package in a single class.
 It consists of 4 slots:
- * dictionary: stores the source dictionary used to find entities
- * entities: a table containing the annotations of documents (samples) in terms of semantic sets
- * similarity: a matrix of the similarities between the unique semantic sets identified in the entities table
- * scores: a dataset of quantitative measurements (e.g. gene expression) associated to the samples annotated in entities and separated in the different semantic sets identified in the annotation process.
+
+* dictionary: stores the source dictionary used to find entities.
+
+* entities: a table containing the annotations of documents (samples). The list of unique concepts belonging to the dictionary and found in the metadata representing a given sample can be defined as a semantic set
+
+* similarity: a matrix of the similarities between the unique semantic sets identified in the entities table
+
+* scores: a dataset of quantitative measurements (e.g. gene expression) associated to the samples annotated in entities and separated in the different semantic sets identified in the annotation process.
  
 In this section we illustrate the use of the Onassis class to annotate the previously retrieved metadata. The method `annotate` takes as input a data frame of metadata to annotate, the type of dictionary and the path of an ontology file and returns an instance of class Onassis. 
 
@@ -434,7 +438,6 @@ knitr::kable(entities(filtered_onassis),
   scroll_box(width = "80%", height = "400px")
 ```
 
-
 The method `sim` cretes a matrix of the semantic similarities between the annotations of each couple of samples annotated in the entities slot of an Onassis object. 
 
 ```{r similarity_of_samples, echo=TRUE, eval=TRUE}
@@ -444,7 +447,7 @@ filtered_onassis <- sim(filtered_onassis)
 ```
 
 Annotations with semantic similarities above a given threshold can be unified using the method `collapse`. This method unifies the similar annotations by concatenating their unique concepts. Entities are replaced with the new concatenated annotations. For each concept in the concatenated annotations the number of samples associated is also reported, together with the total number of samples annotated with the new annotations. 
-The similarity slot will be consequently updated
+The similarity slot will be consequently updated.
 
 ```{r collapsing_similarities, echo=TRUE, eval=TRUE, message=FALSE, results='hide', fig.width=6, fig.height=6}
 collapsed_onassis <- Onassis::collapse(filtered_onassis, 0.8)
