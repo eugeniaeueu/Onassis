@@ -501,7 +501,7 @@ EntityFinder <- function(input, dictionary, options = NA, outDir = tempdir(), mu
 #'
 #' @export
 Similarity <- function(ontology, termlist1, termlist2, annotatedtab = NA, icConf = "seco", 
-    pairConf = "resnik", groupConf = "ui") {
+    pairConf = "lin", groupConf = "ui") {
     sim <- new("Similarity")
     ontology(sim) <- ontology
     pairConf <- c(pairConf, icConf)
