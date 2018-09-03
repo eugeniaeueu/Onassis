@@ -52,9 +52,10 @@ To run Onassis Java (>= 1.8) is needed.
 For the correct working of the following examples please install the following libraries:
 
 ```{r echo=TRUE, eval=FALSE}
-source("https://bioconductor.org/biocLite.R")
-biocLite('org.Hs.eg.db')
-biocLite("GenomicRanges")
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install('org.Hs.eg.db')
+BiocManager::install("GenomicRanges")
 install.packages('data.table')
 install.packages('DT')
 install.packages('gplots')
