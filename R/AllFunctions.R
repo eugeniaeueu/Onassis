@@ -17,7 +17,6 @@ findHealthy <- function(metadata_df) {
     gsm_list <- c()
     metadata_df[, 1] <- as.character(as.vector(metadata_df[, 1]))
     for (i in 2:ncol(metadata_df)) {
-        # metadata_df[,i] <- as.character(as.vector(gsub('ξ', '', metadata_df[,i])))
         gsms <- metadata_df[, 1][grep(markers, tolower(metadata_df[, i]))]
         if (length(gsms) > 0) 
             gsm_list <- c(gsm_list, gsms)
