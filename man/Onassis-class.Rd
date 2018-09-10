@@ -13,6 +13,11 @@ The following methods can be applied to Onassis
 \code{\link{annotate}} \cr
 \code{\link{collapse}} \cr
 \code{\link{compare}} \cr
+\code{\link{dictionary}} \cr
+\code{\link{simil}} \cr
+\code{\link{entities}} \cr
+\code{\link{scores}} \cr
+\code{\link{sim}} \cr
 }
 \section{Slots}{
 
