@@ -35,6 +35,11 @@ NULL
 #'\code{\link{annotate}} \cr
 #'\code{\link{collapse}} \cr
 #'\code{\link{compare}} \cr
+#'\code{\link{dictionary}} \cr
+#'\code{\link{simil}} \cr
+#'\code{\link{entities}} \cr
+#'\code{\link{scores}} \cr
+#'\code{\link{sim}} \cr
 #' @exportClass Onassis
 setClass(Class = "Onassis", representation(dictionary = "character", entities = "data.frame", 
     similarity = "matrix", scores = "matrix"), validity = function(object) {

@@ -33,5 +33,5 @@ configures the pairwise java object to compute semantic similarity between two c
 sim <- new('Similarity')
 pairwiseConfigRef(sim)
 sim <- new('Similarity')
-pairwiseConfigRef(sim) <- c('resnik')
+pairwiseConfigRef(sim) <- c('lin')
 }

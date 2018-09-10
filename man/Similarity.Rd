@@ -5,7 +5,7 @@
 \title{\code{Similarity}}
 \usage{
 Similarity(ontology, termlist1, termlist2, annotatedtab = NA,
-  icConf = "seco", pairConf = "resnik", groupConf = "ui")
+  icConf = "seco", pairConf = "lin", groupConf = "ui")
 }
 \arguments{
 \item{ontology}{The ontology file to create the DAG to compute similarities}
