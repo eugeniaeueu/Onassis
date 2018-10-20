@@ -555,7 +555,7 @@ setMethod("mergeonassis", signature = c("Onassis", "Onassis"), def = function(on
 #' # By default the wilcox.test will be applied to each of the 50 genes 
 #' scores(onassis_results1) <- score_matrix
 #' gene_by_gene_cell_differences <- compare(onassis_results1)
-#' head(cell_differences[1,2])
+#' head(gene_by_gene_cell_differences[1,2])
 #' # Applying the same wilcox.test but obtaining a multiple test correction
 #' gene_by_gene_cell_differences_ADJ <- compare(onassis_results1, padj=TRUE)
 #' head(gene_by_gene_cell_differences_ADJ[1,2])
@@ -602,7 +602,8 @@ setMethod("compare", signature = c("Onassis"), def = function(onassis, score_mat
   }
   if(any(!entities(onassis)$sample_id %in% colnames(scores_matrix))){
     message('Found annotated entities not in score matrix, \n Onassis will try to subset the entities to obtain the same columns') 
-    entities(onassis) <- entities(onassis)[match(colnames(scores_matrix), entities(onassis$sample_id))]
+    entities(onassis)$sample_id <- as.character(as.vector(entities(onassis)$sample_id))
+     entities(onassis) <- entities(onassis)[match(colnames(scores_matrix), entities(onassis)$sample_id), ]
     message('Done')
   }
   if (nrow(scores_matrix) == 0) {

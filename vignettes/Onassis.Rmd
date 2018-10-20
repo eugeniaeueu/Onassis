@@ -495,20 +495,19 @@ score_matrix <- readRDS(system.file('extdata', 'vignette_data', 'score_matrix.rd
 
 The method `compare` can be used with any test function to compare scores, separated in semantic sets. For example we created a function that summarized, for each promoter region, the peak scores from different samples in one semantic set with the mean peak score and then calls the `t.test` function. 
 
-```{r example_of_test_function, echo=TRUE, eval=TRUE}
-personalized_t <- function(x, y){
+To apply the t.test for different diseases within cell line semantic sets the following code can be used. When by is set to 'col' the test function will be applied to columns, otherwise to genomic units belonging to different couples of semantic sets. Further details and examples about `compare` are available in the help page of the method. The method returns, in case of annotations with multiple ontologies a named list with the semantic sets of the first level ontology. Each entry of the list contains a matrix with the results of the test for each couple of second level semantic sets.  
+
+```{r score_comparison, echo=T, eval=T}
+
+personal_t <- function(x, y){
 		if(is.matrix(x))
 			x <- apply(x, 1, mean)
 		if(is.matrix(y))
 			y <- apply(y, 1, mean)
 		do.call(match.fun('t.test'), list(x, y))
 }
-```
 
-To apply the t.test for different diseases within cell line semantic sets the following code can be used. When by is set to 'col' the test function will be applied to columns, otherwise to genomic units belonging to different couples of semantic sets. Further details and examples about `compare` are available in the help page of the method. The method returns, in case of annotations with multiple ontologies a named list with the semantic sets of the first level ontology. Each entry of the list contains a matrix with the results of the test for each couple of second level semantic sets.  
-
-```{r score_comparison, echo=T, eval=T}
-disease_comparisons <- compare(cell_disease_onassis, score_matrix=as.matrix(score_matrix), by='col', fun_name='personalized_t')
+disease_comparisons <- compare(cell_disease_onassis, score_matrix=as.matrix(score_matrix), by='col', fun_name='personal_t')
 head(disease_comparisons)[[1]][1,2]
 ```
 
