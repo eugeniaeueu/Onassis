@@ -11,13 +11,13 @@ Description: A package that allows the annotation of text with ontology terms (m
     samples.
 License: GPL-2
 Depends:
-    R (>= 3.4), rJava, OnassisJavaLibs, knitr
+    R (>= 3.4), rJava, OnassisJavaLibs 
 Imports:
-    GEOmetadb, RSQLite, data.table, methods, tools, utils, AnnotationDbi, RCurl, stats 
+    GEOmetadb, RSQLite, data.table, methods, tools, utils, AnnotationDbi, RCurl, stats, DT, data.table, knitr
 SystemRequirements: Java (>= 1.8)
 RoxygenNote: 6.1.0
 VignetteBuilder: knitr
-Suggests: BiocStyle, rmarkdown, htmltools, DT, org.Hs.eg.db, gplots, GenomicRanges, kableExtra 
+Suggests: BiocStyle, rmarkdown, htmltools, org.Hs.eg.db, gplots, GenomicRanges, kableExtra 
 Encoding: UTF-8
 LazyData: yes
 biocViews: Annotation, DataImport, Clustering, Network, Software, GeneTarget
