@@ -28,13 +28,7 @@ StopWords(x) <- value
 The StopWords corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
 }
 \description{
-Method StopWords
-
-Method StopWords<-
-
 Method to get and set the StopWords parameter
-
-\code{StopWords<-}
 }
 \examples{
 opts <- CMoptions()

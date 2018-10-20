@@ -8,8 +8,8 @@
 \usage{
 multisim(similarities, annotations, sample1, sample2, aggregating_function)
 
-\S4method{multisim}{list,list,character,character}(similarities, annotations,
-  sample1, sample2, aggregating_function = "mean")
+\S4method{multisim}{list,list,character,character}(similarities,
+  annotations, sample1, sample2, aggregating_function = "mean")
 }
 \arguments{
 \item{similarities}{a list of Similarity instances, one for each ontology used to annotate the data}

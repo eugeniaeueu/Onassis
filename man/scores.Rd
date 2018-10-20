@@ -26,8 +26,6 @@ the matrix of scores in case of get and the new \code{\link{Onassis-class}} obje
 }
 \description{
 This method gets and sets the \code{scores} slot of a class \code{\link{Onassis-class}}
-
-\code{scores}
 }
 \examples{
 onassis <- Onassis()

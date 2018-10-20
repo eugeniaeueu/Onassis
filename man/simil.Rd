@@ -26,8 +26,6 @@ the similarity matrix of an object of type \code{\link{Onassis-class}} in case o
 }
 \description{
 Method to get and set the \code{similarity} slot of the class \code{\link{Onassis-class}}
-
-\code{simil}
 }
 \examples{
 onassis <- Onassis()

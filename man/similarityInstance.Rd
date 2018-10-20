@@ -28,8 +28,6 @@ The object of class Similarity with a new instance of the java Similarity class
 }
 \description{
 This method retrieves the java object referencing the Similarity class
-
-\code{similarityInstance<-}
 }
 \examples{
 sim <- new('Similarity')

@@ -28,13 +28,7 @@ SynonymType(x) <- value
 The SynonymType corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
 }
 \description{
-Method SynonymType
-
-Method SynonymType<-
-
 Method to get and set the SynonymType parameter
-
-\code{SynonymType<-}
 }
 \examples{
 opts <- CMoptions()

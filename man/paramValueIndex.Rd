@@ -25,13 +25,7 @@ paramValueIndex(x) <- value
 The paramValueIndex corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
 }
 \description{
-Method paramValueIndex
-
-Method paramValueIndex<-
-
 Method to get and set the parameter combination index corresponding to a given parameter combination. The value of the paramValueIndex lays in the range [0:575]
-
-\code{paramValueIndex<-}
 }
 \examples{
 opts <- CMoptions()

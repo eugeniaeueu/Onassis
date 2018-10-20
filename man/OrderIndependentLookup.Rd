@@ -29,8 +29,6 @@ The OrderIndependentLookup corresponding to the current options when used as get
 }
 \description{
 Method to get and set the OrderIndependentLookup parameter
-
-\code{OrderIndependentLookup<-}
 }
 \examples{
 opts <- CMoptions()

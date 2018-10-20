@@ -26,8 +26,6 @@ The path of the dictionary in case of get, the instance of Onassis with new dict
 }
 \description{
 Method to get and set the \code{dictionary} slot of the class \code{\link{Onassis-class}}
-
-\code{dictionary}
 }
 \examples{
 onassis <- Onassis()

@@ -30,13 +30,7 @@ SearchStrategy(x) <- value
 The SearchStrategy corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
 }
 \description{
-Method SearchStrategy
-
-Method SearchStrategy<-
-
 Method to get and set the SearchStrategy parameter
-
-\code{SearchStrategy<-}
 }
 \examples{
 opts <- CMoptions()

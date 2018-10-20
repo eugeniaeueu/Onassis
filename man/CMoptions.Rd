@@ -5,9 +5,9 @@
 \title{\code{CMoptions}}
 \usage{
 CMoptions(SearchStrategy = "CONTIGUOUS_MATCH",
-  CaseMatch = "CASE_INSENSITIVE", Stemmer = "NONE", StopWords = "NONE",
-  OrderIndependentLookup = "ON", FindAllMatches = "YES",
-  SynonymType = "ALL", paramValueIndex = NA)
+  CaseMatch = "CASE_INSENSITIVE", Stemmer = "NONE",
+  StopWords = "NONE", OrderIndependentLookup = "ON",
+  FindAllMatches = "YES", SynonymType = "ALL", paramValueIndex = NA)
 }
 \arguments{
 \item{SearchStrategy}{The matching strategy for finding concepts in the input text

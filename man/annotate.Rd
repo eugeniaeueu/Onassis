@@ -8,13 +8,14 @@
 \usage{
 annotate(input = NA, dictType = NA, dictionary = NA, ...)
 
-\S4method{annotate}{data.frame,character,character}(input, dictType = "OBO",
-  dictionary = NA, dictoutdir = getwd(), d_synonymtype = "EXACT",
-  taxID = 0, annot_out = getwd(), paramValueIndex = NA,
-  SearchStrategy = "CONTIGUOUS_MATCH", CaseMatch = "CASE_INSENSITIVE",
-  Stemmer = "NONE", StopWords = "NONE", OrderIndependentLookup = "ON",
-  FindAllMatches = "YES", e_synonymtype = "ALL", multipleDocs = FALSE,
-  disease = FALSE)
+\S4method{annotate}{data.frame,character,character}(input,
+  dictType = "OBO", dictionary = NA, dictoutdir = getwd(),
+  d_synonymtype = "EXACT", taxID = 0, annot_out = getwd(),
+  paramValueIndex = NA, SearchStrategy = "CONTIGUOUS_MATCH",
+  CaseMatch = "CASE_INSENSITIVE", Stemmer = "NONE",
+  StopWords = "NONE", OrderIndependentLookup = "ON",
+  FindAllMatches = "YES", e_synonymtype = "ALL",
+  multipleDocs = FALSE, disease = FALSE)
 }
 \arguments{
 \item{input}{A data frame where the first column is the ID of the sample or document to annotate}

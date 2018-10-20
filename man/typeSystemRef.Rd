@@ -27,10 +27,6 @@ the reference to the Java type system currently set
 The updated EntityFinder S4 object
 }
 \description{
-Method typeSystemRef
-
-Method typeSystemRef<-
-
 This method sets the type system to the ccp-nlp one to run the EntityFinder
 
 This method sets the type system to the ccp-nlp one to run the EntityFinder

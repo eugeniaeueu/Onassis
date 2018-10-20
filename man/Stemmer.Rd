@@ -29,13 +29,7 @@ Stemmer(x) <- value
 The Stemmer corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
 }
 \description{
-Method Stemmer
-
-Method Stemmer<-
-
 Method to get and set the Stemmer parameter
-
-\code{Stemmer<-}
 }
 \examples{
 opts <- CMoptions()

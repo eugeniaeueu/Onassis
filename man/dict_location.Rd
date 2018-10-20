@@ -26,8 +26,6 @@ the path of the dictionary in the file system
 }
 \description{
 A method to get and set the location of  \code{\link{CMdictionary}}
-
-\code{dict_location<-}
 }
 \examples{
 dictionary <- new('CMdictionary')

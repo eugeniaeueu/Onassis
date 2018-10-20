@@ -32,8 +32,6 @@ The CaseMatch corresponding to the current options when used as get, the new CMo
 }
 \description{
 Method to get and set the CaseMatch parameter of \code{\link{CMoptions}} instances
-
-\code{CaseMatch<-}
 }
 \examples{
 opts <- CMoptions()

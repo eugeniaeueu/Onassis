@@ -4,7 +4,8 @@
 \alias{getGEOMetadata}
 \title{\code{getGEOMetadata}}
 \usage{
-getGEOMetadata(geo_con, experiment_type = NA, organism = NA, gpl = NA)
+getGEOMetadata(geo_con, experiment_type = NA, organism = NA,
+  gpl = NA)
 }
 \arguments{
 \item{geo_con}{connection to the SQLite GEOmetadb databse}

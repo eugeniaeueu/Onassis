@@ -28,13 +28,7 @@ FindAllMatches(x) <- value
 The FindAllMatches corresponding to the current options when used as get, the new CMoptions object with updated parameters when used to set.
 }
 \description{
-Method FindAllMatches
-
-Method FindAllMatches<-
-
 Method to get and set the FindAllMatches parameter
-
-\code{FindAllMatches<-}
 }
 \examples{
 opts <- CMoptions()

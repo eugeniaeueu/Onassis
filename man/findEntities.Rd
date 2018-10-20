@@ -31,8 +31,6 @@ findEntities(object, inputDirOrFile, multipleDocs = FALSE,
 A data frame of annotations containing the sample name, the id of the OBO concept, the corresponding name, the part of the text containing the annotation
 }
 \description{
-Method findEntities
-
 This method finds concepts from a Conceptmapper Dictionary of type \code{\link{CMdictionary}} in a given directory or in a single pipe separated file containing a named document in each row, with a specified configuration of type \code{\link{CMoptions}}. This is a method of the \code{\link{EntityFinder-class}}
 }
 \examples{

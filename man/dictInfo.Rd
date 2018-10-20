@@ -27,11 +27,7 @@ list of details about the dictionary
 object of class \code{\link{CMdictionary}}
 }
 \description{
-Get and Set the dicInfo slot for the \code{\link{CMdictionary}} class
-
 Method to get and set a list of info about the dictionary
-
-\code{dictInfo<-}
 }
 \examples{
 dictionary <- new('CMdictionary')

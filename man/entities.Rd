@@ -26,8 +26,6 @@ the entities of the Onassis object in case of get and the Onassis object with ne
 }
 \description{
 Method to get and set the \code{entities} slot of the class \code{\link{Onassis-class}}
-
-\code{entities}
 }
 \examples{
 onassis <- Onassis()

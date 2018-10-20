@@ -26,8 +26,6 @@ java reference to the Conceptmapper dictionary
 }
 \description{
 This method retrieves and sets the java reference the conceptmapper dictionary
-
-\code{dictRef<-}
 }
 \examples{
 dictionary <- new('CMdictionary')

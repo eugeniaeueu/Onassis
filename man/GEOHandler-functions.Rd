@@ -6,7 +6,8 @@
 \alias{GEOHandler-function}
 \title{\code{connectToGEODB}}
 \usage{
-connectToGEODB(sqliteFilePath = NULL, download = FALSE, destdir = getwd())
+connectToGEODB(sqliteFilePath = NULL, download = FALSE,
+  destdir = getwd())
 }
 \arguments{
 \item{sqliteFilePath}{optional SQLite full file path of the SQLite database if already downloaded}

@@ -8,8 +8,8 @@
 \usage{
 samplesim(object, sample1, sample2, annotated_df)
 
-\S4method{samplesim}{Similarity,character,character,data.frame}(object, sample1,
-  sample2, annotated_df)
+\S4method{samplesim}{Similarity,character,character,data.frame}(object,
+  sample1, sample2, annotated_df)
 }
 \arguments{
 \item{object}{instance of class \code{\link{Similarity-class}}}
