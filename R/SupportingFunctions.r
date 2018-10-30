@@ -22,9 +22,15 @@ loadEntities <- function(entityDirectory, deleteDir = TRUE) {
                   sep = "\t", as.is = TRUE, quote = "")
                 even <- seq(1, nrow(x), 2)
                 odd <- seq(2, nrow(x), 2)
-                
+                term_id <- NA
                 sample_id <- strsplit(entityfile, ".a1")[[1]][1]
+                if(!grepl('/', x[odd, 2][1])){
+                  term_id <- sub(".* ", "", x[odd, 2])
+                }
+                else{
+                  
                 term_id <- sub(".*/", "", x[odd, 2])
+                }
                 matched_sentence <- as.character(as.vector(x[even, 3]))
                 term_name <- gsub("\"", "", x[odd, 3])
                 if (grepl("_", term_id[1])) {
