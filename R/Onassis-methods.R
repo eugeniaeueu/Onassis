@@ -240,6 +240,7 @@ setMethod("annotate", c("data.frame", "character", "character"), function(input,
   if (nrow(annotated_df) > 0) {
     annotated_df <- annotated_df[!duplicated(annotated_df[, c("sample_id", "term_id",
                                                               "term_url", "term_name")]), ]
+    annotated_df <- annotated_df[order(annotated_df$term_id),]
     setDT(annotated_df)
     collapsed_annotations <- annotated_df[, lapply(.SD, function(x) toString(x)),
                                           by = sample_id]
@@ -376,6 +377,10 @@ setMethod("collapse", signature = c("Onassis"), def = function(onassis, simil_th
       # If this column is available in entities maybe we are collapsing otherwise user
       # has to run similarity before calling this method
       similarity <- simil(onassis)
+      if(nrow(simil(onassis))==0){
+        message('Please run sim method to obtain a valid semantic similarity matrix in the slot similarity')
+        return(NA)
+      }
       if ("short_label" %in% colnames(entities) & any(rownames(similarity) %in%
                                                       entities$short_label))
       {
@@ -434,7 +439,7 @@ setMethod("collapse", signature = c("Onassis"), def = function(onassis, simil_th
                                        ")"))
         new_entities[which(new_entities$cluster == cluster_name), c("short_label")] <<- short_names
       })
-      entities(onassis) <- new_entities
+      entities(onassis) <- new_entities[, c('sample_id', 'term_id', 'term_name', 'term_url', 'matched_sentence', 'short_label', 'cluster')]
       onassis <- sim(onassis)
       return(onassis)
     }
@@ -577,6 +582,7 @@ setMethod("compare", signature = c("Onassis"), def = function(onassis, score_mat
     scores(onassis) <- score_matrix
     scores_matrix <- score_matrix
   }
+  
   else {
     if(is.na(score_matrix)){
       scores_matrix <- scores(onassis)
@@ -598,13 +604,11 @@ setMethod("compare", signature = c("Onassis"), def = function(onassis, score_mat
     message('Found score matrix column names that are not in entities annotations\n Onassis will try to subset the score matrix to obtain the same columns')
     scores(onassis) <- scores_matrix[, match(entities(onassis)$sample_id, colnames(scores_matrix))]
     scores_matrix <- scores(onassis)
-    message('Done')
   }
   if(any(!entities(onassis)$sample_id %in% colnames(scores_matrix))){
-    message('Found annotated entities not in score matrix, \n Onassis will try to subset the entities to obtain the same columns') 
+    message('Found annotated entities not in score matrix\nOnassis will try to subset the entities to obtain the same columns') 
     entities(onassis)$sample_id <- as.character(as.vector(entities(onassis)$sample_id))
      entities(onassis) <- entities(onassis)[match(colnames(scores_matrix), entities(onassis)$sample_id), ]
-    message('Done')
   }
   if (nrow(scores_matrix) == 0) {
     message("Unable to compare: empty score matrix")
@@ -628,8 +632,8 @@ setMethod("compare", signature = c("Onassis"), def = function(onassis, score_mat
     # Setting the names to the conditions to short_labels if these are available
     # or to term_names
     
-    if ("short_label" %in% colnames(entities))
-      condition_names <- unique(entities$short_label[which(!is.na(entities$term_url))])
+    if ("short_label" %in% colnames(entities)) 
+        condition_names <- unique(entities$short_label[which(!is.na(entities$term_url))])
     else
       condition_names <- unique(entities$term_name[which(!is.na(entities$term_url))])
     
@@ -637,13 +641,11 @@ setMethod("compare", signature = c("Onassis"), def = function(onassis, score_mat
     # possible couple of semantic sets
     comparison_result <- matrix(list(), nrow = length(condition_names), ncol = length(condition_names))
     rownames(comparison_result) <- colnames(comparison_result) <- condition_names
-    for (i in 1:(length(conditions) - 1)) {
+    for (i in 1:(length(conditions))) {
       sample_ids_1 <- unique(entities$sample_id[which(entities$term_url == conditions[i])])
-      j = i + 1
-      for (k in j:length(conditions)) {
+      for (k in 1:length(conditions)) {
         sample_ids_2 <- unique(entities$sample_id[which(entities$term_url == conditions[k])])
         if (by == "row"){
-          
           # Each genomic unit or element on the row will be tested for differences between
           # semantic sets in the columns
           
@@ -657,9 +659,15 @@ setMethod("compare", signature = c("Onassis"), def = function(onassis, score_mat
             if(length(fun_args)>0)
               arguments <- c(arguments, fun_args)
             # Calling the function with the options
-            test_res <- do.call(fun_obj, arguments)
-            # Getting the statistic and p.value
-            test_res_col <- cbind(test_res$statistic, test_res$p.value)
+            test_res <- tryCatch({
+              test_res <- do.call(fun_obj, arguments)
+            }, error = function(e) {
+              test_res <- list(statistic=NA, p.value=NA)
+              return(test_res)
+            })
+          
+              # Getting the statistic and p.value
+              test_res_col <- cbind(test_res$statistic, test_res$p.value)
           }))
           
           
@@ -671,7 +679,7 @@ setMethod("compare", signature = c("Onassis"), def = function(onassis, score_mat
             adj.pvalue <- p.adjust(test_result[,2])
             test_result <- cbind(test_result, adj.pvalue)
           }
-          comparison_result[condition_names[i], condition_names[k]][[1]] <- comparison_result[condition_names[k], condition_names[i]][[1]] <- test_result  
+          comparison_result[condition_names[i], condition_names[k]][[1]] <- test_result  
         }  # end if by row
         else {
           # We want to test by columns
@@ -684,11 +692,16 @@ setMethod("compare", signature = c("Onassis"), def = function(onassis, score_mat
           if(length(fun_args)>0)
             arguments <- c(arguments, fun_args)
           # Calling the function with the options
-          test_res <- do.call(fun_obj, arguments)
+          test_res <- tryCatch({
+            test_res <- do.call(fun_obj, arguments)
+          }, error = function(e) {
+            test_res <- list(statistic=NA, p.value=NA)
+            return(test_res)
+          })
           # Getting the statistic and p.value
           test_res_col <- cbind(test_res$statistic, test_res$p.value)
-          comparison_result[condition_names[i], condition_names[k]][[1]] <- comparison_result[condition_names[k],
-                                                                                              condition_names[i]][[1]] <- test_res_col
+          colnames(test_res_col) <- c('statistic', 'p.value')
+          comparison_result[condition_names[i], condition_names[k]][[1]] <- test_res_col
         }  #end else (if by is col)
       }  #end inner for
     }  # end outer for
@@ -729,11 +742,10 @@ setMethod("compare", signature = c("Onassis"), def = function(onassis, score_mat
         comparison_result <- matrix(list(), nrow = length(level2_cond_names),
                                     ncol = length(level2_cond_names))
         rownames(comparison_result) <- colnames(comparison_result) <- level2_cond_names
-        for (j in 1:(length(level2_conds) - 1)) {
-          k = j + 1
+        for (j in 1:(length(level2_conds))) {
           sample_ids_1 <- unique(entities$sample_id[which(entities$term_url_2 ==
                                                             level2_conds[j] & entities$term_url_1 == level1_cond)])
-          for (l in k:length(level2_conds)) {
+          for (l in 1:length(level2_conds)) {
             sample_ids_2 <- unique(entities$sample_id[which(entities$term_url_2 ==
                                                               level2_conds[l] & entities$term_url_1 == level1_cond)])
             if (by == "row")
@@ -748,7 +760,12 @@ setMethod("compare", signature = c("Onassis"), def = function(onassis, score_mat
                 if(length(fun_args)>0)
                   arguments <- c(arguments, fun_args)
                 # Calling the function with the options
-                test_res <- do.call(fun_obj, arguments)
+                test_res <- tryCatch({
+                  test_res <- do.call(fun_obj, arguments)
+                }, error = function(e) {
+                  test_res <- list(statistic=NA, p.value=NA)
+                  return(test_res)
+                })
                 # Getting the statistic and p.value
                 test_res_col <- cbind(test_res$statistic, test_res$p.value)
               }))
@@ -763,8 +780,7 @@ setMethod("compare", signature = c("Onassis"), def = function(onassis, score_mat
                 test_result <- cbind(test_result, adj.pvalue)
               }
               
-              comparison_result[level2_cond_names[j], level2_cond_names[l]][[1]] <- comparison_result[level2_cond_names[j],
-                                                                                                      level2_cond_names[l]][[1]] <- test_result
+              comparison_result[level2_cond_names[j], level2_cond_names[l]][[1]] <- test_result
               
             }  # end if by row
             else {
@@ -779,18 +795,24 @@ setMethod("compare", signature = c("Onassis"), def = function(onassis, score_mat
               if(length(fun_args)>0)
                 arguments <- c(arguments, fun_args)
               # Calling the function with the options
-              test_res <- do.call(fun_obj, arguments)
+              test_res <- tryCatch({
+                test_res <- do.call(fun_obj, arguments)
+              }, error = function(e) {
+                test_res <- list(statistic=NA, p.value=NA)
+                return(test_res)
+              })
+              
               # Getting the statistic and p.value
               test_res_col <- cbind(test_res$statistic, test_res$p.value)
               colnames(test_res_col) <- c('statistics', 'p.vaue')
-              comparison_result[level2_cond_names[j], level2_cond_names[l]][[1]] <- comparison_result[level2_cond_names[j],
-                                                                                                      level2_cond_names[l]][[1]] <- test_res_col
+              comparison_result[as.character(level2_cond_names[j]), as.character(level2_cond_names[l])][[1]] <- test_res_col
             }  # end if by col
           }  # end inner for level 2 condition
         }  # end outer for level 2 conditions
         if (class(comparison_result) == "matrix") {
           global_result_list[[outer_counter]] <- comparison_result
-          names(global_result_list)[outer_counter] <- level1_condition_names[i]
+          names(global_result_list)[outer_counter] <- level1_condition_names[i] 
+          outer_counter <- outer_counter + 1
         }
       }  # end if length of conditions in level 2 > 1
     }  # end for level 1 conditions
@@ -828,34 +850,37 @@ setMethod("filterconcepts", signature = c("Onassis"), def = function(onassis, co
       for (i in 1:ncol(entities)) entities[, i] <- as.character(entities[, i])
       if (length(concepts_to_filter) > 0) {
         filtered_table <- data.frame(t(apply(entities, 1, function(entity_row) {
-          entity_row <- as.character(entity_row)
-          names(entity_row) <- colnames(entities)
-          term_id <- entity_row["term_id"]
-          term_name <- entity_row["term_name"]
-          term_url <- entity_row["term_url"]
-          splitted_term_names <- trim(strsplit(term_name, ",")[[1]])
-          splitted_term_ids <- trim(strsplit(term_id, ",")[[1]])
-          splitted_term_urls <- trim(strsplit(term_url, ",")[[1]])
-          indexes_to_remove <- which(tolower(splitted_term_names) %in% tolower(concepts_to_filter))
-          if (length(indexes_to_remove) > 0) {
-            splitted_term_names <- splitted_term_names[-indexes_to_remove]
-            splitted_term_ids <- splitted_term_ids[-indexes_to_remove]
-            splitted_term_urls <- splitted_term_urls[-indexes_to_remove]
-            if (length(splitted_term_names) > 0) {
-              term_id <- paste(splitted_term_ids, collapse = ",")
-              term_name <- paste(splitted_term_names, collapse = ",")
-              term_url <- paste(splitted_term_urls, collapse = ",")
-            } else {
-              term_id <- NA
-              term_name <- NA
-              term_url <- NA
+          # CASE ONE: entities(onassis) has been obtained by method annotate
+          if('term_id' %in% names(entity_row)){
+            entity_row <- as.character(entity_row)
+            names(entity_row) <- colnames(entities)
+            term_id <- entity_row["term_id"]
+            term_name <- entity_row["term_name"]
+            term_url <- entity_row["term_url"]
+            splitted_term_names <- trim(strsplit(term_name, ",")[[1]])
+            splitted_term_ids <- trim(strsplit(term_id, ",")[[1]])
+            splitted_term_urls <- trim(strsplit(term_url, ",")[[1]])
+            indexes_to_remove <- which(tolower(splitted_term_names) %in% tolower(concepts_to_filter))
+            if (length(indexes_to_remove) > 0) {
+              splitted_term_names <- splitted_term_names[-indexes_to_remove]
+              splitted_term_ids <- splitted_term_ids[-indexes_to_remove]
+              splitted_term_urls <- splitted_term_urls[-indexes_to_remove]
+              if (length(splitted_term_names) > 0) {
+                term_id <- paste(splitted_term_ids, collapse = ", ")
+                term_name <- paste(splitted_term_names, collapse = ", ")
+                term_url <- paste(splitted_term_urls, collapse = ", ")
+              } else {
+                term_id <- NA
+                term_name <- NA
+                term_url <- NA
+              }
             }
-          }
-          new_row <- c(entity_row["sample_id"], term_id, term_name, term_url,
+            new_row <- c(entity_row["sample_id"], term_id, term_name, term_url,
                        entity_row["matched_sentence"])
           return(new_row)
+          }
         })))
-        colnames(filtered_table) <- colnames(entities)
+        colnames(filtered_table)[1:5] <- colnames(entities)[1:5]
         filtered_table <- filtered_table[which(!is.na(filtered_table$term_name)),
                                          ]
         entities(onassis) <- filtered_table

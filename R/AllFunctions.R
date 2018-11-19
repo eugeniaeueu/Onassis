@@ -13,7 +13,7 @@
 #' @export
 
 findHealthy <- function(metadata_df) {
-    markers <- "disease state: normal|tissuetype: normal|no ad present|healthy|disease: healthy|disease: normal|disease: presumed normal|disease: none|disease: null|disease: na|disease status: normal|tumor: none"
+    markers <- "disease state: normal|tissuetype: normal|no ad present|healthy|disease: healthy|disease: normal|disease: presumed normal|disease: none|disease: null|disease: na|disease status: normal|tumor: none|cell type: normal|cell karyotype: normal"
     gsm_list <- c()
     metadata_df[, 1] <- as.character(as.vector(metadata_df[, 1]))
     for (i in 2:ncol(metadata_df)) {

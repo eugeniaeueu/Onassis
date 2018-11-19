@@ -145,6 +145,9 @@ prepareEntrezDictionary <- function(gene_symbols, gene_synonyms = NA) {
     dictionary_total <- sapply(unique_symbols, function(symbol) {
         token_string <- paste0("<token id=\"", symbol, "\" canonical =\"", as.character(gene_symbols[which(gene_symbols$gene_id == 
             symbol), 2]), "\">")
+        exact_synonym <- paste0("<variant base=\"",as.character(gene_symbols[which(gene_symbols$gene_id == 
+                                                                                                  symbol), 2]),  "\"/>")
+        token_string <- paste(token_string, exact_synonym, collapse='\n')
         if (is.data.frame(gene_synonyms)) {
             synonym_strings <- gene_synonyms$alias_symbol[which(gene_synonyms$gene_id == 
                 symbol)]
