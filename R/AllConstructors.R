@@ -293,7 +293,7 @@ CMdictionary <- function(inputFileOrDb = NULL, dictType = "OBO", outputDir = tem
         n <- length(entrez_file_lines) - 1
         entrez_file_lines <- entrez_file_lines[1:n]
         lines_to_add <- sapply(histones_file_content, function(histone) {
-            modified_histone <- gsub("Histone", "", histone)
+            modified_histone <- gsub("Histone ", "", histone)
             token_to_append <- paste0("<token id=\"", modified_histone, "\"", " canonical=\"", 
                 modified_histone, "\">")
             variant_to_append <- paste0("<variant base=\"", histone, "\"", "/>")

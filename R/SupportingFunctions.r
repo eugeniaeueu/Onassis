@@ -22,9 +22,15 @@ loadEntities <- function(entityDirectory, deleteDir = TRUE) {
                   sep = "\t", as.is = TRUE, quote = "")
                 even <- seq(1, nrow(x), 2)
                 odd <- seq(2, nrow(x), 2)
-                
+                term_id <- NA
                 sample_id <- strsplit(entityfile, ".a1")[[1]][1]
+                if(!grepl('/', x[odd, 2][1])){
+                  term_id <- sub(".* ", "", x[odd, 2])
+                }
+                else{
+                  
                 term_id <- sub(".*/", "", x[odd, 2])
+                }
                 matched_sentence <- as.character(as.vector(x[even, 3]))
                 term_name <- gsub("\"", "", x[odd, 3])
                 if (grepl("_", term_id[1])) {
@@ -139,6 +145,9 @@ prepareEntrezDictionary <- function(gene_symbols, gene_synonyms = NA) {
     dictionary_total <- sapply(unique_symbols, function(symbol) {
         token_string <- paste0("<token id=\"", symbol, "\" canonical =\"", as.character(gene_symbols[which(gene_symbols$gene_id == 
             symbol), 2]), "\">")
+        exact_synonym <- paste0("<variant base=\"",as.character(gene_symbols[which(gene_symbols$gene_id == 
+                                                                                                  symbol), 2]),  "\"/>")
+        token_string <- paste(token_string, exact_synonym, collapse='\n')
         if (is.data.frame(gene_synonyms)) {
             synonym_strings <- gene_synonyms$alias_symbol[which(gene_synonyms$gene_id == 
                 symbol)]
