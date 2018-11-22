@@ -1,6 +1,6 @@
 Package: Onassis
-Version: 1.5.2
-Date: 2018-11-19
+Version: 1.5.3
+Date: 2018-11-22
 Title: OnASSIs Ontology Annotation and Semantic SImilarity software
 Author: Eugenia Galeota
 Authors@R: person("Eugenia", "Galeota", email="eugenia.galeota@gmail.com",
