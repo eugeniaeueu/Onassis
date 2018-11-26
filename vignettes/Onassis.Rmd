@@ -72,7 +72,7 @@ Some of the optional functions, which will be described in the following parts o
 
 # Retrieving metadata from public repositories
 
-One of the most straightforward ways to retrieve metadata of samples provided in GEO is through the `r BiocStyle::Biocpkg("GEOmetadb")` package. In order to use GEOmetadb through Onassis, the corresponding SQLite database should be available. This can be downloaded by Onassis (see below), and this step should be performed only once. Onassis provides functions to facilitate the retrieval of specific GEO metadata without the need of explicitly making SQL queries to the database. While GEOmetadb can be accessed on any platform, another important database `r BiocStyle::Biocpkg("SRAdb")`, is not available for Windows users. In the following sections we show how to query GEOmetadb through Onassis, but we also provide an example on how to access SRAdb metadata. 
+One of the most straightforward ways to retrieve metadata of samples provided in GEO is through the `r BiocStyle::Biocpkg("GEOmetadb")` package. In order to use GEOmetadb through Onassis, the corresponding SQLite database should be available. This can be downloaded by Onassis (see below), and this step has to be performed only once. As described below, Onassis provides functions to facilitate the retrieval of specific GEO metadata without the need of explicitly making SQL queries to the database. Additionally, an example on how to access `r BiocStyle::Biocpkg("SRAdb")` metadata, is also provided. 
 
 ## Handling GEO (Gene Expression Omnibus) metadata
 
@@ -661,6 +661,21 @@ disease_comparisons <- compare(cell_disease_onassis, score_matrix=as.matrix(scor
 ```
 
 Further details and examples about `compare` are available in the help page of the method. 
+
+# Performances of the tool 
+
+In this section we provide a table with details on the performance of Onassis in running the annotation, semantic similarity, and data integrative analysis tasks. Different input sizes and dictionary sizes were tested and run time and memory footprint are reported. Tests were run on a desktop computer having a 3,5 GHz Intel Core i7 processor and 24 GB RAM. The table reports the name of the function, the elapsed time in seconds as reported by the R system.time function, the size of the object in bytes as reported by object_size function, a description and the used code. We additionaly report the performances of the queries to SRA used to obtain the ChIP-seq dataset used in the vignette.
+
+```{r performances, echo=FALSE, eval=TRUE}
+performances_table <- readRDS(system.file('extdata', 'vignette_data', 'performances.rds', package='Onassis'))
+```
+
+```{r showingperformances, echo=FALSE, eval=TRUE}
+knitr::kable(performances_table, 
+  caption = ' Onassis performances ') %>% kable_styling(bootstrap_options = c("striped"), position="center") %>%
+  scroll_box(width = "80%", height = "400px")
+```
+
 
 # Session Info
 
