@@ -53,8 +53,10 @@ The score module applies statistical tests to determine if omics data from sampl
 
 To run Onassis Java (>= 1.8) is needed. To install the package please run the following code
 ```{r installing_onassis, echo=TRUE, eval=FALSE}
-source("https://bioconductor.org/biocLite.R")
-biocLite("Onassis")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("Onassis")
 ````
 
 Onassis can be loaded with the following code
