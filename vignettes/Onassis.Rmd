@@ -681,164 +681,21 @@ Further details and examples about `compare` are available in the help page of t
 We reasoned that the aggregation of H3K27ac samples in groups defined by semantic similarities should reflect, at least in part, the similarity of the actual ChIP-seq data. To this end, we identified semantic groups at different cutoff values of semantic similarity (from 0.1 to 1). We used t-SNE dimensionality reduction method to identify an equal number of data-driven groups, based on promoter H3K27ac densities. The overlap between semantic and data-driven groups can be quantified with the Jaccard index. 
 The overlap analysis was then repeated using a randomly reshuffled score matrix. 
 
+<<<<<<< HEAD
 ```{r correspondence, echo=T, eval=T, results='hide'}
 
-onassis_annotations <- entities(filtered_cells)
-# Sorting the annotations based on the order of the score matrix labels
-onassis_annotations <- onassis_annotations[match(colnames(score_matrix), onassis_annotations$sample_id),]
+```{r reloading_data, echo=F, eval=T, message=F}
+#Loading data to annotate
+h3k27ac_chip <- readRDS(system.file('extdata', 'vignette_data', 'h3k27ac_metadata.rds',  package='Onassis'))
 
-# Creating a score matrix with scrambled annotations 
-random_score_matrix <- score_matrix[,sample(1:ncol(score_matrix))]
+#Annotating data 
+obo <- system.file('extdata', 'sample.cs.obo', package='OnassisJavaLibs')
+cell_annotations <- Onassis::annotate(h3k27ac_chip, 'OBO', obo, FindAllMatches='YES')
 
-# Running t-SNE on the score matrix and on the random matrix
-set.seed(456)
-tsne_out <- Rtsne(t(score_matrix), perplexity = 10, dims=3)$Y 
-random_tsne_out = Rtsne(t(random_score_matrix), perplexity = 10, dims=3)$Y 
-tsne_hclus <- hclust(dist(tsne_out[,c(1,2)]),  method='ward.D')
-random_tsne_hclus <- hclust(dist(random_tsne_out[,c(1,2)]) , method='ward.D')
+#Filtering generic concepts
+filtered_cells <- filterconcepts(cell_annotations, c('cell', 'tissue'))
+filtered_cells <- sim(filtered_cells)
 
-
-# Vetors to store the similarities of data driven and semantic driven clusters
-real_jaccard_similarity_vector <- c()
-random_jaccard_similarity_vector <- c()
-
-
-sequence_of_similarities <- rev(seq(0.1, 1, 0.1))
-sequence_of_similarities[1] <- 0.99
-
-for(i in sequence_of_similarities){
-  collapsed_cells <- Onassis::collapse(filtered_cells,  as.numeric(i)) 
-  onassis_annotations <- entities(collapsed_cells)
-  onassis_annotations <- onassis_annotations[match(colnames(score_matrix), onassis_annotations$sample_id),]
-  
-  # Clustering based on the tSNE results
-  tsne_clus <- factor(cutree(tsne_hclus, length(unique(onassis_annotations$short_label))))
-
-  # Similarity of the tSNE driven vs semantic set driven clusters
-  real_jaccard_similarity_vector <- c(real_jaccard_similarity_vector, cluster_similarity(tsne_clus, as.numeric(factor(onassis_annotations$short_label)), similarity='jaccard'))  
-  
-  # Clustering of the random matrix
-  random_tsne_clus <- factor(cutree(random_tsne_hclus, length(unique(onassis_annotations$short_label))))
-
-  # Similarity of the tSNE driven vs semantic set driven clusters
-  random_jaccard_similarity_vector <- c(random_jaccard_similarity_vector, cluster_similarity(random_tsne_clus, as.numeric(factor(onassis_annotations$short_label)), similarity='jaccard')) 
-}
-names(real_jaccard_similarity_vector) <- rev(seq(0.1, 1, 0.1))
-
+# Loading the score matrix 
+score_matrix <- readRDS(system.file('extdata', 'vignette_data', 'score_matrix.rds', package='Onassis'))
 ```
-
-We plot the Jaccard similarities for real and random datasets 
-
-```{r plot_jaccar, echo=T, eval=T}
-# Plotting the Jaccard similarities for real and random datasets 
-myx <- rev(seq(0.1, 1, 0.1))
-myylim <- max(random_jaccard_similarity_vector, real_jaccard_similarity_vector) + 0.05
-mydata = cbind(myx, random_jaccard_similarity_vector, real_jaccard_similarity_vector)
-
-plot1 <- ggplot(mydata, aes(x=myx)) + 
-  geom_line(aes(y = random_jaccard_similarity_vector, color = "darkred")) + 
-  geom_line(aes(y = real_jaccard_similarity_vector, color="steelblue" )) +
-  geom_point(aes(y = random_jaccard_similarity_vector, color = "darkred")) + 
-  geom_point(aes(y = real_jaccard_similarity_vector, color = "steelblue"))  +
-  scale_x_continuous(breaks=seq(0,1, 0.1)) + 
-  scale_color_manual(labels=c('Random dataset', 'Real dataset'), values=c('darkred', 'steelblue'), name='') + 
-  theme_bw() +
-  xlab('Semantic similarity threshold') + 
-  ylab('Jaccard Similarity')
-
-plot1
-```
-
-From the previous image we could observe lower Jaccard similarities for the randomized dataset. We also identified the semantic similarity cutoff at 0.7 as the one maximizing the similarity between data driven and semantically driven clusters. 
-
-```{r plots_of_tsne, echo=T, eval=T}
-
-best_similarity <- names(real_jaccard_similarity_vector)[which(real_jaccard_similarity_vector==max(real_jaccard_similarity_vector))]
-```
-
-In the following plot we show the tSNE positioning of the samples with samples colored by semantic set. The proximity of samples associated with the same semantic group idicates that they have similar patterns of H3K27ac promoters.
-
-```{r plotofcoherence, echo=T, eval=T, message=FALSE, warning=FALSE}
-
-# Collapsing semantic sets at the best similarity value
-collapsed_cells <- Onassis::collapse(filtered_cells, as.numeric(best_similarity))
-onassis_annotations <- entities(collapsed_cells)
-
-# Sorting the annotations based on the score matrix columns
-onassis_annotations <- onassis_annotations[match(colnames(score_matrix), onassis_annotations$sample_id),]
-
-tsne_clus <- cutree(hclust(dist(tsne_out[,c(1,2)]), method='ward.D'), length(unique(onassis_annotations$short_label)))
-
-my_tsne_out <- data.frame(tsne_out)
-colnames(my_tsne_out) <- c('tSNE1', 'tSNE2', 'tSNE3')
-my_tsne_out$annotations <- onassis_annotations$short_label
-my_tsne_out$cluster <- as.numeric(as.vector(tsne_clus))
-
-my_random_tsne_clus <- factor(cutree(hclust(dist(random_tsne_out[,c(1,2)]), method='ward.D'), length(unique(onassis_annotations$short_label))))
-
-my_colors <- c("#7FC97F", "#386CB0", "#F0027F", "#666666", "#FF7F00", "#6A3D9A", "#F4CAE4")
-
-plot2 <- ggplot(my_tsne_out[, c(1, 2, 4, 5)], aes(x=tSNE1, y=tSNE2,colour= annotations)) +
-  geom_point(size=5) + 
-  theme_bw()  +
-  scale_colour_manual(name = "Semantic set", values = my_colors) 
-
-plot2 
-```
-
-In the following plot instead we show how reshuffling the data matrix the association between semantic groups and data driven groups is lost
-
-```{r second_plot, echo=T, eval=T, warning=FALSE, message=FALSE}
-
-my_random_tsne_out <- data.frame(random_tsne_out)
-colnames(my_random_tsne_out) <- c('tSNE1', 'tSNE2', 'tSNE3')
-my_random_tsne_out$annotations <- onassis_annotations$short_label
-my_random_tsne_out$cluster <- as.numeric(as.vector(random_tsne_clus))
-
-plot3 <- ggplot(my_random_tsne_out[, c(1, 2, 4, 5)], aes(x=tSNE1, y=tSNE2,colour= annotations)) +
-  geom_point(size=5) +
-  theme_bw()  +
-  scale_colour_manual(name = "Semantic set", values = my_colors) 
-
-plot3 
-
-```
-
-We also show the correspondence between tSNE clusters and semantic sets
-
-```{r plot_correspondence_tsne_hclus, echo=T, eva=T, warning=FALSE}
-plot4 <- ggplot(my_tsne_out[, c(1, 2, 4, 5)], aes(x=tSNE1, y=tSNE2,colour= annotations)) +
-  stat_ellipse(type = "t", level=0.9, data=my_tsne_out[, c(1, 2, 4,5)], aes(x=tSNE1, y=tSNE2, colour=factor(cluster))) +
-  geom_point(size=5) +
-  theme_bw()  +
-  scale_colour_manual(name = "Semantic set",values = c(rep('black', 7), my_colors)) +
-   
-  theme(legend.position = "none")
-plot4
-```
-
-
-# Performances of the tool 
-
-In this section we provide a table with details on the performance of Onassis in running the annotation, semantic similarity, and data integrative analysis tasks. Different input sizes and dictionary sizes were tested and run time and memory footprint are reported. Tests were run on a desktop computer having a 3,5 GHz Intel Core i7 processor and 24 GB RAM. The table reports the name of the function, the elapsed time in seconds as reported by the R system.time function, the size of the object in bytes as reported by object_size function, a description and the used code. We additionaly report the performances of the queries to SRA used to obtain the ChIP-seq dataset used in the vignette.
-
-```{r performances, echo=FALSE, eval=TRUE}
-performances_table <- readRDS(system.file('extdata', 'vignette_data', 'performances.rds', package='Onassis'))
-```
-
-```{r showingperformances, echo=FALSE, eval=TRUE}
-knitr::kable(performances_table, 
-  caption = ' Onassis performances ') %>% kable_styling(bootstrap_options = c("striped"), position="center") %>%
-  scroll_box(width = "80%", height = "400px")
-```
-
-
-
-# Session Info
-
-Here is the output of sessionInfo() on the system on which this document was compiled through kintr:
-
-```{r sessionInfo(), echo=FALSE, eval=TRUE}
-sessionInfo()
-```
-# References
