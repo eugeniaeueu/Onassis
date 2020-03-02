@@ -280,7 +280,7 @@ setMethod("annotate", c("data.frame", "character", "character"), function(input,
 setMethod("sim", signature = c("Onassis"), def = function(onassis, iconf = "sanchez",
                                                           pairconf = "lin", groupconf = "bma") {
   
-  if (!class(onassis) == "Onassis")
+  if (!is(onassis , "Onassis"))
     return(NA) else {
       entities <- entities(onassis)
       entities <- entities[which(!entities$term_url == ""), ]
@@ -370,7 +370,7 @@ setMethod("sim", signature = c("Onassis"), def = function(onassis, iconf = "sanc
 #' @export
 setMethod("collapse", signature = c("Onassis"), def = function(onassis, simil_thresh) {
   trim <- function(x) gsub("^\\s+|\\s+$", "", x)
-  if (!class(onassis) == "Onassis")
+  if (!is(onassis,  "Onassis"))
     return(NA) else {
       entities <- entities(onassis)
       
@@ -474,7 +474,7 @@ setMethod("collapse", signature = c("Onassis"), def = function(onassis, simil_th
 #' @export
 setMethod("mergeonassis", signature = c("Onassis", "Onassis"), def = function(onassis1,
                                                                               onassis2) {
-  if (!class(onassis1) == "Onassis" | !class(onassis2) == "Onassis")
+  if (!is(onassis1,"Onassis") | !is(onassis2, "Onassis"))
     return(NA) else {
       entities1 <- entities(onassis1)
       if('short_label' %in% colnames(entities1))
@@ -844,7 +844,7 @@ setMethod("compare", signature = c("Onassis"), def = function(onassis, score_mat
 setMethod("filterconcepts", signature = c("Onassis"), def = function(onassis, concepts_to_filter = c()) {
   trim <- function(x) gsub("^\\s+|\\s+$", "", x)
   
-  if (!class(onassis) == "Onassis")
+  if (!is(onassis, "Onassis"))
     return(NA) else {
       entities <- data.frame(entities(onassis))
       for (i in 1:ncol(entities)) entities[, i] <- as.character(entities[, i])
