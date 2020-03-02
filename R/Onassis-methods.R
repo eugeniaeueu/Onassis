@@ -809,7 +809,7 @@ setMethod("compare", signature = c("Onassis"), def = function(onassis, score_mat
             }  # end if by col
           }  # end inner for level 2 condition
         }  # end outer for level 2 conditions
-        if (class(comparison_result) == "matrix") {
+        if (is.matrix(comparison_result)) {
           global_result_list[[outer_counter]] <- comparison_result
           names(global_result_list)[outer_counter] <- level1_condition_names[i] 
           outer_counter <- outer_counter + 1
